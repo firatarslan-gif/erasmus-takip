@@ -4973,6 +4973,7 @@ function switchTab(id,idx){
   else if(id==='reports'){try{renderReports();}catch(e){console.error('[reports]',e.message);var el=document.getElementById('reportsContent');if(el)el.innerHTML='<pre style="color:red;padding:20px">'+e.message+'</pre>';}}
   else if(id==='matching'){try{renderMatching();}catch(e){console.error('[matching]',e.message);}}
   else if(id==='applications'){try{renderApplications();}catch(e){console.error('[applications]',e.message);}}
+  else if(id==='iletisim25'){setTimeout(renderIletisim25,50);}
 }
 
 // ═══════════════════════════
@@ -8244,7 +8245,7 @@ function renderPlan25(){
         return _mobDate(a)-_mobDate(b);
       });
 
-      var mobHtml='';
+      var mobHtml=''; var _schoolSideHtml='';
       if(sortedMobs.length){
         sortedMobs.forEach(function(m){
           var mEvet=m.evet||0,mTotal=m.total||0;
@@ -8374,9 +8375,31 @@ function renderPlan25(){
               +(m.sheet_id?'<button onclick="_t25ShowKL(\''+m.sheet_id+'\')" style="font-size:12px;color:#7c3aed;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;font-weight:600">✏️ Görev Notları</button>':'')
               +(targetFolder?'<a href="https://drive.google.com/drive/folders/'+targetFolder+'" target="_blank" style="font-size:12px;color:#3b82f6;text-decoration:none;white-space:nowrap;font-weight:600;flex-shrink:0">'+targetLabel+'</a>':'')
               +'<button id="t25nb_'+(m.sheet_id||m.mob_folder_id||'')+'" class="t25nb" data-mid="'+(m.sheet_id||m.mob_folder_id||'')+'" onclick="_t25ShowMobNotes(\''+(m.sheet_id||m.mob_folder_id||'')+'\')" style="font-size:12px;color:#0369a1;background:#eff6ff;border:1px solid #bae6fd;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;font-weight:600">📝 Not</button>'
-              +_t25AdminChip(m.sheet_id||m.mob_folder_id||'', turShort+' – '+sh)
-              +_t25DocsChip(m.sheet_id||m.mob_folder_id||'', turShort+' – '+sh, r.drive_id||'')
             +'</div>'
+          +'</div>';
+          // ── Build school-column dot matrix for this mobility ──
+          var _adminT2=(window._t25AdminTasks||{})[_mobApprId]||{};
+          var _docL2=(window._t25DocLinks||{})[_mobApprId]||{};
+          var _aDone=_T25_ADMIN_KEYS.filter(function(t){return !!_adminT2[t.key];}).length;
+          var _dDone=_T25_DOC_KEYS.filter(function(d){var v=_docL2[d.key]||'';return !!(v);}).length;
+          var _aDots=_T25_ADMIN_KEYS.map(function(t){
+            var ck=!!_adminT2[t.key];
+            return '<span id="t25ad_'+_mobApprId+'_'+t.key+'" title="'+t.lbl.replace(/"/g,'&quot;')+'" onclick="_t25ToggleAdminInline(\''+_mobApprId+'\',\''+t.key+'\')" '
+              +'style="display:inline-block;width:13px;height:13px;border-radius:3px;cursor:pointer;margin-right:2px;vertical-align:middle;background:'+(ck?'#16a34a':'#e2e8f0')+';border:1px solid '+(ck?'#15803d':'#cbd5e1')+'"></span>';
+          }).join('');
+          var _dDots=_T25_DOC_KEYS.map(function(d){
+            var v=_docL2[d.key]||'';
+            var hasLink=!!(v&&v!=='1'&&v!=='ok');
+            var dotBg=hasLink?'#16a34a':'#e2e8f0';
+            var dotBorder=hasLink?'#15803d':'#cbd5e1';
+            var clickFn=hasLink?'window.open(\''+v.replace(/'/g,"\\'")+'\',\'_blank\')':'_t25SetDocLink(\''+_mobApprId+'\',\''+d.key+'\''+')';
+            return '<span id="t25dd_'+_mobApprId+'_'+d.key+'" title="'+d.lbl.replace(/"/g,'&quot;')+(hasLink?' — tıkla: aç':' — tıkla: link ekle')+'" onclick="'+clickFn+'" '
+              +'style="display:inline-block;width:13px;height:13px;border-radius:50%;cursor:pointer;margin-right:2px;vertical-align:middle;background:'+dotBg+';border:1px solid '+dotBorder+'"></span>';
+          }).join('');
+          _schoolSideHtml+='<div style="margin-top:6px;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px">'
+            +'<div style="font-size:10px;font-weight:700;color:#0369a1;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+turShort+'</div>'
+            +'<div style="display:flex;align-items:center;gap:2px;margin-bottom:3px"><span style="font-size:10px;margin-right:2px">⚙️</span>'+_aDots+'<span style="font-size:10px;color:#94a3b8;margin-left:3px">'+_aDone+'/5</span></div>'
+            +'<div style="display:flex;align-items:center;gap:2px"><span style="font-size:10px;margin-right:2px">📁</span>'+_dDots+'<span style="font-size:10px;color:#94a3b8;margin-left:3px">'+_dDone+'/8</span></div>'
           +'</div>';
         });
       }else{
@@ -8405,10 +8428,11 @@ function renderPlan25(){
         +'data-okul="'+r.name.toLocaleLowerCase('tr-TR')+'" data-mobids="'+_rowMobIds+'" '
         +'style="border-bottom:1px solid #e2e8f0;vertical-align:top;border-left:5px solid '+_spColor+';background:'+_spBg+'">'
         +'<td style="padding:14px 12px;color:#94a3b8;font-size:12px;font-weight:600">'+(i+1)+'</td>'
-        +'<td style="padding:14px 12px">'
-          +'<div style="font-weight:700;color:#1e293b;font-size:14px;margin-bottom:3px">'+sh+'</div>'
-          +'<div style="font-size:12px;color:#64748b;margin-bottom:6px">'+r.ilce+'</div>'
-          +'<span style="padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:'+s2.bg+';color:'+s2.color+'">'+s2.label+'</span>'
+        +'<td style="padding:14px 12px;min-width:160px;max-width:240px">'
+          +'<div style="font-weight:700;color:#1e293b;font-size:14px;margin-bottom:3px;line-height:1.3">'+sh+'</div>'
+          +'<div style="font-size:12px;color:#64748b;margin-bottom:4px">'+r.ilce+'</div>'
+          +(_hOCheck?'<span style="background:#faf5ff;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:4px">🏆 Onaylandı</span>':'')
+          +_schoolSideHtml
         +'</td>'
         +'<td style="padding:6px 12px 10px">'+mobHtml+'</td>'
         +'<td style="padding:14px 12px"><a href="https://drive.google.com/drive/folders/'+r.drive_id+'" target="_blank" style="font-size:12px;color:#3b82f6;text-decoration:none;font-weight:600">📁 Okul</a></td>'
@@ -9449,9 +9473,12 @@ function _t25ToggleAdminTask(mobId, key, checked) {
   try { var _ls=JSON.parse(localStorage.getItem('t25_admin')||'{}'); if(!_ls[mobId])_ls[mobId]={}; if(checked)_ls[mobId][key]=true; else{delete _ls[mobId][key]; if(!Object.keys(_ls[mobId]).length)delete _ls[mobId];} localStorage.setItem('t25_admin',JSON.stringify(_ls)); } catch(e){}
   // GAS'a kaydet (arka planda)
   fetch(GAS_URL+'?action=saveAdminTask&mobId='+encodeURIComponent(mobId)+'&key='+encodeURIComponent(key)+'&val='+(checked?'1':'0')).catch(function(){});
-  // Chip güncelle
+  // Chip güncelle (geriye dönük uyumluluk)
   var chips = document.querySelectorAll('button[onclick*="_t25ShowAdminModal"]');
   chips.forEach(function(btn){ if(btn.getAttribute('onclick').indexOf(mobId)>=0){ var html=_t25AdminChip(mobId,''); var tmp=document.createElement('div'); tmp.innerHTML=html; if(tmp.firstChild){ btn.style.background=tmp.firstChild.style.background; btn.style.color=tmp.firstChild.style.color; btn.style.border=tmp.firstChild.style.border; btn.textContent=tmp.firstChild.textContent; } } });
+  // İnline dot güncelle
+  var _inlineDot=document.getElementById('t25ad_'+mobId+'_'+key);
+  if(_inlineDot){_inlineDot.style.background=checked?'#16a34a':'#e2e8f0';_inlineDot.style.borderColor=checked?'#15803d':'#cbd5e1';}
 }
 
 function _t25ShowDocsModal(mobId, label, driveId) {
@@ -9521,6 +9548,49 @@ function _t25ToggleDocItem(mobId, key, checked, driveId) {
 }
 
 init();
+
+function _t25ToggleAdminInline(mobId, key) {
+  var _tasks=(window._t25AdminTasks||{})[mobId]||{};
+  _t25ToggleAdminTask(mobId, key, !_tasks[key]);
+}
+
+function _t25SetDocLink(mobId, key) {
+  var docs=(window._t25DocLinks||{})[mobId]||{};
+  var curVal=docs[key]||'';
+  var curLink=(curVal&&curVal!=='1'&&curVal!=='ok')?curVal:'';
+  var docMeta=_T25_DOC_KEYS.filter(function(d){return d.key===key;})[0]||{lbl:key};
+  var link=prompt('📎 '+docMeta.lbl+(curLink?'\nMevcut: '+curLink:'')+'\n\nDrive belge linkini yapıştırın (boş=sil):', curLink);
+  if(link===null) return;
+  link=link.trim();
+  if(!window._t25DocLinks)window._t25DocLinks={};
+  if(!window._t25DocLinks[mobId])window._t25DocLinks[mobId]={};
+  if(link){window._t25DocLinks[mobId][key]=link;}
+  else{delete window._t25DocLinks[mobId][key];}
+  // localStorage'a kaydet
+  try{
+    var _lsd=JSON.parse(localStorage.getItem('t25_docs')||'{}');
+    if(!_lsd[mobId])_lsd[mobId]={};
+    if(link){_lsd[mobId][key]=link;}
+    else{delete _lsd[mobId][key];if(!Object.keys(_lsd[mobId]).length)delete _lsd[mobId];}
+    localStorage.setItem('t25_docs',JSON.stringify(_lsd));
+  }catch(e){}
+  // GAS'a kaydet
+  fetch(GAS_URL+'?action=saveDocLink&mobId='+encodeURIComponent(mobId)+'&key='+encodeURIComponent(key)+'&link='+encodeURIComponent(link)).catch(function(){});
+  // İnline dot güncelle
+  var dot=document.getElementById('t25dd_'+mobId+'_'+key);
+  if(dot){
+    var hasLink=!!link;
+    dot.style.background=hasLink?'#16a34a':'#e2e8f0';
+    dot.style.borderColor=hasLink?'#15803d':'#cbd5e1';
+    if(hasLink){
+      dot.setAttribute('onclick','window.open(\''+link.replace(/'/g,"\\'")+'\',' +''_blank')');
+      dot.title=dot.title.split(' — ')[0]+' — tıkla: aç';
+    }else{
+      dot.setAttribute('onclick','_t25SetDocLink(\''+mobId+'\',\''+key+'\')');
+      dot.title=dot.title.split(' — ')[0]+' — tıkla: link ekle';
+    }
+  }
+}
 </script>
 
 <script>
@@ -9616,10 +9686,6 @@ function renderIletisim25() {
   _iletisimFilter();
 }
 
-// Trigger render when tab opens
-  if (id === 'iletisim25') { setTimeout(renderIletisim25, 50); }
-  };
-}
 </script>
 
 </body>
