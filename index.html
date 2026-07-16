@@ -9583,7 +9583,7 @@ function _t25SetDocLink(mobId, key) {
     dot.style.background=hasLink?'#16a34a':'#e2e8f0';
     dot.style.borderColor=hasLink?'#15803d':'#cbd5e1';
     if(hasLink){
-      dot.setAttribute('onclick','window.open(\''+link.replace(/'/g,"\\'")+'\',' +''_blank')');
+      dot.setAttribute('onclick','window.open(\''+link.replace(/'/g,"\\'")+'\',\'_blank\')');
       dot.title=dot.title.split(' — ')[0]+' — tıkla: aç';
     }else{
       dot.setAttribute('onclick','_t25SetDocLink(\''+mobId+'\',\''+key+'\')');
