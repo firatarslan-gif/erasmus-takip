@@ -8380,26 +8380,38 @@ function renderPlan25(){
           // ── Build school-column dot matrix for this mobility ──
           var _adminT2=(window._t25AdminTasks||{})[_mobApprId]||{};
           var _docL2=(window._t25DocLinks||{})[_mobApprId]||{};
-          var _aDone=_T25_ADMIN_KEYS.filter(function(t){return !!_adminT2[t.key];}).length;
-          var _dDone=_T25_DOC_KEYS.filter(function(d){var v=_docL2[d.key]||'';return !!(v);}).length;
+          // Tamamlanmış hareketlilikler için admin görevleri otomatik işaretli say
+          var _autoCheck=(m.durum==='tamam'||(m.evet>0&&m.evet===m.total));
+          var _aDone=_autoCheck?_T25_ADMIN_KEYS.length:_T25_ADMIN_KEYS.filter(function(t){return !!_adminT2[t.key];}).length;
+          var _dDone=_T25_DOC_KEYS.filter(function(d){var v=_docL2[d.key]||'';return !!(v&&v!=='1'&&v!=='ok');}).length;
           var _aDots=_T25_ADMIN_KEYS.map(function(t){
-            var ck=!!_adminT2[t.key];
+            var ck=_autoCheck||!!_adminT2[t.key];
+            var abbr=t.abbr||t.key.substring(0,2).toUpperCase();
             return '<span id="t25ad_'+_mobApprId+'_'+t.key+'" title="'+t.lbl.replace(/"/g,'&quot;')+'" onclick="_t25ToggleAdminInline(\''+_mobApprId+'\',\''+t.key+'\')" '
-              +'style="display:inline-block;width:13px;height:13px;border-radius:3px;cursor:pointer;margin-right:2px;vertical-align:middle;background:'+(ck?'#16a34a':'#e2e8f0')+';border:1px solid '+(ck?'#15803d':'#cbd5e1')+'"></span>';
+              +'style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:14px;border-radius:3px;cursor:pointer;margin-right:2px;'
+              +'font-size:8px;font-weight:800;letter-spacing:-.3px;'
+              +'background:'+(ck?'#16a34a':'#e2e8f0')+';border:1px solid '+(ck?'#15803d':'#cbd5e1')+';color:'+(ck?'#fff':'#94a3b8')+'">'+abbr+'</span>';
           }).join('');
+          var _docAbbr={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'};
+          // Sonrası belgeleri sadece hareketlilik sonrası/tamam aşamasındaysa göster
+          var _postMobKeys=['boarding','europass','anket'];
+          var _mobSonrasi=(m.durum==='sonrasi'||m.durum==='tamam');
           var _dDots=_T25_DOC_KEYS.map(function(d){
             var v=_docL2[d.key]||'';
             var hasLink=!!(v&&v!=='1'&&v!=='ok');
-            var dotBg=hasLink?'#16a34a':'#e2e8f0';
-            var dotBorder=hasLink?'#15803d':'#cbd5e1';
-            var clickFn=hasLink?'window.open(\''+v.replace(/'/g,"\\'")+'\',\'_blank\')':'_t25SetDocLink(\''+_mobApprId+'\',\''+d.key+'\''+')';
-            return '<span id="t25dd_'+_mobApprId+'_'+d.key+'" title="'+d.lbl.replace(/"/g,'&quot;')+(hasLink?' — tıkla: aç':' — tıkla: link ekle')+'" onclick="'+clickFn+'" '
-              +'style="display:inline-block;width:13px;height:13px;border-radius:50%;cursor:pointer;margin-right:2px;vertical-align:middle;background:'+dotBg+';border:1px solid '+dotBorder+'"></span>';
+            // Henüz gerçekleşmemiş hareketlilik → sonrası belgeleri yeşil gösterme
+            if(hasLink&&_postMobKeys.indexOf(d.key)!==-1&&!_mobSonrasi) hasLink=false;
+            var abbr=_docAbbr[d.key]||d.key.substring(0,2).toUpperCase();
+            var clickFn=hasLink?'window.open(\''+v.replace(/'/g,"\\'")+'\',\'_blank\')':'_t25AutoFillDocLink(\''+_mobApprId+'\',\''+d.key+'\')';
+            return '<span id="t25dd_'+_mobApprId+'_'+d.key+'" title="'+d.lbl.replace(/"/g,'&quot;')+(hasLink?' — tıkla: aç':' — tıkla: otomatik bul')+'" onclick="'+clickFn+'" '
+              +'style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:14px;border-radius:3px;cursor:pointer;margin-right:2px;'
+              +'font-size:8px;font-weight:800;letter-spacing:-.3px;'
+              +'background:'+(hasLink?'#16a34a':'#e2e8f0')+';border:1px solid '+(hasLink?'#15803d':'#cbd5e1')+';color:'+(hasLink?'#fff':'#94a3b8')+'">'+abbr+'</span>';
           }).join('');
           _schoolSideHtml+='<div style="margin-top:6px;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px">'
             +'<div style="font-size:10px;font-weight:700;color:#0369a1;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+turShort+'</div>'
-            +'<div style="display:flex;align-items:center;gap:2px;margin-bottom:3px"><span style="font-size:10px;margin-right:2px">⚙️</span>'+_aDots+'<span style="font-size:10px;color:#94a3b8;margin-left:3px">'+_aDone+'/5</span></div>'
-            +'<div style="display:flex;align-items:center;gap:2px"><span style="font-size:10px;margin-right:2px">📁</span>'+_dDots+'<span style="font-size:10px;color:#94a3b8;margin-left:3px">'+_dDone+'/8</span></div>'
+            +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-bottom:3px"><span style="font-size:10px;margin-right:2px">⚙️</span>'+_aDots+'<span id="t25ac_'+_mobApprId+'" style="font-size:10px;color:#94a3b8;margin-left:3px">'+_aDone+'/'+_T25_ADMIN_KEYS.length+'</span></div>'
+            +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px"><span style="font-size:10px;margin-right:2px">📁</span>'+_dDots+'<span id="t25dc_'+_mobApprId+'" style="font-size:10px;color:#94a3b8;margin-left:3px">'+_dDone+'/'+_T25_DOC_KEYS.length+'</span></div>'
           +'</div>';
         });
       }else{
@@ -9387,11 +9399,10 @@ const PLAN_EXCEL_2025 = {"by_type":{"LM-GRP-PUPIL":{"kisi":90,"gun_total":450,"m
 // ADMİN GÖREVLER & BELGELER
 // =============================================================================
 var _T25_ADMIN_KEYS = [
-  {key:'turna',      lbl:'Turna Portal\'a girildi'},
-  {key:'bm',         lbl:'BM\'ye girildi'},
-  {key:'tablo8',     lbl:'Tablo8\'e (Muhasebe) girildi'},
-  {key:'hibe_teslim',lbl:'Hibe Sözleşmesi İmzaya Teslim Edildi'},
-  {key:'hibe_tarama',lbl:'Hibe Sözleşmesi Drive\'a Taranarak Yüklendi'}
+  {key:'turna',      lbl:'Turna Portal\'a girildi',        abbr:'TU'},
+  {key:'bm',         lbl:'BM\'ye girildi',                  abbr:'BM'},
+  {key:'tablo8',     lbl:'Tablo8\'e (Muhasebe) girildi',   abbr:'T8'},
+  {key:'hibe_tarama',lbl:'Hibe Sözleşmesi Drive\'a Taranarak Yüklendi', abbr:'HB'}
 ];
 var _T25_DOC_KEYS = [
   {key:'faaliyet', lbl:'Faaliyet Programı'},
@@ -9552,6 +9563,35 @@ init();
 function _t25ToggleAdminInline(mobId, key) {
   var _tasks=(window._t25AdminTasks||{})[mobId]||{};
   _t25ToggleAdminTask(mobId, key, !_tasks[key]);
+}
+
+function _t25AutoFillDocLink(mobId, key) {
+  var dot=document.getElementById('t25dd_'+mobId+'_'+key);
+  if(dot){dot.style.opacity='0.4';dot.textContent='…';}
+  fetch(GAS_URL+'?action=findDocLink&mobId='+encodeURIComponent(mobId)+'&key='+encodeURIComponent(key))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.link){
+        if(!window._t25DocLinks)window._t25DocLinks={};
+        if(!window._t25DocLinks[mobId])window._t25DocLinks[mobId]={};
+        window._t25DocLinks[mobId][key]=data.link;
+        var abbr={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'}[key]||key.substring(0,2).toUpperCase();
+        if(dot){
+          dot.style.opacity='1';dot.textContent=abbr;
+          dot.style.background='#16a34a';dot.style.borderColor='#15803d';dot.style.color='#fff';
+          dot.setAttribute('onclick','window.open(\''+data.link.replace(/'/g,"\\'")+'\',\'_blank\')');
+          dot.title=dot.title.split(' — ')[0]+' — tıkla: aç';
+        }
+        var _dl=(window._t25DocLinks||{})[mobId]||{};
+        var done=_T25_DOC_KEYS.filter(function(d){var v=_dl[d.key]||'';return !!(v&&v!=='1'&&v!=='ok');}).length;
+        var ctr=document.getElementById('t25dc_'+mobId);
+        if(ctr)ctr.textContent=done+'/'+_T25_DOC_KEYS.length;
+      } else {
+        if(dot){dot.style.opacity='1';var ab={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'}[key]||key.substring(0,2).toUpperCase();dot.textContent=ab;}
+        alert('Klasör bulunamadı ('+key+'). Drive yapısı farklı olabilir.');
+      }
+    })
+    .catch(function(){if(dot){dot.style.opacity='1';}});
 }
 
 function _t25SetDocLink(mobId, key) {
