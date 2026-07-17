@@ -8388,7 +8388,7 @@ function renderPlan25(){
           // Tamamlanmış hareketlilikler için admin görevleri otomatik işaretli say
           var _autoCheck=(m.durum==='tamam'||(m.evet>0&&m.evet===m.total));
           var _aDone=_autoCheck?_T25_ADMIN_KEYS.length:_T25_ADMIN_KEYS.filter(function(t){return !!_adminT2[t.key];}).length;
-          var _dDone=_T25_DOC_KEYS.filter(function(d){var v=_docL2[d.key]||'';return !!(v&&v!=='1'&&v!=='ok');}).length;
+          var _dDone=_T25_DOC_KEYS.filter(function(d){if((d.key+'_file') in _docL2)return _docL2[d.key+'_file']===true;var v=_docL2[d.key]||'';return !!(v&&v!=='1'&&v!=='ok');}).length;
           // Hareketlilik sırasına göre renk (aynı okuldaki birden fazla hareketliliği ayırt etmek için)
           var _mobColors=['#0369a1','#7c3aed','#c2410c','#059669'];
           var _mobIdx=sortedMobs.indexOf(m);
@@ -8409,14 +8409,20 @@ function renderPlan25(){
           var _dDots=_T25_DOC_KEYS.map(function(d){
             var v=_docL2[d.key]||'';
             var hasLink=!!(v&&v!=='1'&&v!=='ok');
+            // _file alanı varsa onu kullan, yoksa hasLink'e dön (eski davranış)
+            var hasFile=((d.key+'_file') in _docL2)?(_docL2[d.key+'_file']===true):hasLink;
             // Henüz gerçekleşmemiş hareketlilik → sonrası belgeleri yeşil gösterme
-            if(hasLink&&_postMobKeys.indexOf(d.key)!==-1&&!_mobSonrasi) hasLink=false;
+            if(_postMobKeys.indexOf(d.key)!==-1&&!_mobSonrasi){hasLink=false;hasFile=false;}
             var abbr=_docAbbr[d.key]||d.key.substring(0,2).toUpperCase();
             var clickFn=hasLink?'window.open(\''+v.replace(/'/g,"\\'")+'\',\'_blank\')':'_t25AutoFillDocLink(\''+_mobApprId+'\',\''+d.key+'\',\''+_schoolDriveId+'\')';
-            return '<span id="t25dd_'+_mobApprId+'_'+d.key+'" title="'+d.lbl.replace(/"/g,'&quot;')+(hasLink?' — tıkla: aç':' — tıkla: otomatik bul')+'" onclick="'+clickFn+'" '
+            var bg=hasFile?'#16a34a':hasLink?'#93c5fd':'#e2e8f0';
+            var bd=hasFile?'#15803d':hasLink?'#60a5fa':'#cbd5e1';
+            var cl=hasFile?'#fff':hasLink?'#1d4ed8':'#94a3b8';
+            var tip=d.lbl.replace(/"/g,'&quot;')+(hasFile?' — dosya mevcut ✓':hasLink?' — klasör var, dosya bekleniyor':' — tıkla: otomatik bul');
+            return '<span id="t25dd_'+_mobApprId+'_'+d.key+'" title="'+tip+'" onclick="'+clickFn+'" '
               +'style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:3px;cursor:pointer;margin-right:2px;'
               +'font-size:9px;font-weight:800;letter-spacing:-.3px;'
-              +'background:'+(hasLink?'#16a34a':'#e2e8f0')+';border:1px solid '+(hasLink?'#15803d':'#cbd5e1')+';color:'+(hasLink?'#fff':'#94a3b8')+'">'+abbr+'</span>';
+              +'background:'+bg+';border:1px solid '+bd+';color:'+cl+'">'+abbr+'</span>';
           }).join('');
           var _isFirstMob=(_mobIdx===0);
           _schoolSideHtml+=(!_isFirstMob?'<div style="border-top:2px dashed #cbd5e1;margin:8px 0 4px"></div>':'')+
