@@ -3888,7 +3888,15 @@ function renderMatching(){
   var potScores=_score(sel,targetActs2,'potential');
   var etsnScores=_scoreETSN(sel,targetActs2);
   var histList=Object.entries(histScores).sort(function(a,b){return b[1].sc-a[1].sc;});
-  var potList=Object.entries(potScores).sort(function(a,b){return b[1].sc-a[1].sc;});
+  // Potansiyel listesi: ülke başına max 4 (çeşitlilik), fazlası sona eklenir
+  var _potRaw=Object.entries(potScores).sort(function(a,b){return b[1].sc-a[1].sc;});
+  var _potCtry={}; var _potDiv=[]; var _potOver=[];
+  _potRaw.forEach(function(e){
+    var c=e[1].ctry||'??';
+    _potCtry[c]=(_potCtry[c]||0)+1;
+    if(_potCtry[c]<=4) _potDiv.push(e); else _potOver.push(e);
+  });
+  var potList=_potDiv.concat(_potOver);
   var etsnList=Object.entries(etsnScores).sort(function(a,b){return b[1].sc-a[1].sc;});
 
   // Sekme
@@ -4411,7 +4419,7 @@ function _t25RequestUpdate() {
           setTimeout(_doPoll, 10000);
         } else {
           if(btn){btn.textContent='🔄 Şimdi Güncelle';btn.disabled=false;}
-          setStatus('⚠️ Sync zaman aşımı — GAS logunu kontrol edin', '#ef4444');
+          setStatus('⚠️ Sync bitmedi (5dk). GAS editöründe syncTakip25 içinde checkDocFiles() varsa silin.', '#ef4444');
         }
       })
       .catch(function(){
@@ -4536,12 +4544,15 @@ function _t25RenderTable(data, updateTime) {
     h += '<tr id="t25det'+i+'" style="display:none;background:#f8fafc"><td colspan="7" style="padding:0">';
     h += '<div style="padding:12px 20px 16px;display:flex;flex-direction:column;gap:10px">';
     if(r.mobs&&r.mobs.length){
+      var _rMobColors=['#0369a1','#7c3aed','#c2410c','#059669'];
       r.mobs.forEach(function(m,mi){
         var mst=T25_STAGES[m.durum]||T25_STAGES.bilinmiyor;
+        var _rColor=_rMobColors[mi%_rMobColors.length];
         var noteKey='t25note_'+(r.drive_id||i)+'_'+mi;
         var savedNote=''; try{savedNote=localStorage.getItem(noteKey)||'';}catch(e){}
 
-        h += '<div style="background:white;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px">';
+        if(mi>0) h+='<div style="border-top:2px dashed #cbd5e1;margin:6px 0 8px"></div>';
+        h += '<div style="background:white;border:1.5px solid #e2e8f0;border-left:4px solid '+_rColor+';border-radius:0 10px 10px 0;padding:14px">';
         // Başlık + linkler
         h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;flex-wrap:wrap">';
         h += '<div><div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:4px">🌍 '+m.tur+'</div>'
@@ -8863,8 +8874,11 @@ function _t25ShowKL(sheetId) {
   _t25Modal('📋 Görev Notları' + (sh ? ' — '+sh : ''),
     '<div style="text-align:center;padding:30px;color:#64748b">⏳ Yükleniyor...</div>', footer);
 
-  fetch(GAS_URL+'?action=getTasksForSheet&sheetId='+encodeURIComponent(sheetId)+'&tur='+encodeURIComponent(meta.tur||''))
-    .then(function(r){return r.json();})
+  var _klCtrl = typeof AbortController!=='undefined' ? new AbortController() : null;
+  var _klTimer = _klCtrl ? setTimeout(function(){_klCtrl.abort();}, 25000) : null;
+  fetch(GAS_URL+'?action=getTasksForSheet&sheetId='+encodeURIComponent(sheetId)+'&tur='+encodeURIComponent(meta.tur||''),
+    _klCtrl ? {signal:_klCtrl.signal} : {})
+    .then(function(r){ if(_klTimer)clearTimeout(_klTimer); return r.json(); })
     .then(function(d){
       var liveTasks = (d&&Array.isArray(d.tasks)) ? d.tasks : [];
       if(liveTasks.length) {
@@ -8876,11 +8890,20 @@ function _t25ShowKL(sheetId) {
       var modBody = document.getElementById('_t25ModBody');
       if(modBody) modBody.innerHTML = body;
     })
-    .catch(function(){
+    .catch(function(err){
+      if(_klTimer)clearTimeout(_klTimer);
       var tasks = (window._t25TasksMap||{})[sheetId]||[];
-      var body = _t25RenderKLBody(sheetId, tasks, meta);
+      var isTimeout = err && err.name === 'AbortError';
       var modBody = document.getElementById('_t25ModBody');
-      if(modBody) modBody.innerHTML = body;
+      if(tasks.length) {
+        var body = _t25RenderKLBody(sheetId, tasks, meta);
+        if(modBody) modBody.innerHTML = body
+          + (isTimeout ? '<div style="margin-top:10px;padding:8px 12px;background:#fef3c7;border-radius:6px;font-size:11px;color:#92400e">⚠️ Sunucu yavaş yanıt verdi, önbellekteki veriler gösteriliyor</div>' : '');
+      } else {
+        if(modBody) modBody.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444">'
+          + (isTimeout ? '⏱️ Sunucu 25 saniyede yanıt vermedi. GAS soğuk başlıyorsa 1-2 dakika sonra tekrar deneyin.' : '⚠️ Yükleme hatası. Lütfen tekrar deneyin.')
+          + '</div>';
+      }
     });
 }
 
