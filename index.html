@@ -3561,10 +3561,11 @@ function _hostEdu(name, orgType){
   if(HOST_EDU_MAP&&HOST_EDU_MAP[name]) return HOST_EDU_MAP[name];
   if(orgType){
     var t=orgType.toLowerCase();
-    if(t.indexOf('pre')>=0) return 3;
-    if(t.indexOf('prim')>=0) return 4;
-    if(t.indexOf('lowsec')>=0) return 6;
-    if(t.indexOf('upsec')>=0||t.indexOf('voc')>=0||t==='eplus-edu-gen-sec') return 8;
+    if(t.indexOf('pre')>=0||t.indexOf('early childhood')>=0) return 3;
+    if(t.indexOf('primary')>=0||t.indexOf('prim ')>=0) return 4;
+    if(t.indexOf('lower sec')>=0||t.indexOf('lowsec')>=0||t.indexOf('basic education')>=0) return 6;
+    // "secondary" (secondary level) → Lise; check AFTER "lower secondary" so it doesn't conflict
+    if(t.indexOf('upsec')>=0||t.indexOf('upper sec')>=0||t.indexOf('secondary')>=0||t.indexOf('voc')>=0||t==='eplus-edu-gen-sec') return 8;
   }
   var n=_ntr(name||'');
   if(n.indexOf('anaokul')>=0||n.indexOf('kindergart')>=0||n.indexOf('maternelle')>=0||n.indexOf('preschool')>=0) return 3;
@@ -3572,7 +3573,7 @@ function _hostEdu(name, orgType){
   if(n.startsWith('ceip ')) return 4;
   if(n.indexOf('ortaokul')>=0||n.indexOf('scuola media')>=0||n.indexOf('zakladni')>=0||n.indexOf('basisschool')>=0||n.indexOf('middle school')>=0) return 6;
   if(n.indexOf('bilsem')>=0||n.indexOf('bilim ve sanat')>=0) return 6;
-  if(n.indexOf('lisesi')>=0||n.indexOf('lise ')>=0||n.indexOf('gymnasium')>=0||n.indexOf('lycee')>=0||n.indexOf('lyceum')>=0||n.indexOf('liceo')>=0||n.indexOf('liceum')>=0||n.indexOf('secondary')>=0||n.indexOf('high school')>=0||n.indexOf('oberschule')>=0||n.indexOf('gesamtschule')>=0||n.indexOf('mtal')>=0) return 8;
+  if(n.indexOf('lisesi')>=0||n.indexOf('lise ')>=0||n.indexOf('gymnasium')>=0||n.indexOf('gimnazija')>=0||n.indexOf('gymnazium')>=0||n.indexOf('gymn')>=0||n.indexOf('lycee')>=0||n.indexOf('lyceum')>=0||n.indexOf('liceo')>=0||n.indexOf('liceum')>=0||n.indexOf('secondary')>=0||n.indexOf('high school')>=0||n.indexOf('oberschule')>=0||n.indexOf('gesamtschule')>=0||n.indexOf('mtal')>=0) return 8;
   if(n.startsWith('ies ')||n.indexOf(' ies ')>=0) return 8;
   if(n.indexOf('istituto comprensivo')>=0||n.indexOf('szkola podstawowa')>=0||n.indexOf('comprehensive')>=0) return 5;
   return 0;
@@ -3932,6 +3933,9 @@ function renderMatching(){
       var eCol=eDiff===0?'#16a34a':eDiff<=1?'#d97706':'#dc2626';
       var eBg=eDiff===0?'#f0fdf4':eDiff<=1?'#fffbeb':'#fef2f2';
       eBadge='<span style="font-size:10px;padding:2px 7px;border-radius:4px;background:'+eBg+';color:'+eCol+';font-weight:600">'+(eDiff===0?'\u2713 ':eDiff<=1?'~ ':'\u26a0 ')+d.hLabel+'</span>';
+    } else if(d.hRank>0) {
+      // Ev sahibi d\u00fczeyi biliniyor ama se\u00e7ili okul d\u00fczeyi yok \u2014 sadece d\u00fczeyi g\u00f6ster
+      eBadge='<span style="font-size:10px;padding:2px 7px;border-radius:4px;background:#f1f5f9;color:#475569;font-weight:600">\ud83c\udfeb '+d.hLabel+'</span>';
     } else {
       eBadge=d.isETSN?'':'<span style="font-size:10px;padding:2px 7px;border-radius:4px;background:#f1f5f9;color:#94a3b8">? e\u011fitim d\u00fczeyi</span>';
     }
@@ -4185,18 +4189,35 @@ function _copyList(){
   var targetActs=MS.acts.length?MS.acts:(MS.school.mobilities||[]).map(function(m){return m.code;}).filter(Boolean);
   if(!targetActs.length) targetActs=['SM-JOB-SHDW','SM-COUR-TRAIN','SM-TTA','LM-GRP-PUPIL'];
   var scores=_score(MS.school,targetActs,MS.tab);
-  var sorted=Object.entries(scores).sort(function(a,b){return b[1].sc-a[1].sc;}).slice(0,30);
-  var lines=['=== '+MS.school.name+' için Önerilen Ev Sahibi Kurumlar ('+new Date().toLocaleDateString('tr')+') ===',''];
+  // Aynı çeşitlendirme filtresi
+  var _raw=Object.entries(scores).sort(function(a,b){return b[1].sc-a[1].sc;});
+  var _cc={}; var _div=[]; var _ov=[];
+  _raw.forEach(function(e){var c=e[1].ctry||'??';_cc[c]=(_cc[c]||0)+1;if(_cc[c]<=4)_div.push(e);else _ov.push(e);});
+  var sorted=_div.concat(_ov).slice(0,30);
+
+  var lines=[
+    '=== '+MS.school.name+' — Erasmus+ Potansiyel Ev Sahipleri ===',
+    'Tarih: '+new Date().toLocaleDateString('tr-TR'),
+    'Gönderen Okul: '+MS.school.name+(MS.school.ilce?' / '+MS.school.ilce:''),
+    'Eğitim Düzeyi: '+(MS.school.edu_label||'Belirtilmemiş'),
+    ''
+  ];
   sorted.forEach(function(e,i){
     var d=e[1];
     lines.push((i+1)+'. '+e[0]);
-    lines.push('   Ülke: '+_ctryN(d.ctry||'')+(d.city?', '+d.city:''));
-    if(d.acts&&d.acts.length) lines.push('   Aktivite: '+d.acts.map(function(a){return (ACT_SHORT&&ACT_SHORT[a])||a;}).join(', '));
-    lines.push('   Düzey Uyumu: '+(d.diff===0?'✓ Aynı':'⚠ '+d.hLabel));
-    if(d.email) lines.push('   E-posta: '+d.email);
-    if(d.web) lines.push('   Web: '+d.web);
-    if(d.phone) lines.push('   Tel: '+d.phone);
-    lines.push('   Uyum: '+Math.round(d.sc)+'/100');
+    lines.push('   Ülke/Şehir  : '+_ctryN(d.ctry||'')+(d.city?', '+d.city:''));
+    if(d.oid) lines.push('   OID         : '+d.oid);
+    var lvlStr=d.hLabel&&d.hLabel!=='?'?d.hLabel:'?';
+    var diffStr=d.hRank>0&&sel.edu_rank>0?(d.diff===0?' (✓ Aynı düzey)':d.diff===1?' (~ Yakın)':' (⚠ Farklı)'):'';
+    lines.push('   Eğitim Düz.  : '+lvlStr+diffStr);
+    if(d.acts&&d.acts.length) lines.push('   Aktivite     : '+d.acts.map(function(a){return (ACT_SHORT&&ACT_SHORT[a])||a;}).join(', '));
+    if(d.email) lines.push('   E-posta      : '+d.email);
+    if(d.web)   lines.push('   Web          : '+(d.web.startsWith('http')?d.web:'https://'+d.web));
+    if(d.phone) lines.push('   Tel          : '+d.phone);
+    // why alanından HTML temizle
+    var why=(d.why||'').replace(/<br\s*\/?>/gi,' | ').replace(/<b>/g,'').replace(/<\/b>/g,'').replace(/<[^>]+>/g,'').replace(/\s*\|\s*$/,'').trim();
+    if(why) lines.push('   Neden        : '+why);
+    lines.push('   Uyum Skoru   : '+Math.round(d.sc)+'/100');
     lines.push('');
   });
   navigator.clipboard.writeText(lines.join('\n')).then(function(){
