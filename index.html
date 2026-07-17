@@ -4300,7 +4300,7 @@ function _t25FetchFromGAS(callback) {
       // Admin + Belge verilerini arka planda çek, bitince yeniden render et
       function _gasFetch(action){
         var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
-        var tid=ctrl?setTimeout(function(){ctrl.abort();},12000):null;
+        var tid=ctrl?setTimeout(function(){ctrl.abort();},25000):null;
         return fetch(GAS_URL+'?action='+action+'&_t='+Date.now(),ctrl?{signal:ctrl.signal}:{})
           .then(function(r2){if(tid)clearTimeout(tid);return r2.json();})
           .catch(function(){if(tid)clearTimeout(tid);return null;});
@@ -4371,7 +4371,7 @@ function _t25RequestUpdate() {
 
   // 30 saniyede bir yeni veri geldi mi diye kontrol et — gelince göster, 3 dk timeout
   var _pollCount = 0;
-  var _maxPolls = 18; // 18 × 10s = 180s max
+  var _maxPolls = 30; // 30 × 10s = 300s max
   function _doPoll() {
     _pollCount++;
     var elapsed = _pollCount * 10;
@@ -4388,7 +4388,7 @@ function _t25RequestUpdate() {
           if(Array.isArray(schools) && schools.length > 0) {
             _t25LastData = schools;
             _t25LastUpdate = newTs;
-            function _gF2(act){var c=typeof AbortController!=='undefined'?new AbortController():null;var t=c?setTimeout(function(){c.abort();},12000):null;return fetch(GAS_URL+'?action='+act+'&_t='+Date.now(),c?{signal:c.signal}:{}).then(function(r2){if(t)clearTimeout(t);return r2.json();}).catch(function(){if(t)clearTimeout(t);return null;});}
+            function _gF2(act){var c=typeof AbortController!=='undefined'?new AbortController():null;var t=c?setTimeout(function(){c.abort();},25000):null;return fetch(GAS_URL+'?action='+act+'&_t='+Date.now(),c?{signal:c.signal}:{}).then(function(r2){if(t)clearTimeout(t);return r2.json();}).catch(function(){if(t)clearTimeout(t);return null;});}
             Promise.all([_gF2('getApprovals'),_gF2('getAdminTasks'),_gF2('getDocLinks')])
             .then(function(results){
               var approvals=results[0]||[], adminTasks=results[1]||{}, docLinks=results[2]||{};
