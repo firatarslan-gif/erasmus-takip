@@ -4208,7 +4208,7 @@ function _copyList(){
     lines.push('   Ülke/Şehir  : '+_ctryN(d.ctry||'')+(d.city?', '+d.city:''));
     if(d.oid) lines.push('   OID         : '+d.oid);
     var lvlStr=d.hLabel&&d.hLabel!=='?'?d.hLabel:'?';
-    var diffStr=d.hRank>0&&sel.edu_rank>0?(d.diff===0?' (✓ Aynı düzey)':d.diff===1?' (~ Yakın)':' (⚠ Farklı)'):'';
+    var diffStr=d.hRank>0&&(MS.school.edu_rank||0)>0?(d.diff===0?' (✓ Aynı düzey)':d.diff===1?' (~ Yakın)':' (⚠ Farklı)'):'';
     lines.push('   Eğitim Düz.  : '+lvlStr+diffStr);
     if(d.acts&&d.acts.length) lines.push('   Aktivite     : '+d.acts.map(function(a){return (ACT_SHORT&&ACT_SHORT[a])||a;}).join(', '));
     if(d.email) lines.push('   E-posta      : '+d.email);
