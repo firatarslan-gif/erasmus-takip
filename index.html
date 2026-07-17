@@ -4293,33 +4293,40 @@ function _t25FetchFromGAS(callback) {
         : new Date().toLocaleString('tr-TR');
       _t25LastData = schools;
       _t25LastUpdate = ts;
-      // Onay + Admin + Belge verilerini paralel çek, sonra render et
+      // Önce sync verisiyle hemen render et (dot'lar sonra güncellenir)
+      if(typeof renderPlan25==='function')renderPlan25();
+      if(callback)callback(null,schools);
+
+      // Admin + Belge verilerini arka planda çek, bitince yeniden render et
+      function _gasFetch(action){
+        var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+        var tid=ctrl?setTimeout(function(){ctrl.abort();},12000):null;
+        return fetch(GAS_URL+'?action='+action+'&_t='+Date.now(),ctrl?{signal:ctrl.signal}:{})
+          .then(function(r2){if(tid)clearTimeout(tid);return r2.json();})
+          .catch(function(){if(tid)clearTimeout(tid);return null;});
+      }
       Promise.all([
-        fetch(GAS_URL+'?action=getApprovals').then(function(r2){return r2.json();}).catch(function(){return [];}),
-        fetch(GAS_URL+'?action=getAdminTasks').then(function(r2){return r2.json();}).catch(function(){return {};}),
-        fetch(GAS_URL+'?action=getDocLinks').then(function(r2){return r2.json();}).catch(function(){return {};})
+        _gasFetch('getApprovals'),
+        _gasFetch('getAdminTasks'),
+        _gasFetch('getDocLinks')
       ]).then(function(results){
-        var approvals=results[0], adminTasks=results[1], docLinks=results[2];
+        var approvals=results[0]||[], adminTasks=results[1]||{}, docLinks=results[2]||{};
         window._t25ApprovalMap={};
         if(Array.isArray(approvals)){approvals.forEach(function(id){window._t25ApprovalMap[id]=true;});}
         else if(approvals&&typeof approvals==='object'){window._t25ApprovalMap=approvals;}
-        // GAS verisi (deployed GAS'ta endpoint eksikse {} veya sync datası gelebilir)
-        var _gasAdmin = (adminTasks && typeof adminTasks==='object' && !adminTasks.error && !adminTasks.schools) ? adminTasks : {};
-        var _gasDocs  = (docLinks   && typeof docLinks==='object'   && !docLinks.error   && !docLinks.schools)  ? docLinks   : {};
-        // localStorage ile merge et (localStorage öncelikli)
-        try {
-          var _lsA = JSON.parse(localStorage.getItem('t25_admin')||'{}');
-          var _lsD = JSON.parse(localStorage.getItem('t25_docs')||'{}');
-          Object.keys(_lsA).forEach(function(mid){ if(!_gasAdmin[mid])_gasAdmin[mid]={}; Object.assign(_gasAdmin[mid],_lsA[mid]); });
-          Object.keys(_lsD).forEach(function(mid){ if(!_gasDocs[mid])_gasDocs[mid]={}; Object.assign(_gasDocs[mid],_lsD[mid]); });
-        } catch(e){}
-        window._t25AdminTasks = _gasAdmin;
-        window._t25DocLinks   = _gasDocs;
-      }).catch(function(){}).finally(function(){
+        var _gasAdmin=(adminTasks&&typeof adminTasks==='object'&&!adminTasks.error&&!adminTasks.schools)?adminTasks:{};
+        var _gasDocs =(docLinks  &&typeof docLinks  ==='object'&&!docLinks.error  &&!docLinks.schools  )?docLinks  :{};
+        try{
+          var _lsA=JSON.parse(localStorage.getItem('t25_admin')||'{}');
+          var _lsD=JSON.parse(localStorage.getItem('t25_docs')||'{}');
+          Object.keys(_lsA).forEach(function(mid){if(!_gasAdmin[mid])_gasAdmin[mid]={};Object.assign(_gasAdmin[mid],_lsA[mid]);});
+          Object.keys(_lsD).forEach(function(mid){if(!_gasDocs[mid]) _gasDocs[mid]={};Object.assign(_gasDocs[mid], _lsD[mid]);});
+        }catch(e){}
+        window._t25AdminTasks=_gasAdmin;
+        window._t25DocLinks  =_gasDocs;
         if(typeof renderPlan25==='function')renderPlan25();
-        if(callback)callback(null,schools);
-      });
-      return; // finally içinde callback çağrılıyor
+      }).catch(function(){});
+      return;
     })
     .catch(function(err){
       console.warn('GAS fetch hatası:', err);
@@ -4381,12 +4388,10 @@ function _t25RequestUpdate() {
           if(Array.isArray(schools) && schools.length > 0) {
             _t25LastData = schools;
             _t25LastUpdate = newTs;
-            Promise.all([
-              fetch(GAS_URL+'?action=getApprovals&_t='+Date.now()).then(function(r2){return r2.json();}).catch(function(){return [];}),
-              fetch(GAS_URL+'?action=getAdminTasks&_t='+Date.now()).then(function(r2){return r2.json();}).catch(function(){return {};}),
-              fetch(GAS_URL+'?action=getDocLinks&_t='+Date.now()).then(function(r2){return r2.json();}).catch(function(){return {};})
-            ]).then(function(results){
-              var approvals=results[0], adminTasks=results[1], docLinks=results[2];
+            function _gF2(act){var c=typeof AbortController!=='undefined'?new AbortController():null;var t=c?setTimeout(function(){c.abort();},12000):null;return fetch(GAS_URL+'?action='+act+'&_t='+Date.now(),c?{signal:c.signal}:{}).then(function(r2){if(t)clearTimeout(t);return r2.json();}).catch(function(){if(t)clearTimeout(t);return null;});}
+            Promise.all([_gF2('getApprovals'),_gF2('getAdminTasks'),_gF2('getDocLinks')])
+            .then(function(results){
+              var approvals=results[0]||[], adminTasks=results[1]||{}, docLinks=results[2]||{};
               window._t25ApprovalMap={};
               if(Array.isArray(approvals)){approvals.forEach(function(id){window._t25ApprovalMap[id]=true;});}
               else if(approvals&&typeof approvals==='object'){window._t25ApprovalMap=approvals;}
@@ -8384,32 +8389,36 @@ function renderPlan25(){
           var _autoCheck=(m.durum==='tamam'||(m.evet>0&&m.evet===m.total));
           var _aDone=_autoCheck?_T25_ADMIN_KEYS.length:_T25_ADMIN_KEYS.filter(function(t){return !!_adminT2[t.key];}).length;
           var _dDone=_T25_DOC_KEYS.filter(function(d){var v=_docL2[d.key]||'';return !!(v&&v!=='1'&&v!=='ok');}).length;
+          // Hareketlilik türüne göre renk
+          var _tLow=(turShort||'').toLowerCase();
+          var _mBorderColor=_tLow.indexOf('kurs')!==-1?'#0369a1':_tLow.indexOf('işbaşı')!==-1||_tLow.indexOf('isb')!==-1?'#7c3aed':_tLow.indexOf('öğretme')!==-1||_tLow.indexOf('ogretme')!==-1?'#c2410c':'#64748b';
           var _aDots=_T25_ADMIN_KEYS.map(function(t){
             var ck=_autoCheck||!!_adminT2[t.key];
             var abbr=t.abbr||t.key.substring(0,2).toUpperCase();
             return '<span id="t25ad_'+_mobApprId+'_'+t.key+'" title="'+t.lbl.replace(/"/g,'&quot;')+'" onclick="_t25ToggleAdminInline(\''+_mobApprId+'\',\''+t.key+'\')" '
-              +'style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:14px;border-radius:3px;cursor:pointer;margin-right:2px;'
-              +'font-size:8px;font-weight:800;letter-spacing:-.3px;'
+              +'style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:3px;cursor:pointer;margin-right:2px;'
+              +'font-size:9px;font-weight:800;letter-spacing:-.3px;'
               +'background:'+(ck?'#16a34a':'#e2e8f0')+';border:1px solid '+(ck?'#15803d':'#cbd5e1')+';color:'+(ck?'#fff':'#94a3b8')+'">'+abbr+'</span>';
           }).join('');
           var _docAbbr={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'};
           // Sonrası belgeleri sadece hareketlilik sonrası/tamam aşamasındaysa göster
           var _postMobKeys=['boarding','europass','anket'];
           var _mobSonrasi=(m.durum==='sonrasi'||m.durum==='tamam');
+          var _schoolDriveId=(r&&r.drive_id)||'';
           var _dDots=_T25_DOC_KEYS.map(function(d){
             var v=_docL2[d.key]||'';
             var hasLink=!!(v&&v!=='1'&&v!=='ok');
             // Henüz gerçekleşmemiş hareketlilik → sonrası belgeleri yeşil gösterme
             if(hasLink&&_postMobKeys.indexOf(d.key)!==-1&&!_mobSonrasi) hasLink=false;
             var abbr=_docAbbr[d.key]||d.key.substring(0,2).toUpperCase();
-            var clickFn=hasLink?'window.open(\''+v.replace(/'/g,"\\'")+'\',\'_blank\')':'_t25AutoFillDocLink(\''+_mobApprId+'\',\''+d.key+'\')';
+            var clickFn=hasLink?'window.open(\''+v.replace(/'/g,"\\'")+'\',\'_blank\')':'_t25AutoFillDocLink(\''+_mobApprId+'\',\''+d.key+'\',\''+_schoolDriveId+'\')';
             return '<span id="t25dd_'+_mobApprId+'_'+d.key+'" title="'+d.lbl.replace(/"/g,'&quot;')+(hasLink?' — tıkla: aç':' — tıkla: otomatik bul')+'" onclick="'+clickFn+'" '
-              +'style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:14px;border-radius:3px;cursor:pointer;margin-right:2px;'
-              +'font-size:8px;font-weight:800;letter-spacing:-.3px;'
+              +'style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:18px;border-radius:3px;cursor:pointer;margin-right:2px;'
+              +'font-size:9px;font-weight:800;letter-spacing:-.3px;'
               +'background:'+(hasLink?'#16a34a':'#e2e8f0')+';border:1px solid '+(hasLink?'#15803d':'#cbd5e1')+';color:'+(hasLink?'#fff':'#94a3b8')+'">'+abbr+'</span>';
           }).join('');
-          _schoolSideHtml+='<div style="margin-top:6px;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px">'
-            +'<div style="font-size:10px;font-weight:700;color:#0369a1;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+turShort+'</div>'
+          _schoolSideHtml+='<div style="margin-top:6px;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;border-left:3px solid '+_mBorderColor+'">'
+            +'<div style="font-size:11px;font-weight:700;color:'+_mBorderColor+';margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+turShort+'</div>'
             +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-bottom:3px"><span style="font-size:10px;margin-right:2px">⚙️</span>'+_aDots+'<span id="t25ac_'+_mobApprId+'" style="font-size:10px;color:#94a3b8;margin-left:3px">'+_aDone+'/'+_T25_ADMIN_KEYS.length+'</span></div>'
             +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px"><span style="font-size:10px;margin-right:2px">📁</span>'+_dDots+'<span id="t25dc_'+_mobApprId+'" style="font-size:10px;color:#94a3b8;margin-left:3px">'+_dDone+'/'+_T25_DOC_KEYS.length+'</span></div>'
           +'</div>';
@@ -9565,8 +9574,9 @@ function _t25ToggleAdminInline(mobId, key) {
   _t25ToggleAdminTask(mobId, key, !_tasks[key]);
 }
 
-function _t25AutoFillDocLink(mobId, key) {
+function _t25AutoFillDocLink(mobId, key, fallbackDriveId) {
   var dot=document.getElementById('t25dd_'+mobId+'_'+key);
+  var abbr={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'}[key]||key.substring(0,2).toUpperCase();
   if(dot){dot.style.opacity='0.4';dot.textContent='…';}
   fetch(GAS_URL+'?action=findDocLink&mobId='+encodeURIComponent(mobId)+'&key='+encodeURIComponent(key))
     .then(function(r){return r.json();})
@@ -9575,7 +9585,6 @@ function _t25AutoFillDocLink(mobId, key) {
         if(!window._t25DocLinks)window._t25DocLinks={};
         if(!window._t25DocLinks[mobId])window._t25DocLinks[mobId]={};
         window._t25DocLinks[mobId][key]=data.link;
-        var abbr={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'}[key]||key.substring(0,2).toUpperCase();
         if(dot){
           dot.style.opacity='1';dot.textContent=abbr;
           dot.style.background='#16a34a';dot.style.borderColor='#15803d';dot.style.color='#fff';
@@ -9587,11 +9596,16 @@ function _t25AutoFillDocLink(mobId, key) {
         var ctr=document.getElementById('t25dc_'+mobId);
         if(ctr)ctr.textContent=done+'/'+_T25_DOC_KEYS.length;
       } else {
-        if(dot){dot.style.opacity='1';var ab={faaliyet:'FA',hibe_soz:'HS',ogrenme:'ÖA',boarding:'BP',ulasim:'UL',konaklama:'KO',europass:'EP',anket:'AK'}[key]||key.substring(0,2).toUpperCase();dot.textContent=ab;}
-        alert('Klasör bulunamadı ('+key+'). Drive yapısı farklı olabilir.');
+        // GAS klasörü bulamadı — okul Drive klasörünü fallback olarak aç
+        if(dot){dot.style.opacity='1';dot.textContent=abbr;}
+        if(fallbackDriveId){
+          window.open('https://drive.google.com/drive/folders/'+fallbackDriveId,'_blank');
+        } else {
+          alert('Klasör bulunamadı ('+key+'). Drive yapısı farklı olabilir.');
+        }
       }
     })
-    .catch(function(){if(dot){dot.style.opacity='1';}});
+    .catch(function(){if(dot){dot.style.opacity='1';dot.textContent=abbr;}});
 }
 
 function _t25SetDocLink(mobId, key) {
