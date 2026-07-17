@@ -3950,7 +3950,7 @@ function renderMatching(){
     h+='<div style="flex:1;min-width:0">';
     var dispName=d.isETSN?(d.n||org.split('||')[0]):org;
         h+='<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:3px">'+flag+' '+dispName+'</div>';
-    if(cname||d.city) h+='<div style="font-size:11px;color:#64748b;margin-bottom:4px">'+cname+(d.city?', '+d.city:'')+(d.oid?' \u00b7 <span style="font-family:monospace;font-size:10px">'+d.oid+'</span>':'')+'</div>';
+    if(cname||d.city) h+='<div style="font-size:11px;color:#64748b;margin-bottom:4px">'+cname+(d.city?', '+d.city:'')+(d.oid?' \u00b7 <span style="font-family:monospace;font-size:10px;color:#94a3b8" title="KA120 Akreditasyon No">'+d.oid+'</span>':'')+'</div>';
     var scorePill='<span style="font-size:12px;font-weight:800;color:'+scolor+';background:'+scolor+'20;padding:3px 10px;border-radius:8px;margin-left:auto;flex-shrink:0">'+Math.round(d.sc)+'<span style="font-size:9px;font-weight:600;opacity:.75"> UYUM</span></span>';
     h+='<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:4px">'+srcBadge+' '+eBadge+' '+actB+(flowB?' '+flowB:'')+' '+scorePill+'</div>';
     if(d.web||d.email||d.phone){
@@ -4206,7 +4206,7 @@ function _copyList(){
     var d=e[1];
     lines.push((i+1)+'. '+e[0]);
     lines.push('   Ülke/Şehir  : '+_ctryN(d.ctry||'')+(d.city?', '+d.city:''));
-    if(d.oid) lines.push('   OID         : '+d.oid);
+    if(d.oid) lines.push('   Akr. No     : '+d.oid);
     var lvlStr=d.hLabel&&d.hLabel!=='?'?d.hLabel:'?';
     var diffStr=d.hRank>0&&(MS.school.edu_rank||0)>0?(d.diff===0?' (✓ Aynı düzey)':d.diff===1?' (~ Yakın)':' (⚠ Farklı)'):'';
     lines.push('   Eğitim Düz.  : '+lvlStr+diffStr);
