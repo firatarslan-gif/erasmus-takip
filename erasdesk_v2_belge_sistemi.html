@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ErasDesk v2 — Belge Sistemi Detaylı Tasarım</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; font-size: 13px; }
+.page { max-width: 1060px; margin: 0 auto; padding: 28px 18px 100px; }
+h1 { font-size: 24px; font-weight: 800; }
+.lead { color: #64748b; margin: 6px 0 36px; font-size: 13px; line-height: 1.6; }
+h2 { font-size: 15px; font-weight: 800; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; color: #1e293b; }
+h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #64748b; margin: 16px 0 8px; }
+p { color: #475569; line-height: 1.7; margin-bottom: 8px; font-size: 12px; }
+
+.nav { position:sticky;top:0;background:rgba(248,250,252,.96);border-bottom:1px solid #e2e8f0;padding:8px 18px;z-index:100;backdrop-filter:blur(8px);display:flex;gap:5px;flex-wrap:wrap;margin:0 -18px 0; }
+.nav a { font-size:10px;font-weight:600;color:#64748b;text-decoration:none;padding:3px 9px;border-radius:6px;border:1px solid #e2e8f0;background:white;white-space:nowrap; }
+
+.box { background:white;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:14px; }
+.box.blue   { border-top:4px solid #2563eb; }
+.box.green  { border-top:4px solid #059669; }
+.box.purple { border-top:4px solid #7c3aed; }
+.box.orange { border-top:4px solid #d97706; }
+.box.teal   { border-top:4px solid #0891b2; }
+.box.slate  { border-top:4px solid #475569; }
+.cols2 { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.cols3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px; }
+@media(max-width:680px){ .cols2,.cols3{grid-template-columns:1fr;} }
+
+.b { display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap; }
+.b-auto   { background:#ecfdf5;color:#059669; }
+.b-upload { background:#eff6ff;color:#1d4ed8; }
+.b-ai     { background:#faf5ff;color:#7c3aed; }
+.b-sign   { background:#fef3c7;color:#b45309; }
+.b-info   { background:#f1f5f9;color:#475569; }
+.b-form   { background:#fdf4ff;color:#9333ea; }
+.b-block  { background:#fef2f2;color:#dc2626; }
+.b-rev    { background:#f0fdf4;color:#166534; }
+
+/* TEMPLATE PREVIEW */
+.tpl-wrap { border:2px solid #e2e8f0;border-radius:10px;overflow:hidden;font-size:11px; }
+.tpl-toolbar { background:#1e293b;color:#e2e8f0;padding:8px 14px;display:flex;align-items:center;gap:10px; }
+.tpl-toolbar span { font-size:10px;font-weight:600; }
+.tpl-btn { font-size:10px;padding:3px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:white;cursor:pointer; }
+.tpl-body { padding:16px;font-size:11px;color:#374151;line-height:1.8;background:white; }
+.tpl-auto { background:#dbeafe;color:#1e3a8a;padding:1px 4px;border-radius:3px;font-weight:600; }
+.tpl-fill { background:#fef9c3;color:#854d0e;padding:3px 8px;border-radius:4px;border:1.5px dashed #f59e0b;cursor:pointer; }
+.tpl-fill:hover { background:#fef08a; }
+.tpl-sig { display:flex;gap:20px;margin-top:14px;flex-wrap:wrap; }
+.tpl-sig-box { flex:1;min-width:120px;border:1.5px dashed #e2e8f0;border-radius:6px;padding:10px;text-align:center; }
+.tpl-sig-box.active { border-color:#059669;background:#f0fdf4; }
+.tpl-sig-label { font-size:10px;color:#64748b;margin-bottom:4px; }
+.tpl-sig-name { font-size:11px;font-weight:700;color:#1e293b; }
+.tpl-sig-add { font-size:10px;color:#2563eb;cursor:pointer;margin-top:4px; }
+
+/* SIGNATURE TABLE */
+.sig-tbl { width:100%;border-collapse:collapse;font-size:11px; }
+.sig-tbl th { background:#f8fafc;padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;border-bottom:2px solid #e2e8f0; }
+.sig-tbl td { padding:9px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top; }
+.sig-tbl tr:last-child td { border-bottom:none; }
+.sig-tag { display:inline-block;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;margin:1px; }
+.st-coord { background:#e0f2fe;color:#0369a1; }
+.st-okul  { background:#dcfce7;color:#166534; }
+.st-kat   { background:#fef3c7;color:#92400e; }
+.st-veli  { background:#fce7f3;color:#9d174d; }
+.st-refak { background:#f3e8ff;color:#6b21a8; }
+.st-ev    { background:#ffedd5;color:#9a3412; }
+
+/* CHECKLIST */
+.cl-key { display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700; }
+.cl-info   { background:#f1f5f9;color:#475569; }
+.cl-doc    { background:#fef3c7;color:#92400e; }
+.cl-form   { background:#fdf4ff;color:#7c3aed; }
+.cl-row { display:flex;gap:8px;align-items:flex-start;padding:7px 10px;border:1px solid #f1f5f9;border-radius:6px;margin-bottom:4px;background:white; }
+.cl-cb { width:16px;height:16px;border-radius:4px;border:2px solid #e2e8f0;flex-shrink:0;margin-top:1px; }
+.cl-cb.blocked { background:#fef2f2;border-color:#fca5a5; }
+.cl-text { font-size:12px;color:#374151;flex:1; }
+.cl-note { font-size:10px;color:#94a3b8;margin-top:2px; }
+.cl-req  { font-size:10px;color:#dc2626;margin-top:2px; }
+
+/* AI VALIDATION */
+.ai-card { background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px;margin-bottom:8px; }
+.ai-header { display:flex;align-items:center;gap:6px;margin-bottom:8px; }
+.ai-icon { font-size:16px; }
+.ai-title { font-size:11px;font-weight:700;color:#7c3aed; }
+.ai-checks { display:flex;flex-direction:column;gap:4px; }
+.ai-check { display:flex;align-items:center;gap:6px;font-size:11px; }
+.ai-check .ok { color:#059669;font-weight:700; }
+.ai-check .warn { color:#d97706;font-weight:700; }
+.ai-check .err { color:#dc2626;font-weight:700; }
+
+/* REVERSIBILITY */
+.rev-item { display:flex;gap:10px;align-items:center;padding:10px;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;background:white; }
+.rev-icon { font-size:18px;flex-shrink:0; }
+.rev-body { flex:1; }
+.rev-title { font-size:12px;font-weight:700;color:#1e293b; }
+.rev-desc { font-size:11px;color:#64748b;margin-top:2px; }
+.rev-btn { font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid #fca5a5;background:#fef2f2;color:#dc2626;cursor:pointer;font-weight:600;white-space:nowrap; }
+
+/* VALILIK OLURU */
+.ext-card { background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px; }
+.ext-header { display:flex;align-items:center;gap:8px;margin-bottom:10px; }
+.ext-icon { font-size:20px; }
+.ext-title { font-size:12px;font-weight:700;color:#1e293b; }
+.ext-subtitle { font-size:10px;color:#64748b; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#hibeler">📄 Hibe Şablonları</a>
+  <a href="#imzalar">✍️ İmza Yapıları</a>
+  <a href="#template-ui">🖥️ Şablon Arayüzü</a>
+  <a href="#checklist">✅ Checklist Tipleri</a>
+  <a href="#ai-val">🤖 AI Doğrulama</a>
+  <a href="#reversibility">↩️ Geri Alma</a>
+  <a href="#valilik">🏛️ Valilik Oluru</a>
+</nav>
+
+<div class="page">
+
+<h1>ErasDesk v2 — Belge Sistemi Detaylı Tasarım</h1>
+<p class="lead">2025 hibe şablonları incelenerek düzenlendi · Gerçek imza yapıları · Şablon önizleme + form arayüzü · AI doğrulama · Checklist tipleri · Geri alma mekanizmaları</p>
+
+
+<!-- ══ HİBE ŞABLONLARI ══════════════════════════════════ -->
+<h2 id="hibeler">📄 Hibe Anlaşması Şablon Tipleri (Drive'dan)</h2>
+
+<div class="box blue">
+<p>Drive'da 7 farklı hibe şablonu var. Her faaliyet türü için farklı şablon — ErasDesk faaliyet tipine göre doğru şablonu otomatik seçer.</p>
+
+<table class="sig-tbl" style="margin-top:12px">
+<tr><th>Şablon Dosyası</th><th>Faaliyet Türü</th><th>Para Birimi / IBAN</th><th>Taraflar</th></tr>
+<tr>
+  <td><code>ÖĞRENCİGRUP</code></td>
+  <td>LM-GRP-PUPIL (Grup Öğrenci)</td>
+  <td>Okul Euro hesabı</td>
+  <td>Koordinatör + Okul + Refakatçi(ler)</td>
+</tr>
+<tr>
+  <td><code>ÖĞRENCİKISA</code></td>
+  <td>LM-SHORT-PUPIL (Bireysel Kısa)</td>
+  <td>Katılımcı / Veli Euro IBAN</td>
+  <td>Koordinatör + Okul + Katılımcı + <strong>Yasal Vasi</strong></td>
+</tr>
+<tr>
+  <td><code>ÖĞRENCİUZUN</code></td>
+  <td>LM-LONG-PUPILS (Bireysel Uzun)</td>
+  <td>Katılımcı Euro IBAN</td>
+  <td>Koordinatör + Okul + Katılımcı + <strong>Yasal Vasi</strong></td>
+</tr>
+<tr>
+  <td><code>REFAKATÇİÖĞRETMEN</code></td>
+  <td>Kısa/Uzun Öğrenci Refakatçisi</td>
+  <td>Refakatçi kişisel Euro IBAN</td>
+  <td>Koordinatör + Okul + Refakatçi Öğretmen</td>
+</tr>
+<tr>
+  <td><code>ÖĞRETMEGÖREVLENDİRME</code></td>
+  <td>SM-TTA (Öğretim Görevlendirmesi)</td>
+  <td>Katılımcı kişisel Euro IBAN</td>
+  <td>Koordinatör + Okul + Öğretmen</td>
+</tr>
+<tr>
+  <td><code>İŞBAŞI</code></td>
+  <td>SM-JOB-SHDW (İşbaşı)</td>
+  <td>Katılımcı kişisel Euro IBAN</td>
+  <td>Koordinatör + Okul + Katılımcı</td>
+</tr>
+<tr>
+  <td><code>KURS</code></td>
+  <td>SM-COUR-TRAIN (Kurs)</td>
+  <td>Katılımcı kişisel Euro IBAN</td>
+  <td>Koordinatör + Okul + Katılımcı</td>
+</tr>
+</table>
+
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-top:14px">
+<strong style="font-size:11px;color:#92400e">📌 ErasDesk Seçim Mantığı:</strong>
+<p style="font-size:11px;color:#78350f;margin:4px 0 0">Hareketlilik kaydı oluşturulurken <code>activity_type</code> otomatik okunur → doğru şablon seçilir → doğru imza blokları oluşturulur. Okul seçim yapmaz.</p>
+</div>
+</div>
+
+
+<!-- ══ İMZA YAPILARI ════════════════════════════════════ -->
+<h2 id="imzalar">✍️ İmza Yapıları — Şablonlardan Çıkarıldı</h2>
+
+<div class="box purple">
+<p>Her şablon farklı sayıda ve türde imzacı gerektiriyor. ErasDesk imza bloklarını dinamik oluşturur — koordinatör imzacı ekleyip çıkarabilir.</p>
+
+<table class="sig-tbl">
+<tr>
+  <th>Faaliyet</th>
+  <th>İmzacılar (Sıra)</th>
+  <th>Değişken?</th>
+  <th>Notlar</th>
+</tr>
+<tr>
+  <td><strong>Grup Öğrenci<br>(LM-GRP-PUPIL)</strong></td>
+  <td>
+    <span class="sig-tag st-refak">Refakatçi Öğretmen(ler)</span>
+    <span class="sig-tag st-okul">Okul Müdürü</span>
+    <span class="sig-tag st-coord">Koordinatör</span>
+  </td>
+  <td>✅ Refakatçi sayısı değişken</td>
+  <td>Şablondan: "Birden fazla olması halinde imza alanı kopyalanır." Para okul hesabına gider.</td>
+</tr>
+<tr>
+  <td><strong>Kısa Öğrenci<br>(LM-SHORT-PUPIL)</strong></td>
+  <td>
+    <span class="sig-tag st-kat">Katılımcı</span>
+    <span class="sig-tag st-okul">Okul Müdürü</span>
+    <span class="sig-tag st-veli">Yasal Vasi (Veli)</span>
+    <span class="sig-tag st-coord">Koordinatör</span>
+  </td>
+  <td>Sabit (4)</td>
+  <td>Şablondan: "Katılımcı Yasal Vasisi Adına" imza bloğu mevcut. Katılımcı 18 yaş altıysa veli zorunlu.</td>
+</tr>
+<tr>
+  <td><strong>Uzun Öğrenci<br>(LM-LONG-PUPILS)</strong></td>
+  <td>
+    <span class="sig-tag st-kat">Katılımcı</span>
+    <span class="sig-tag st-okul">Okul Müdürü</span>
+    <span class="sig-tag st-veli">Yasal Vasi (Veli)</span>
+    <span class="sig-tag st-coord">Koordinatör</span>
+  </td>
+  <td>Sabit (4)</td>
+  <td>Kısa ile aynı yapı, süre 2.3'te farklı.</td>
+</tr>
+<tr>
+  <td><strong>Refakatçi Öğretmen</strong></td>
+  <td>
+    <span class="sig-tag st-refak">Refakatçi</span>
+    <span class="sig-tag st-okul">Okul Müdürü</span>
+    <span class="sig-tag st-coord">Koordinatör</span>
+  </td>
+  <td>Sabit (3)</td>
+  <td>Kendi kişisel IBAN'ına ödeme yapılır.</td>
+</tr>
+<tr>
+  <td><strong>Öğretmen (SM-TTA, İşbaşı, Kurs)</strong></td>
+  <td>
+    <span class="sig-tag st-kat">Katılımcı</span>
+    <span class="sig-tag st-okul">Okul Müdürü</span>
+    <span class="sig-tag st-coord">Koordinatör</span>
+  </td>
+  <td>Sabit (3)</td>
+  <td>Kişisel Euro IBAN.</td>
+</tr>
+</table>
+
+<div class="cols2" style="margin-top:14px">
+<div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px">
+  <strong style="font-size:11px;color:#7c3aed">Koordinatör: İmza Bloğu Yönetimi</strong>
+  <ul style="font-size:11px;color:#64748b;margin:6px 0 0;padding-left:14px;line-height:1.9">
+    <li>Grup hareketliliğinde refakatçi ekle/çıkar (+ butonu)</li>
+    <li>Her refakatçi için: ad-soyad, görev, TC, IBAN</li>
+    <li>Sistem imza bloklarını PDF'e otomatik yerleştirir</li>
+    <li>Min 1, max 5 refakatçi sınırı (özelleştirilebilir)</li>
+  </ul>
+</div>
+<div style="background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:12px">
+  <strong style="font-size:11px;color:#9d174d">Veli İmzası (18 yaş altı öğrenci)</strong>
+  <ul style="font-size:11px;color:#64748b;margin:6px 0 0;padding-left:14px;line-height:1.9">
+    <li>Katılımcı doğum tarihi sisteme girilmiş → 18 yaş hesaplanır</li>
+    <li>18 yaş altıysa veli imza bloğu otomatik eklenir</li>
+    <li>18 yaş üstüyse veli bloğu gösterilmez</li>
+    <li>Veli adı ve TC sisteme girilebilir, PDF'e yansır</li>
+  </ul>
+</div>
+</div>
+</div>
+
+
+<!-- ══ ŞABLON ARAYÜZÜ ════════════════════════════════════ -->
+<h2 id="template-ui">🖥️ Şablon Arayüzü — Tam Görünüm + Doldurulacak Alanlar</h2>
+
+<div class="box green">
+<p>Okul belgenin <strong>tamamını</strong> görür — hangi alanın otomatik dolduğunu, hangisini kendisinin girmesi gerektiğini renkli işaretlerle anlar. Hiçbir madde gizlenmez, hukuki metni okuyabilir.</p>
+
+<div class="cols2" style="margin-top:14px">
+<div>
+  <h3>Önizleme Modu (Okuma)</h3>
+  <div class="tpl-wrap">
+    <div class="tpl-toolbar">
+      <span>Hibe Anlaşması — LM-SHORT-PUPIL</span>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <button class="tpl-btn">✏️ Doldur</button>
+        <button class="tpl-btn">⬇️ PDF</button>
+      </div>
+    </div>
+    <div class="tpl-body">
+      <div style="text-align:center;font-weight:800;margin-bottom:10px;font-size:12px">ERASMUS+ HİBE SÖZLEŞMESİ</div>
+      <p style="font-size:11px;margin-bottom:6px">Bu Sözleşme aşağıdaki taraflar arasında imzalanmıştır:</p>
+      <p style="font-size:11px"><strong>Koordinatör:</strong> <span class="tpl-auto">Kocaeli İl MEM — Emrullah AYDIN</span></p>
+      <p style="font-size:11px"><strong>Gönderen Kurum:</strong> <span class="tpl-auto">28 Haziran Ortaokulu (E10348415)</span></p>
+      <p style="font-size:11px">Okul Müdürü: <span class="tpl-fill" title="Sistem doldurdu">Ayşe Kaya — Müdür</span></p>
+      <p style="font-size:11px"><strong>Katılımcı:</strong> <span class="tpl-auto">Ali Yılmaz</span> &nbsp; D.T: <span class="tpl-auto">15.03.2013</span></p>
+      <p style="font-size:11px">IBAN: <span class="tpl-fill" title="Okul girer">__________ girin</span></p>
+      <p style="font-size:11px"><strong>Hareketlilik:</strong> <span class="tpl-auto">12.09.2026 – 22.09.2026 (SM-TTA)</span></p>
+      <p style="font-size:11px">Bireysel Destek: <span class="tpl-fill" title="Koordinatör girer">__ €</span> &nbsp; Seyahat: <span class="tpl-fill" title="Koordinatör girer">__ €</span></p>
+      <div style="font-size:10px;color:#94a3b8;margin:8px 0">…Madde 1 — Madde 18 (hukuki metin)…</div>
+      <div class="tpl-sig">
+        <div class="tpl-sig-box active">
+          <div class="tpl-sig-label">Katılımcı</div>
+          <div class="tpl-sig-name">Ali Yılmaz</div>
+          <div style="font-size:9px;color:#94a3b8;margin-top:3px">İmza yeri boş</div>
+        </div>
+        <div class="tpl-sig-box active">
+          <div class="tpl-sig-label">Okul Müdürü</div>
+          <div class="tpl-sig-name">Ayşe Kaya</div>
+        </div>
+        <div class="tpl-sig-box" style="border-color:#fca5a5;background:#fef2f2">
+          <div class="tpl-sig-label" style="color:#dc2626">Yasal Vasi (Veli)</div>
+          <div class="tpl-fill" style="font-size:10px">— girilmedi —</div>
+          <div class="tpl-sig-add">+ Veli ekle</div>
+        </div>
+        <div class="tpl-sig-box">
+          <div class="tpl-sig-label">Koordinatör</div>
+          <div class="tpl-sig-name">Emrullah AYDIN</div>
+          <div style="font-size:9px;color:#94a3b8">Mühür + imza</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <h3>Doldurma Modu (Okul Tarafı)</h3>
+  <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px">
+    <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:12px">📝 Bilgileri girin:</div>
+    
+    <div style="margin-bottom:10px">
+      <label style="font-size:10px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">OKUL MÜDÜRÜ AD-SOYAD / GÖREV</label>
+      <input style="border:1.5px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:11px;width:100%;" placeholder="Ayşe Kaya, Müdür" value="Ayşe Kaya, Müdür">
+    </div>
+
+    <div style="margin-bottom:10px">
+      <label style="font-size:10px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">KATILIMCI EURO IBAN</label>
+      <input style="border:1.5px solid #fde68a;background:#fefce8;border-radius:6px;padding:6px 10px;font-size:11px;width:100%;" placeholder="TR__ ____ ____ ____ ____ ____ __">
+    </div>
+
+    <div style="margin-bottom:10px">
+      <label style="font-size:10px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">KATILIMCI BANKA ADI / ŞUBE</label>
+      <input style="border:1.5px solid #fde68a;background:#fefce8;border-radius:6px;padding:6px 10px;font-size:11px;width:100%;" placeholder="Ziraat Bankası / .... Şubesi">
+    </div>
+
+    <div style="background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:10px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;color:#9d174d;margin-bottom:6px">👨‍👩‍👦 Yasal Vasi (Veli) Bilgileri</div>
+      <div style="font-size:10px;color:#64748b;margin-bottom:6px">Ali Yılmaz doğum tarihi 2013 — 18 yaş altı, veli imzası gerekli.</div>
+      <input style="border:1.5px solid #fde68a;background:#fefce8;border-radius:6px;padding:6px 10px;font-size:11px;width:100%;margin-bottom:6px;" placeholder="Veli Adı Soyadı">
+      <input style="border:1.5px solid #fde68a;background:#fefce8;border-radius:6px;padding:6px 10px;font-size:11px;width:100%;" placeholder="TC Kimlik No">
+    </div>
+
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px;font-size:10px;color:#92400e;margin-bottom:10px">
+      ⚠️ Hibe miktarları koordinatör tarafından doldurulacaktır. Bu alanlar şimdi boş bırakılır.
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button style="flex:1;padding:9px;background:#1e293b;color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;">💾 Kaydet &amp; Önizle</button>
+      <button style="padding:9px 12px;background:#f1f5f9;color:#64748b;border:none;border-radius:8px;font-size:11px;">↩ İptal</button>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px">
+    <div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:6px">Renk Kodu:</div>
+    <div style="display:flex;flex-direction:column;gap:4px;font-size:10px;color:#64748b">
+      <div><span class="tpl-auto" style="font-size:10px">mavi arka plan</span> — Sistemden otomatik dolan alan (değiştirilemez)</div>
+      <div><span class="tpl-fill" style="font-size:10px">sarı kenarlık</span> — Okul tarafından girilmesi gereken alan</div>
+      <div style="color:#7c3aed">mor — Koordinatör tarafından doldurulacak alan</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;margin-top:14px">
+<strong style="font-size:11px;color:#166534">💡 Grup Hareketliliğinde Refakatçi Yönetimi:</strong>
+<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+  <div style="background:white;border:1px solid #e2e8f0;border-radius:6px;padding:8px;flex:1;min-width:140px;font-size:11px">
+    <div style="font-weight:700;margin-bottom:4px">Refakatçi 1</div>
+    <div>Ahmet Tekin — Öğretmen</div>
+    <div style="color:#94a3b8;font-size:10px">IBAN: TR12 3456…</div>
+  </div>
+  <div style="background:white;border:1px solid #e2e8f0;border-radius:6px;padding:8px;flex:1;min-width:140px;font-size:11px">
+    <div style="font-weight:700;margin-bottom:4px">Refakatçi 2</div>
+    <div>Fatma Çelik — Öğretmen</div>
+    <div style="color:#94a3b8;font-size:10px">IBAN: TR56 7890…</div>
+  </div>
+  <button style="padding:8px 14px;background:#eff6ff;border:1.5px dashed #93c5fd;border-radius:6px;color:#1d4ed8;font-size:11px;font-weight:700;cursor:pointer">+ Refakatçi Ekle</button>
+</div>
+<p style="font-size:11px;color:#166534;margin-top:8px">Her refakatçi için ayrı imza bloğu PDF'e eklenir. Silme yapılabilir (imzalanmadan önce).</p>
+</div>
+</div>
+
+
+<!-- ══ CHECKLIST TİPLERİ ═════════════════════════════════ -->
+<h2 id="checklist">✅ Checklist — 3 Tip, Doğru Engelleyicilik</h2>
+
+<div class="box orange">
+<p>Her checklist maddesi artık 3 tipten biri. Yalnızca <strong>belge gerektiren</strong> ve <strong>form gerektiren</strong> maddeler engelleyicidir. Bilgi onayı için belge/form zorunlu değil.</p>
+
+<div class="cols3" style="margin-top:12px;margin-bottom:16px">
+<div style="background:#f1f5f9;border-radius:8px;padding:12px;text-align:center">
+  <div style="font-size:22px;margin-bottom:4px">☑️</div>
+  <span class="cl-key cl-info">BİLGİ ONAYI</span>
+  <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5">Sadece "evet, yaptım" onayı gerekir. Belge veya form yok. Yanlışlıkla işaretlenirse geri alınabilir.</div>
+</div>
+<div style="background:#fffbeb;border-radius:8px;padding:12px;text-align:center">
+  <div style="font-size:22px;margin-bottom:4px">📎</div>
+  <span class="cl-key cl-doc">BELGE GEREKTİREN</span>
+  <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5">İlgili belge yüklenmeden "Evet" seçilemiyor. Belge yüklenince otomatik açılmıyor — okul hâlâ tıklamalı (kasıtlı).</div>
+</div>
+<div style="background:#fdf4ff;border-radius:8px;padding:12px;text-align:center">
+  <div style="font-size:22px;margin-bottom:4px">📝</div>
+  <span class="cl-key cl-form">FORM GEREKTİREN</span>
+  <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5">ErasDesk içi form/anket tüm katılımcılar için doldurulmadan "Evet" seçilemiyor.</div>
+</div>
+</div>
+
+<h3>Hareketlilik Öncesi — Tam Liste (Tip Atamasıyla)</h3>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Ortaklık Sözleşmesi imzalandı <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ OrtaklikSozlesmesi_Imzali.pdf yüklenmeli</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Hareketlilik Uygulama Rehberi detaylı incelendi <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Rehber linki gösterilir, "Okudum" onayı yeterli</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Fiziksel dosya oluşturuldu <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Sadece onay</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Europass Portal üyeliği tamamlandı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ "Tamamlandı" onayı + opsiyonel profil linki</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Hareketlilik Yürütme Kurulu oluşturuldu <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Katılımcı Seçim Kurulu oluşturuldu <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Kurul üyeleri sisteme girilirse form sayılır</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">TurnaPortal üzerinden başvurular alındı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Dış sistem, "Tamamlandı" onayı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Katılımcı Seçim Kurulu değerlendirmesi tamamlandı ve tutanak imzalandı <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ KatilimciSecimTutanagi_Imzali.pdf yüklenmeli</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Asil/yedek liste ilan edildi <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Görev yeri / öğrenci belgeleri yüklendi <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Her katılımcı için görev yeri belgesi</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Bireysel Yabancı Dil Gelişim Planı dolduruldu <span class="cl-key cl-form">FORM</span><div class="cl-note">→ Sistemde form, tüm katılımcılar doldurmalı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">DUOLINGO / dil hazırlığı tamamlandı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Rehber linki + "Tamamlandı" onayı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Sonuçların Kullanımı Planı yapıldı, Padlet'e eklendi <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Padlet linki girilebilir</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Öğrenme kazanımları ev sahibiyle belirlendi <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Faaliyet Programı ev sahibinden imzalı alındı <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ FaaliyetProgrami_Imzali.pdf</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Kurs Proforma Faturası yüklendi (yalnızca kurs) <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Sadece SM-COUR-TRAIN için görünür</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Hibe Sözleşmeleri hazırlandı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ ErasDesk'te üretildi, önizlendi onayı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Öğrenme Sözleşmeleri hazırlandı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ ErasDesk'te üretildi, önizlendi onayı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Hibe sözleşmeleri imzalandı, AR-GE'ye teslim edildi <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Tüm katılımcılar için imzalı hibe PDF yüklenmeli</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">KVKK belgeleri imzalanıp yüklendi <span class="cl-key cl-doc">BELGE</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">WhatsApp grubu kuruldu <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Valilik Oluru yazıldı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ EBYS'de hazırlandı onayı + EBYS linki</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Onaylı Valilik Oluru alındı ve yüklendi <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ ValikOluru_Onaylanmis.pdf yüklenmeli</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Pasaport işlemleri tamamlandı <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Seyahat biletleri alındı <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Bilet/rezervasyon belgesi yüklenmeli (AI doğrulama aktif)</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Konaklama rezervasyonu yapıldı <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Konaklama belgesi yüklenmeli (AI doğrulama aktif)</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Sigorta yapıldı <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Sigorta poliçesi yüklenmeli (AI doğrulama aktif)</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Sertifika taslağı hazırlandı <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ ErasDesk'te üretildi onayı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Europass akışı oluşturuldu ve katılımcılar eklendi <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Dış sistem (Europass Portal), "Tamamlandı" onayı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Yabancı / Mesleki / Kültürel hazırlık tamamlandı <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Ön Test yapıldı <span class="cl-key cl-form">FORM</span><div class="cl-note">→ Sistemde form</div></div></div>
+
+<h3 style="margin-top:14px">Hareketlilik Sonrası</h3>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Katılımcı Anketi dolduruldu <span class="cl-key cl-form">FORM</span><div class="cl-note">→ Tüm katılımcılar doldurmalı</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Kurs Faturası yüklendi (kurs için) <span class="cl-key cl-doc">BELGE</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Son Test yapıldı <span class="cl-key cl-form">FORM</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Yansıtma Yazıları dolduruldu <span class="cl-key cl-form">FORM</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Resim / Videolar yüklendi <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ Galeri yükleme, min 3 fotoğraf</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">İmzalı Öğrenme Anlaşması yüklendi, AR-GE'ye teslim edildi <span class="cl-key cl-doc">BELGE</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Sertifika yüklendi <span class="cl-key cl-doc">BELGE</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">İmzalı Europass Belgesi yüklendi <span class="cl-key cl-doc">BELGE</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Boarding Pass yüklendi <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ AI tarih/isim doğrulama</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Odak Grup Görüşmeleri yapıldı <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Yaygınlaştırma faaliyetleri yapıldı <span class="cl-key cl-info">BİLGİ</span></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Padlet güncellendi <span class="cl-key cl-info">BİLGİ</span><div class="cl-note">→ Padlet linki girilebilir</div></div></div>
+<div class="cl-row"><div class="cl-cb"></div><div class="cl-text">Beyan yüklendi <span class="cl-key cl-doc">BELGE</span><div class="cl-note">→ İmzalı beyan PDF → koordinatör onaylar → %10 hibe ödenir</div></div></div>
+</div>
+
+
+<!-- ══ AI DOĞRULAMA ═══════════════════════════════════════ -->
+<h2 id="ai-val">🤖 AI Doğrulama — Yükleme Belgelerinde</h2>
+
+<div class="box teal">
+<p>Okul belge yükler → AI saniyeler içinde temel kontrolleri yapar → sorun yoksa "Doğrulandı", sorun varsa uyarı gösterir. Koordinatöre gereksiz iş düşmüyor, okul hatayı anında görüyor.</p>
+
+<div class="cols2" style="margin-top:14px">
+<div>
+  <div class="ai-card">
+    <div class="ai-header"><div class="ai-icon">🛡️</div><div class="ai-title">Sigorta Poliçesi Doğrulama</div></div>
+    <div class="ai-checks">
+      <div class="ai-check"><span class="ok">✓</span> Katılımcı adı: "Ali Yılmaz" eşleşiyor</div>
+      <div class="ai-check"><span class="ok">✓</span> Kapsam tarihleri: 12.09–22.09.2026 hareketlilik içeriyor</div>
+      <div class="ai-check"><span class="warn">⚠</span> Sağlık+Mali sorumluluk var, Kaza sigortası belirsiz</div>
+      <div class="ai-check"><span class="ok">✓</span> Yurt dışı geçerlilik: İspanya belirtilmiş</div>
+    </div>
+    <div style="font-size:10px;background:#fef9c3;border-radius:5px;padding:6px 8px;margin-top:8px;color:#92400e">⚠️ Kaza sigortası açıkça belirtilmemiş — koordinatör inceleyecek.</div>
+  </div>
+
+  <div class="ai-card">
+    <div class="ai-header"><div class="ai-icon">✈️</div><div class="ai-title">Boarding Pass Doğrulama</div></div>
+    <div class="ai-checks">
+      <div class="ai-check"><span class="ok">✓</span> İsim: "ALI YILMAZ" eşleşiyor</div>
+      <div class="ai-check"><span class="ok">✓</span> Tarih: 12 SEP 2026 — hareketlilik başlangıcıyla uyumlu</div>
+      <div class="ai-check"><span class="ok">✓</span> Uçuş IST→BCN (İspanya)</div>
+      <div class="ai-check"><span class="ok">✓</span> Gidiş belgesi</div>
+    </div>
+    <div style="font-size:10px;background:#ecfdf5;border-radius:5px;padding:6px 8px;margin-top:8px;color:#166534">✓ Doğrulandı — dönüş boarding pass da yükleyin.</div>
+  </div>
+</div>
+<div>
+  <div class="ai-card">
+    <div class="ai-header"><div class="ai-icon">🏨</div><div class="ai-title">Konaklama Reservasyonu</div></div>
+    <div class="ai-checks">
+      <div class="ai-check"><span class="ok">✓</span> Tarih aralığı: 12–22 Eylül 2026</div>
+      <div class="ai-check"><span class="err">✗</span> Adı bulunamadı (grup rezervasyonu olabilir)</div>
+      <div class="ai-check"><span class="ok">✓</span> Şehir: Barcelona</div>
+    </div>
+    <div style="font-size:10px;background:#fef2f2;border-radius:5px;padding:6px 8px;margin-top:8px;color:#dc2626">Uyarı: Katılımcı adı doküman içinde bulunamadı. Grup rezervasyonuysa koordinatöre not bırakın.</div>
+  </div>
+
+  <div class="ai-card">
+    <div class="ai-header"><div class="ai-icon">🎫</div><div class="ai-title">Kurs Proforma Faturası</div></div>
+    <div class="ai-checks">
+      <div class="ai-check"><span class="ok">✓</span> Kurum adı mevcuı</div>
+      <div class="ai-check"><span class="ok">✓</span> Tutar ve para birimi belirlenmiş (€1,200)</div>
+      <div class="ai-check"><span class="warn">⚠</span> Kurs tarihleri faturada hareketlilik tarihlerinden farklı</div>
+    </div>
+    <div style="font-size:10px;background:#fef9c3;border-radius:5px;padding:6px 8px;margin-top:8px;color:#92400e">Tarih uyuşmazlığı — koordinatör onaylamadan önce kontrol edin.</div>
+  </div>
+
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:8px">
+    <strong style="font-size:11px;color:#374151">AI Doğrulama Kuralları</strong>
+    <ul style="font-size:11px;color:#64748b;margin:6px 0 0;padding-left:14px;line-height:1.9">
+      <li>Doğrulama <strong>zorunlu değil</strong> — AI başarısız olursa yükleme engellenmez</li>
+      <li>Koordinatör AI notunu görür, kendi kararını verir</li>
+      <li>Doğrulama sonuçları belge kaydıyla birlikte saklanır</li>
+      <li>Okul "AI yanıltıcı" diyebilir, notla geçebilir</li>
+    </ul>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ══ GERİ ALMA ══════════════════════════════════════════ -->
+<h2 id="reversibility">↩️ Her Şeyin Geri Alınabilmesi</h2>
+
+<div class="box slate">
+<p>Hatalar olur. Sistem her adımda geri dönüş yolu sağlar. "Kilitli" denen şey sadece koordinatörün geri alamayacağı anlamına gelir — okul için kalıcı kilitleme yok.</p>
+
+<div class="rev-item">
+  <div class="rev-icon">✅</div>
+  <div class="rev-body">
+    <div class="rev-title">Checklist Onayı</div>
+    <div class="rev-desc">Okul yanlışlıkla "Evet" işaretledi → <strong>Onayı Kaldır</strong> butonuyla geri alınır. Koordinatör de kaldırabilir.</div>
+  </div>
+  <button class="rev-btn">↩ Onayı Kaldır</button>
+</div>
+
+<div class="rev-item">
+  <div class="rev-icon">📎</div>
+  <div class="rev-body">
+    <div class="rev-title">Belge Yükleme</div>
+    <div class="rev-desc">Koordinatör onaylamadan önce: silip yeniden yüklenebilir. Onaylandıktan sonra: koordinatör "Onayı Geri Al" yaparsa tekrar düzenlenebilir.</div>
+  </div>
+  <button class="rev-btn">🗑️ Sil &amp; Yeniden Yükle</button>
+</div>
+
+<div class="rev-item">
+  <div class="rev-icon">✍️</div>
+  <div class="rev-body">
+    <div class="rev-title">Koordinatör Onayı (Belge)</div>
+    <div class="rev-desc">Koordinatör "Onayla" dedikten sonra fark etti sorun var → "Onayı Geri Al" → belge tekrar "Bekliyor" durumuna düşer, okul yeniden yükleyebilir.</div>
+  </div>
+  <button class="rev-btn" style="border-color:#bfdbfe;color:#1d4ed8;background:#eff6ff">⚠ Onayı Geri Al</button>
+</div>
+
+<div class="rev-item">
+  <div class="rev-icon">📄</div>
+  <div class="rev-body">
+    <div class="rev-title">Otomatik Üretilen Belge (Hibe, LA…)</div>
+    <div class="rev-desc">İmzalanmadan önce: belge içeriği güncellenip yeniden üretilebilir. İmzalı versiyon yüklendikten sonra: koordinatör "Yeniden Üret" → eski imzalı versiyon v1 olarak arşivlenir.</div>
+  </div>
+  <button class="rev-btn" style="border-color:#bfdbfe;color:#1d4ed8;background:#eff6ff">🔄 Yeniden Üret</button>
+</div>
+
+<div class="rev-item">
+  <div class="rev-icon">📝</div>
+  <div class="rev-body">
+    <div class="rev-title">Form / Anket</div>
+    <div class="rev-desc">Gönderilmeden önce: katılımcı düzenleyebilir. Gönderildikten sonra: "Düzenle" → yeni cevaplar v2 olarak kaydedilir, orijinal saklanır.</div>
+  </div>
+  <button class="rev-btn">✏️ Düzenle</button>
+</div>
+
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-top:10px">
+<strong style="font-size:11px;color:#92400e">📌 Tek kalıcı kural:</strong>
+<p style="font-size:11px;color:#78350f;margin:4px 0 0">Koordinatör "Beyan onaylandı → %10 hibe aktarıldı" işlemini yaptıktan sonra beyan belgesi değiştirilemez (hukuki kayıt). Bunun dışında her şey geri alınabilir.</p>
+</div>
+</div>
+
+
+<!-- ══ VALİLİK OLURU ═════════════════════════════════════ -->
+<h2 id="valilik">🏛️ Valilik Oluru — EBYS Entegrasyonu</h2>
+
+<div class="box" style="border-top:4px solid #64748b">
+<p>Valilik Oluru EBYS (Elektronik Belge Yönetim Sistemi) üzerinden yazılıyor — ErasDesk bu sürece dokunmuyor. ErasDesk'teki görevi: okulun nerede olduğunu hatırlatmak, bağlantı sağlamak, onaylı versiyonu almak.</p>
+
+<div class="cols2" style="margin-top:14px">
+<div>
+  <div class="ext-card">
+    <div class="ext-header">
+      <div class="ext-icon">🏛️</div>
+      <div>
+        <div class="ext-title">Valilik Oluru</div>
+        <div class="ext-subtitle">EBYS üzerinden yürütülür</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#64748b;line-height:1.8">
+      <div>📋 <strong>Durum:</strong> <span style="color:#d97706;font-weight:700">EBYS'de Hazırlanıyor</span></div>
+      <div style="margin:8px 0;border-top:1px solid #f1f5f9;padding-top:8px">
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">YARDIMCI BAĞLANTILAR</div>
+        <div><a href="#" style="color:#2563eb;font-size:11px">→ EBYS'ye Git</a></div>
+        <div><a href="#" style="color:#2563eb;font-size:11px">→ Valilik Oluru Taslak Metni (Bilgi Amaçlı)</a></div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:4px">* Taslak örnek içindir, resmi metin EBYS'den üretilir</div>
+      </div>
+      <div style="background:#fffbeb;border-radius:6px;padding:8px;margin-top:8px;font-size:10px;color:#92400e">
+        Onaylı Valilik Olurunu aldıktan sonra aşağıya yükleyin. Checklist "Onaylı Valilik Oluru alındı" maddesi bu yüklemeyle açılır.
+      </div>
+      <div style="margin-top:10px">
+        <button style="width:100%;padding:8px;background:#1e293b;color:white;border:none;border-radius:7px;font-size:11px;font-weight:700;">⬆️ Onaylı Valilik Oluru PDF Yükle</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <h3>Koordinatör Paneli — Valilik Oluru Durumu</h3>
+  <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+    <div style="background:#f8fafc;padding:8px 12px;font-size:10px;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;display:grid;grid-template-columns:1fr 70px 80px">
+      <div>OKUL / HAR.</div><div style="text-align:center">HAZIRLANDI</div><div style="text-align:center">ONAYLANDI</div>
+    </div>
+    <div style="padding:8px 12px;font-size:11px;border-bottom:1px solid #f1f5f9;display:grid;grid-template-columns:1fr 70px 80px;align-items:center">
+      <div>28 Haziran / SM-TTA</div>
+      <div style="text-align:center;color:#059669">✅</div>
+      <div style="text-align:center;color:#d97706">⏳ Bekl.</div>
+    </div>
+    <div style="padding:8px 12px;font-size:11px;display:grid;grid-template-columns:1fr 70px 80px;align-items:center">
+      <div>50.Yıl / LM-GRP</div>
+      <div style="text-align:center;color:#059669">✅</div>
+      <div style="text-align:center;color:#059669">✅ 2 gün</div>
+    </div>
+  </div>
+  <div style="margin-top:10px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px;font-size:11px;color:#166534;line-height:1.6">
+    <strong>Tasarım Notu:</strong> ErasDesk hiçbir zaman Valilik Oluru içeriğini üretmez veya EBYS'ye bağlanmaya çalışmaz. Sadece: bilgi notu göster, EBYS linki ver, onaylı PDF'i al, checklistle bağla.
+  </div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

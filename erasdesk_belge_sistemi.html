@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ErasDesk — Belge &amp; Kontrol Listesi Sistemi</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; font-size: 13px; }
+.page { max-width: 1040px; margin: 0 auto; padding: 28px 18px 100px; }
+h1 { font-size: 26px; font-weight: 800; }
+.lead { color: #64748b; margin: 6px 0 36px; font-size: 14px; line-height: 1.6; }
+h2 { font-size: 16px; font-weight: 800; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #64748b; margin: 20px 0 10px; }
+p { color: #475569; line-height: 1.7; margin-bottom: 8px; }
+
+.nav { position:sticky;top:0;background:rgba(248,250,252,.96);border-bottom:1px solid #e2e8f0;padding:8px 18px;z-index:100;backdrop-filter:blur(8px);display:flex;gap:6px;flex-wrap:wrap;max-width:none;margin:0 -18px 0; }
+.nav a { font-size:11px;font-weight:600;color:#64748b;text-decoration:none;padding:4px 10px;border-radius:6px;border:1px solid #e2e8f0;background:white;white-space:nowrap; }
+
+/* LAYOUT */
+.box { background:white;border:1px solid #e2e8f0;border-radius:14px;padding:22px;margin-bottom:14px; }
+.box.blue   { border-top:4px solid #2563eb; }
+.box.green  { border-top:4px solid #059669; }
+.box.purple { border-top:4px solid #7c3aed; }
+.box.orange { border-top:4px solid #d97706; }
+.box.red    { border-top:4px solid #dc2626; }
+.box.teal   { border-top:4px solid #0891b2; }
+.cols2 { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.cols3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px; }
+@media(max-width:680px){ .cols2,.cols3{grid-template-columns:1fr;} }
+
+/* BADGES */
+.b { display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap; }
+.b-auto   { background:#ecfdf5;color:#059669; }
+.b-upload { background:#eff6ff;color:#1d4ed8; }
+.b-ai     { background:#faf5ff;color:#7c3aed; }
+.b-sign   { background:#fef3c7;color:#b45309; }
+.b-host   { background:#fff1f2;color:#be123c; }
+.b-block  { background:#fef2f2;color:#dc2626; }
+
+/* DOCUMENT TABLE */
+.dtbl { width:100%;border-collapse:collapse;font-size:12px; }
+.dtbl th { background:#f8fafc;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #e2e8f0; }
+.dtbl td { padding:9px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top; }
+.dtbl tr:last-child td { border-bottom:none; }
+.dtbl tr:hover td { background:#fafbff; }
+.doc-name { font-weight:700;color:#1e293b; }
+.doc-sub { font-size:11px;color:#94a3b8;margin-top:1px; }
+.fields { display:flex;flex-wrap:wrap;gap:3px;margin-top:4px; }
+.field { background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;font-size:10px;font-family:monospace; }
+.field.ai { background:#faf5ff;color:#7c3aed; }
+.field.school { background:#eff6ff;color:#1d4ed8; }
+
+/* FILE NAMING */
+.fname { font-family:monospace;font-size:12px;background:#1e293b;color:#e2e8f0;padding:8px 12px;border-radius:8px;margin:6px 0; }
+.fname .var { color:#7dd3fc; }
+.fname .fixed { color:#86efac; }
+.fname .sep { color:#94a3b8; }
+
+/* CHECKLIST */
+.cl-group { margin-bottom:14px; }
+.cl-header { background:#f1f5f9;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:#374151;margin-bottom:6px; }
+.cl-item { display:flex;gap:8px;align-items:flex-start;padding:7px 10px;border:1px solid #f1f5f9;border-radius:6px;margin-bottom:4px;background:white; }
+.cl-cb { width:16px;height:16px;border-radius:4px;border:2px solid #e2e8f0;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center; }
+.cl-cb.done { background:#059669;border-color:#059669;color:white;font-size:10px; }
+.cl-cb.blocked { background:#fef2f2;border-color:#fca5a5; }
+.cl-body { flex:1; }
+.cl-text { font-size:12px;color:#374151;line-height:1.4; }
+.cl-req { font-size:10px;margin-top:4px;display:flex;align-items:center;gap:4px; }
+.cl-req .link { color:#2563eb;text-decoration:underline;cursor:pointer; }
+.cl-block-note { font-size:10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:5px;padding:4px 8px;margin-top:4px;color:#dc2626; }
+.cl-tags { display:flex;gap:4px;margin-top:4px;flex-wrap:wrap; }
+
+/* SIGN FLOW */
+.flow { display:flex;gap:0;align-items:stretch;flex-wrap:wrap; }
+.flow-step { flex:1;min-width:140px;padding:14px;text-align:center;position:relative; }
+.flow-step::after { content:'→';position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px;z-index:1; }
+.flow-step:last-child::after { display:none; }
+.flow-num { width:28px;height:28px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white; }
+.flow-title { font-size:11px;font-weight:700;color:#1e293b;margin-bottom:4px; }
+.flow-desc { font-size:10px;color:#64748b;line-height:1.4; }
+
+/* NAMING SECTION */
+.name-rule { background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:8px; }
+.name-rule .nrlabel { font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px; }
+.name-example { font-family:monospace;font-size:11px;background:#1e293b;color:#86efac;padding:6px 10px;border-radius:5px;margin-top:4px;word-break:break-all; }
+
+/* FILE MANAGER */
+.fm-row { display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;background:white; }
+.fm-icon { font-size:18px;flex-shrink:0; }
+.fm-name { flex:1;font-size:12px;font-weight:600;color:#1e293b; }
+.fm-name .fm-sub { font-size:10px;color:#94a3b8;font-weight:400; }
+.fm-status { font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700; }
+.fm-status.uploaded { background:#ecfdf5;color:#059669; }
+.fm-status.pending  { background:#fef9c3;color:#854d0e; }
+.fm-status.missing  { background:#fef2f2;color:#dc2626; }
+.fm-actions { display:flex;gap:4px; }
+.fm-btn { font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid #e2e8f0;background:white;color:#64748b;cursor:pointer;font-weight:600; }
+.fm-btn.del { border-color:#fca5a5;color:#dc2626;background:#fef2f2; }
+.fm-btn.view { border-color:#bfdbfe;color:#1d4ed8;background:#eff6ff; }
+
+/* TUTANAK */
+.tutanak { border:2px solid #e2e8f0;border-radius:10px;overflow:hidden; }
+.tutanak-head { background:#1e293b;color:white;padding:12px 16px;font-size:12px;font-weight:700; }
+.tutanak-body { padding:14px 16px; }
+.tutanak-field { margin-bottom:10px; }
+.tutanak-field label { display:block;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px; }
+.tutanak-field .val { font-size:12px;color:#1e293b;border-bottom:1px solid #e2e8f0;padding-bottom:3px; }
+.tutanak-field .inp { border:1.5px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:12px;width:100%;color:#374151;background:#fafafa; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#inventory">📋 Belge Envanteri</a>
+  <a href="#naming">🏷️ İsimlendirme</a>
+  <a href="#sign">✍️ İmza Akışı</a>
+  <a href="#checklist">✅ Kontrol Listesi</a>
+  <a href="#filemanager">📁 Dosya Yönetimi</a>
+  <a href="#tutanak">📄 Seçim Tutanağı</a>
+  <a href="#ortaklik">🤝 Ortaklık Sözleşmesi</a>
+  <a href="#drive-map">🗺️ Drive→ErasDesk</a>
+</nav>
+
+<div class="page">
+
+<h1>ErasDesk — Belge &amp; Kontrol Listesi Sistemi</h1>
+<p class="lead">Drive klasör yapısının tam analizi → ErasDesk'e taşıma tasarımı · Belge isimlendirme · İmza akışı · Engelleyici kontrol listesi</p>
+
+
+<!-- ══ BELGE ENVANTERİ ══════════════════════════════════ -->
+<h2 id="inventory">📋 Tam Belge Envanteri</h2>
+
+<div class="box blue">
+<h3>Hareketlilik Öncesi Belgeler</h3>
+<table class="dtbl">
+<tr><th>Belge</th><th>Kapsam</th><th>Üretim</th><th>Otomatik Dolan Alanlar</th><th>Okul Girer</th><th>İmza Durumu</th></tr>
+<tr>
+  <td><div class="doc-name">Hibe Anlaşması</div><div class="doc-sub">Grant Agreement</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span></td>
+  <td><div class="fields"><span class="field">okul_adı</span><span class="field">OID</span><span class="field">katılımcı</span><span class="field">tarihler</span><span class="field">hibe_miktarı</span></div></td>
+  <td><div class="fields"><span class="field school">IBAN</span><span class="field school">yetkili_ad</span></div></td>
+  <td><span class="b b-sign">Okul + Koordinatör</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Öğrenme Anlaşması (LA)</div><div class="doc-sub">Learning Agreement</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span> <span class="b b-ai">AI</span></td>
+  <td><div class="fields"><span class="field">okul</span><span class="field">katılımcı</span><span class="field">tarihler</span><span class="field">ev_sahibi</span></div></td>
+  <td><div class="fields"><span class="field school">öğrenme_çıktıları</span><span class="field school">faaliyetler</span><span class="field ai">AI önerir</span></div></td>
+  <td><span class="b b-host">Okul + Ev Sahibi + Koordinatör</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Davet Mektubu</div><div class="doc-sub">Invitation Letter</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span> <span class="b b-ai">AI</span></td>
+  <td><div class="fields"><span class="field">katılımcı</span><span class="field">tarihler</span><span class="field">ev_sahibi</span><span class="field">ülke</span></div></td>
+  <td><div class="fields"><span class="field school">irtibat_kişisi</span><span class="field school">kalış_yeri</span></div></td>
+  <td><span class="b b-host">Ev Sahibi İmzalar</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Faaliyet Programı</div><div class="doc-sub">Activity Agenda</div></td>
+  <td>Hareketlilik başına</td>
+  <td><span class="b b-ai">AI Taslak</span></td>
+  <td><div class="fields"><span class="field">tarihler</span><span class="field">ev_sahibi</span><span class="field">faaliyet_türü</span></div></td>
+  <td><div class="fields"><span class="field school">günlük_aktiviteler</span></div></td>
+  <td><span class="b b-host">Ev Sahibi Onaylar/İmzalar</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">KVKK Belgesi</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span></td>
+  <td><div class="fields"><span class="field">katılımcı</span><span class="field">TC</span></div></td>
+  <td>—</td>
+  <td><span class="b b-sign">Katılımcı İmzalar → Yükler</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Sertifika (Taslak)</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span></td>
+  <td><div class="fields"><span class="field">tüm alanlar</span></div></td>
+  <td>—</td>
+  <td><span class="b b-sign">Sonrasında imzalanır</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Valilik Oluru</div></td>
+  <td>Hareketlilik başına</td>
+  <td><span class="b b-auto">OTOMATİK Taslak</span></td>
+  <td><div class="fields"><span class="field">okul</span><span class="field">katılımcılar</span><span class="field">tarihler</span><span class="field">ülke</span></div></td>
+  <td>—</td>
+  <td><span class="b b-upload">Onaylı versiyonu Yükler</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Sigorta Poliçesi</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td>—</td>
+  <td>—</td>
+  <td><span class="b b-upload">Yükleme</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Seyahat Bileti / Rezervasyon</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td>—</td>
+  <td>—</td>
+  <td><span class="b b-upload">Yükleme</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Konaklama Reservasyonu</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td>—</td>
+  <td>—</td>
+  <td><span class="b b-upload">Yükleme</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Kurs Proforma Faturası</div><div class="doc-sub">Yalnızca Yapılandırılmış Kurs</div></td>
+  <td>Hareketlilik başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td>—</td>
+  <td>—</td>
+  <td><span class="b b-upload">Yükleme</span></td>
+</tr>
+</table>
+
+<h3 style="margin-top:20px">Hareketlilik Sonrası Belgeler</h3>
+<table class="dtbl">
+<tr><th>Belge</th><th>Kapsam</th><th>Üretim</th><th>İmza/Yükleme Durumu</th></tr>
+<tr>
+  <td><div class="doc-name">Katılım Sertifikası (Final)</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span></td>
+  <td><span class="b b-host">Ev Sahibi + Koordinatör İmzalar</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">İmzalı Öğrenme Anlaşması</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">İmzalı PDF Yüklenir</span></td>
+  <td><span class="b b-host">Ev Sahibi İmzalı → Yükle</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Europass Hareketlilik Belgesi</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">Portal'dan İndir → Yükle</span></td>
+  <td><span class="b b-host">İmzalı versiyon yüklenir</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Boarding Pass</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td><span class="b b-ai">AI tarih/isim doğrular</span></td>
+</tr>
+<tr>
+  <td><div class="doc-name">Katılımcı Anketi (Survey)</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">DAHİLİ FORM</span></td>
+  <td>Portal içinde doldurulur</td>
+</tr>
+<tr>
+  <td><div class="doc-name">Kurs Faturası</div><div class="doc-sub">Yapılandırılmış Kurs</div></td>
+  <td>Hareketlilik başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td>Yükleme</td>
+</tr>
+<tr>
+  <td><div class="doc-name">Yansıtma Yazısı</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">DAHİLİ FORM</span></td>
+  <td>Portal içinde doldurulur</td>
+</tr>
+<tr>
+  <td><div class="doc-name">Beyan (Deklarasyon)</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">OTOMATİK</span></td>
+  <td><span class="b b-sign">Okul İmzalar → Yükler → Koordinatör Onaylar</span></td>
+</tr>
+</table>
+
+<h3 style="margin-top:20px">Okul/Konsorsiyum Düzeyinde Belgeler</h3>
+<table class="dtbl">
+<tr><th>Belge</th><th>Kapsam</th><th>Üretim</th><th>Notlar</th></tr>
+<tr>
+  <td><div class="doc-name">Ortaklık Sözleşmesi</div><div class="doc-sub">Partnership Agreement</div></td>
+  <td>Okul başına (tüm dönem)</td>
+  <td><span class="b b-auto">OTOMATİK</span></td>
+  <td>Koordinatör üretir, okul müdürü imzalar, koordinatör de imzalar</td>
+</tr>
+<tr>
+  <td><div class="doc-name">Katılımcı Seçim Tutanağı</div></td>
+  <td>Hareketlilik başına</td>
+  <td><span class="b b-auto">OTOMATİK Taslak</span></td>
+  <td>Kurul üyeleri sisteme girilir → tutanak otomatik oluşur → imzalanıp yüklenir</td>
+</tr>
+<tr>
+  <td><div class="doc-name">Görev Yeri Belgesi / Öğrenci Belgesi</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-upload">Okul Yükler</span></td>
+  <td>Katılımcının okuldan aldığı resmi belge</td>
+</tr>
+<tr>
+  <td><div class="doc-name">Bireysel Yabancı Dil Gelişim Planı</div></td>
+  <td>Katılımcı başına</td>
+  <td><span class="b b-auto">DAHİLİ FORM</span></td>
+  <td>Portal içi form + AI önerileri</td>
+</tr>
+</table>
+</div>
+
+
+<!-- ══ İSİMLENDİRME ══════════════════════════════════════ -->
+<h2 id="naming">🏷️ Standart Belge İsimlendirme</h2>
+
+<div class="box green">
+<p>Tüm belgeler sistem tarafından standart formatta isimlendirilir. Okul yükleme yapsa bile sistem dosyayı standart isimle kaydeder. İnsan hatası ortadan kalkar, koordinatör arama kolaylaşır.</p>
+
+<div class="cols2" style="margin-top:14px">
+<div>
+  <div class="name-rule">
+    <div class="nrlabel">📄 Katılımcı Belgesi (örn. Hibe, LA, Sertifika, Boarding Pass)</div>
+    <div class="fname">
+      <span class="fixed">SCH26</span><span class="sep">_</span><span class="var">{OkulKodu}</span><span class="sep">_</span><span class="var">{SoyAd}</span><span class="sep">_</span><span class="var">{HareketlilikKodu}</span><span class="sep">_</span><span class="var">{BelgeTürü}</span><span class="sep">.pdf</span>
+    </div>
+    <div class="name-example">SCH26_E10348415_YILMAZ_SMTTA_HibeSozlesmesi.pdf</div>
+    <div class="name-example">SCH26_E10348415_YILMAZ_SMTTA_OgrenmeSozlesmesi_Imzali.pdf</div>
+    <div class="name-example">SCH26_E10348415_YILMAZ_SMTTA_BoardingPass.pdf</div>
+    <div class="name-example">SCH26_E10348415_YILMAZ_SMTTA_Sertifika.pdf</div>
+  </div>
+</div>
+<div>
+  <div class="name-rule">
+    <div class="nrlabel">🏫 Hareketlilik Belgesi (Program, Valilik Oluru)</div>
+    <div class="fname">
+      <span class="fixed">SCH26</span><span class="sep">_</span><span class="var">{OkulKodu}</span><span class="sep">_</span><span class="var">{HareketlilikKodu}</span><span class="sep">_</span><span class="var">{BelgeTürü}</span><span class="sep">.pdf</span>
+    </div>
+    <div class="name-example">SCH26_E10348415_SMTTA_FaaliyetProgrami.pdf</div>
+    <div class="name-example">SCH26_E10348415_SMTTA_FaaliyetProgrami_Imzali.pdf</div>
+    <div class="name-example">SCH26_E10348415_SMTTA_ValikOluru_Onaylanmis.pdf</div>
+  </div>
+  <div class="name-rule">
+    <div class="nrlabel">🤝 Okul Düzeyi Belge (Ortaklık, Seçim Tutanağı)</div>
+    <div class="fname">
+      <span class="fixed">SCH26</span><span class="sep">_</span><span class="var">{OkulKodu}</span><span class="sep">_</span><span class="var">{BelgeTürü}</span><span class="sep">.pdf</span>
+    </div>
+    <div class="name-example">SCH26_E10348415_OrtaklikSozlesmesi.pdf</div>
+    <div class="name-example">SCH26_E10348415_SMTTA_KatilimciSecimTutanagi.pdf</div>
+  </div>
+</div>
+</div>
+
+<div style="margin-top:12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px">
+<strong style="color:#92400e;font-size:12px">📌 Kural:</strong>
+<p style="font-size:12px;color:#78350f;margin:4px 0 0">Okul yükleme yaparken dosya adını değiştirmez — sistem otomatik yeniden adlandırır. İmzalı versiyon için <code>_Imzali</code> eki eklenir. Versiyon için <code>_v2</code>, <code>_v3</code>. Sistem her zaman en son versiyonu aktif olarak işaretler.</p>
+</div>
+</div>
+
+
+<!-- ══ İMZA AKIŞI ════════════════════════════════════════ -->
+<h2 id="sign">✍️ İmza Akışı — 5 Durumlu Model</h2>
+
+<div class="box purple">
+<div class="cols2">
+<div>
+  <h3>A. Sadece Okul/Koordinatör İmzalar (Hibe Anlaşması, KVKK…)</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num" style="background:#6366f1">1</div>
+      <div class="flow-title">OTOMATİK ÜRETİLDİ</div>
+      <div class="flow-desc">Sistem PDF'i oluşturur, önizleme sunulur</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num" style="background:#0891b2">2</div>
+      <div class="flow-title">OKUL İNDİRİR</div>
+      <div class="flow-desc">Çıktı alır, müdür/yetkili imzalar</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num" style="background:#d97706">3</div>
+      <div class="flow-title">İMZALIYI YÜKLER</div>
+      <div class="flow-desc">Taranmış PDF sisteme yüklenir</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num" style="background:#059669">4</div>
+      <div class="flow-title">KOORDİNATÖR ONAYLAR</div>
+      <div class="flow-desc">Tamamlandı — kilitlenir</div>
+    </div>
+  </div>
+</div>
+<div>
+  <h3>B. Ev Sahibi de İmzalar (LA, Faaliyet Programı, Sertifika…)</h3>
+  <div class="flow" style="flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f8fafc;border-radius:6px">
+      <div class="flow-num" style="background:#6366f1;flex-shrink:0">1</div>
+      <div><div class="flow-title">Sistem taslak üretir → Okul önizler</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f8fafc;border-radius:6px">
+      <div class="flow-num" style="background:#0891b2;flex-shrink:0">2</div>
+      <div><div class="flow-title">Okul indirir, kendi imzasını atar</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#fef3c7;border-radius:6px">
+      <div class="flow-num" style="background:#d97706;flex-shrink:0">3</div>
+      <div><div class="flow-title">Ev sahibi kuruma gönderir (e-posta/posta)</div><div style="font-size:10px;color:#64748b">Sistem ev sahibi kurumun e-postasına da link gönderebilir</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#fff1f2;border-radius:6px">
+      <div class="flow-num" style="background:#dc2626;flex-shrink:0">4</div>
+      <div><div class="flow-title">Ev sahibi imzalı versiyonu sisteme yükler VEYA okul yükler</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#ecfdf5;border-radius:6px">
+      <div class="flow-num" style="background:#059669;flex-shrink:0">5</div>
+      <div><div class="flow-title">Koordinatör onaylar → Tamamlandı</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div style="margin-top:14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px">
+<strong style="font-size:12px;color:#166534">💡 Ev Sahibi Yükleme Linki:</strong>
+<p style="font-size:12px;color:#14532d;margin:4px 0 0">İleride: Her LA için benzersiz güvenli link üretilir, ev sahibi kuruma e-postayla gönderilir. Ev sahibi linke tıklar, imzalı PDF yükler (hesap açmadan). Bu Drive'da hiç olmayan bir özellik.</p>
+</div>
+</div>
+
+
+<!-- ══ KONTROL LİSTESİ ════════════════════════════════════ -->
+<h2 id="checklist">✅ Kontrol Listesi — Belge Zorunluluğu</h2>
+
+<div class="box orange">
+<p>Her checklist maddesi üç kategoride: <strong>Bilgi</strong> (sadece onay), <strong>Belge Gerektiren</strong> (ilgili belge yüklenmeden "Evet" seçilemiyor), <strong>Form Gerektiren</strong> (dahili form doldurulmadan seçilemiyor).</p>
+
+<div class="cols2" style="margin-top:14px">
+<div>
+  <div class="cl-group">
+    <div class="cl-header">📋 Hareketlilik Öncesi — Örnek Maddeler</div>
+
+    <div class="cl-item">
+      <div class="cl-cb done">✓</div>
+      <div class="cl-body">
+        <div class="cl-text">Ortaklık Sözleşmesi imzalandı</div>
+        <div class="cl-tags">
+          <span class="b b-upload">Belge Gerekli</span>
+        </div>
+        <div class="cl-req">📎 <span class="link">SCH26_E10348415_OrtaklikSozlesmesi.pdf</span> ✓ yüklendi</div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb"></div>
+      <div class="cl-body">
+        <div class="cl-text">Hibe Sözleşmeleri imzalandı, AR-GE birimine teslim edildi</div>
+        <div class="cl-tags">
+          <span class="b b-block">🔒 Belge Yüklenmeden Seçilemiyor</span>
+        </div>
+        <div class="cl-block-note">⚠️ "Hibe Sözleşmesi (İmzalı)" yüklenmeden bu adım tamamlanamaz. <span class="link">→ Belge yükle</span></div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb done">✓</div>
+      <div class="cl-body">
+        <div class="cl-text">Katılımcı Seçim Tutanağı hazırlandı ve imzalandı</div>
+        <div class="cl-tags"><span class="b b-upload">Belge Gerekli</span></div>
+        <div class="cl-req">📎 <span class="link">SCH26_E10348415_SMTTA_KatilimciSecimTutanagi.pdf</span> ✓</div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb"></div>
+      <div class="cl-body">
+        <div class="cl-text">Valilik Oluru alındı ve klasöre yüklendi</div>
+        <div class="cl-tags"><span class="b b-block">🔒 Belge Yüklenmeden Seçilemiyor</span></div>
+        <div class="cl-block-note">⚠️ "Valilik Oluru (Onaylı)" yüklenmeden bu adım tamamlanamaz.</div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb done">✓</div>
+      <div class="cl-body">
+        <div class="cl-text">Hareketlilik Uygulama Rehberi incelendi</div>
+        <div class="cl-tags"><span style="font-size:10px;background:#f1f5f9;color:#475569;padding:2px 6px;border-radius:4px">Bilgi Onayı</span></div>
+        <div class="cl-req">📖 <span class="link">Rehberi görüntüle</span></div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb"></div>
+      <div class="cl-body">
+        <div class="cl-text">Bireysel Yabancı Dil Gelişim Planı dolduruldu</div>
+        <div class="cl-tags"><span class="b b-auto">Form Gerekli</span></div>
+        <div class="cl-block-note">⚠️ Tüm katılımcılar için form doldurulmadan bu adım tamamlanamaz. <span class="link">→ Formu doldur</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <div class="cl-group">
+    <div class="cl-header">📋 Hareketlilik Sonrası — Örnek Maddeler</div>
+
+    <div class="cl-item">
+      <div class="cl-cb"></div>
+      <div class="cl-body">
+        <div class="cl-text">İmzalı Öğrenme Anlaşması yüklendi ve AR-GE'ye teslim edildi</div>
+        <div class="cl-tags"><span class="b b-block">🔒 İmzalı LA Yüklenmeden Seçilemiyor</span></div>
+        <div class="cl-block-note">⚠️ Ev sahibi kurumun imzaladığı LA PDF'ini yükleyin. <span class="link">→ Yükle</span></div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb"></div>
+      <div class="cl-body">
+        <div class="cl-text">Boarding Pass yüklendi</div>
+        <div class="cl-tags"><span class="b b-block">🔒 Boarding Pass Yüklenmeden Seçilemiyor</span></div>
+        <div class="cl-block-note">⚠️ Tüm katılımcıların boarding pass'ı yüklenmeli. <span class="link">→ Yükle</span></div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb done">✓</div>
+      <div class="cl-body">
+        <div class="cl-text">Katılımcı Anketi dolduruldu</div>
+        <div class="cl-tags"><span class="b b-auto">Dahili Form</span></div>
+        <div class="cl-req">📊 3/3 katılımcı anketi tamamladı ✓</div>
+      </div>
+    </div>
+
+    <div class="cl-item">
+      <div class="cl-cb"></div>
+      <div class="cl-body">
+        <div class="cl-text">Hareketlilik tamamlandığına dair beyan yüklendi</div>
+        <div class="cl-tags"><span class="b b-block">🔒 Beyan Yüklenmeden Seçilemiyor</span></div>
+        <div class="cl-block-note">⚠️ İmzalı beyanı yükleyin, koordinatör onaylayacak.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-top:8px">
+    <strong style="font-size:11px;color:#92400e">Checklist → Belge Bağlantısı Kuralları:</strong>
+    <ul style="font-size:11px;color:#78350f;margin:6px 0 0;padding-left:16px;line-height:1.8">
+      <li>Her madde <code>required_doc</code> alanı taşır (ör: <code>hibe_soz_imzali</code>)</li>
+      <li>Belge yüklenmemişse: checkbox disabled + kırmızı uyarı + "Yükle" linki</li>
+      <li>Belge yüklendiyse: checkbox etkin + mevcut dosyaya link gösterilir</li>
+      <li>Rehber linki olan maddeler: "Görüntüle" butonu ile sayfa içi rehber açılır</li>
+      <li>Belge yüklendikten sonra checklist otomatik güncellenemez — okul tıklamalı (kasıtlı)</li>
+    </ul>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ══ DOSYA YÖNETİMİ ═════════════════════════════════════ -->
+<h2 id="filemanager">📁 Dosya Yönetimi — Silme, Değiştirme, Versiyonlama</h2>
+
+<div class="box teal">
+<p>Her belge için tam dosya yönetimi. Hata olması durumunda okul silebilir ve yeniden yükleyebilir. Koordinatör onayladıktan sonra silme kilitlenir.</p>
+
+<div style="margin:14px 0">
+  <div class="fm-row">
+    <div class="fm-icon">📄</div>
+    <div class="fm-name">SCH26_E10348415_YILMAZ_SMTTA_HibeSozlesmesi_Imzali.pdf<div class="fm-sub">Yüklendi: 23.07.2026 · 1.2 MB · v1</div></div>
+    <div class="fm-status pending">⏳ Koordinatör Onayı Bekleniyor</div>
+    <div class="fm-actions">
+      <button class="fm-btn view">👁️ Önizle</button>
+      <button class="fm-btn del">🗑️ Sil &amp; Yeniden Yükle</button>
+    </div>
+  </div>
+  <div class="fm-row">
+    <div class="fm-icon">📄</div>
+    <div class="fm-name">SCH26_E10348415_YILMAZ_SMTTA_BoardingPass.pdf<div class="fm-sub">Yüklendi: 25.07.2026 · 0.8 MB · v2 (v1 silindi)</div></div>
+    <div class="fm-status uploaded">✓ Onaylandı</div>
+    <div class="fm-actions">
+      <button class="fm-btn view">👁️ Önizle</button>
+      <button class="fm-btn" style="opacity:.4;cursor:not-allowed">🔒 Kilitli</button>
+    </div>
+  </div>
+  <div class="fm-row">
+    <div class="fm-icon">📄</div>
+    <div class="fm-name">SCH26_E10348415_SMTTA_ValikOluru.pdf<div class="fm-sub">Henüz yüklenmedi</div></div>
+    <div class="fm-status missing">✗ Eksik</div>
+    <div class="fm-actions">
+      <button class="fm-btn" style="border-color:#bfdbfe;color:#1d4ed8;background:#eff6ff">⬆️ Yükle</button>
+    </div>
+  </div>
+</div>
+
+<div class="cols2">
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px">
+  <strong style="font-size:11px;color:#374151">Versiyonlama Kuralları</strong>
+  <ul style="font-size:11px;color:#64748b;margin:6px 0 0;padding-left:14px;line-height:1.9">
+    <li>Her yeni yükleme otomatik v2, v3… olarak kaydedilir</li>
+    <li>Eski versiyonlar silinmez, arşivde tutulur</li>
+    <li>Koordinatör tüm versiyonları görebilir</li>
+    <li>Aktif (son) versiyon checklist doğrulamasında kullanılır</li>
+    <li>Onaylandıktan sonra silme devre dışı, sadece koordinatör silebilir</li>
+  </ul>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px">
+  <strong style="font-size:11px;color:#374151">Yükleme Kuralları</strong>
+  <ul style="font-size:11px;color:#64748b;margin:6px 0 0;padding-left:14px;line-height:1.9">
+    <li>Kabul edilen: PDF, JPG, PNG (max 10 MB)</li>
+    <li>PDF tercih edilir — sistem uyarır ama engellenmez</li>
+    <li>Dosya adı sistem tarafından otomatik standartlaştırılır</li>
+    <li>Boarding pass için AI tarih/isim doğrulaması çalışır</li>
+    <li>Yükleme sonrası koordinatöre anlık bildirim</li>
+  </ul>
+</div>
+</div>
+</div>
+
+
+<!-- ══ KATILIMCI SEÇİM TUTANAĞI ══════════════════════════ -->
+<h2 id="tutanak">📄 Katılımcı Seçim Tutanağı — Otomatik Üretim</h2>
+
+<div class="box red">
+<p>Drive'da manuel doldurulan tutanak taslağının yerine, ErasDesk kurul üyelerini sisteme alır ve tutanağı otomatik üretir. Okul sadece onaylar ve imzalar.</p>
+
+<div class="cols2" style="margin-top:14px">
+<div>
+  <h3>Okul Girer (Form)</h3>
+  <div class="tutanak">
+    <div class="tutanak-head">Katılımcı Seçim Kurulu Bilgileri — 28 Haziran Ortaokulu / SM-TTA</div>
+    <div class="tutanak-body">
+      <div class="tutanak-field">
+        <label>Kurul Üyesi 1 — Ad Soyad</label>
+        <input class="inp" value="Ayşe Kaya (Müdür)" readonly>
+      </div>
+      <div class="tutanak-field">
+        <label>Kurul Üyesi 2 — Ad Soyad</label>
+        <input class="inp" placeholder="Ad Soyad / Unvan girin…">
+      </div>
+      <div class="tutanak-field">
+        <label>Kurul Üyesi 3 — Ad Soyad</label>
+        <input class="inp" placeholder="Ad Soyad / Unvan girin…">
+      </div>
+      <div class="tutanak-field">
+        <label>Değerlendirme Tarihi</label>
+        <input class="inp" type="date">
+      </div>
+      <div class="tutanak-field">
+        <label>Seçilen Katılımcılar</label>
+        <div class="val">Ali Yılmaz, Fatma Demir (sistemden otomatik)</div>
+      </div>
+      <div class="tutanak-field">
+        <label>Yedek Katılımcılar</label>
+        <input class="inp" placeholder="Varsa yedek adları…">
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <h3>Sistem Üretir (Önizleme)</h3>
+  <div style="background:#f8fafc;border:2px dashed #e2e8f0;border-radius:10px;padding:16px;font-size:12px;color:#374151;line-height:1.8">
+    <div style="text-align:center;font-weight:800;font-size:13px;margin-bottom:10px;color:#1e293b">KATILIMCI SEÇİM KURULU TUTANAĞI</div>
+    <div><strong>Kurum:</strong> 28 Haziran Ortaokulu (E10348415)</div>
+    <div><strong>Hareketlilik:</strong> SM-TTA / CEIP San Fulgencio, ES</div>
+    <div><strong>Tarih:</strong> [Değerlendirme Tarihi]</div>
+    <div style="margin:8px 0"><strong>Kurul Üyeleri:</strong><br>1. Ayşe Kaya — Müdür<br>2. [Üye 2]<br>3. [Üye 3]</div>
+    <div><strong>Seçilen Asil Katılımcılar:</strong><br>1. Ali Yılmaz<br>2. Fatma Demir</div>
+    <div style="margin-top:8px"><strong>Yedek:</strong> [Varsa]</div>
+    <div style="margin-top:12px;display:flex;gap:20px">
+      <div style="text-align:center">_______<br><span style="font-size:10px">Üye 1</span></div>
+      <div style="text-align:center">_______<br><span style="font-size:10px">Üye 2</span></div>
+      <div style="text-align:center">_______<br><span style="font-size:10px">Üye 3</span></div>
+    </div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px">
+    <button style="flex:1;padding:9px;background:#1e293b;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">⬇️ PDF İndir &amp; İmzala</button>
+    <button style="padding:9px 14px;background:#f1f5f9;color:#64748b;border:none;border-radius:8px;font-size:12px;cursor:pointer">✏️ Düzenle</button>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ══ ORTAKLIK SÖZLEŞMESİ ═══════════════════════════════ -->
+<h2 id="ortaklik">🤝 Ortaklık Sözleşmesi — Otomatik Üretim</h2>
+
+<div class="box green">
+<div class="cols2">
+<div>
+  <p>Okul ve Kocaeli MEM arasındaki dönem ortaklık sözleşmesi. 2026 döneminde tüm okullar için standart şablondan otomatik üretilir. Okul sadece IBAN ve yetkili imzacı bilgisini girer.</p>
+  <h3>Otomatik Dolan Alanlar</h3>
+  <div class="fields">
+    <span class="field">okul_adı</span><span class="field">okul_OID</span><span class="field">okul_adresi</span>
+    <span class="field">müdür_adı</span><span class="field">hareketlilik_sayısı</span>
+    <span class="field">toplam_hibe_miktarı</span><span class="field">dönem_tarihleri</span>
+    <span class="field">MEM_bilgileri</span>
+  </div>
+  <h3>Okul Girer</h3>
+  <div class="fields">
+    <span class="field school">IBAN</span><span class="field school">banka_adı</span>
+    <span class="field school">yetkili_imzacı_adı</span><span class="field school">yetkili_unvanı</span>
+  </div>
+  <h3>İmza Akışı</h3>
+  <p>① Sistem üretir → ② Okul önizler, indirir, müdür imzalar → ③ İmzalı versiyonu yükler → ④ Koordinatör karşı imzalar → ⑤ Final PDF her iki tarafa da sistemden indirilebilir</p>
+</div>
+<div>
+  <h3>Koordinatör Paneli — Ortaklık Takibi</h3>
+  <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+    <div style="background:#f8fafc;padding:8px 12px;font-size:10px;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;display:grid;grid-template-columns:1fr 80px 80px">
+      <div>OKUL</div><div style="text-align:center">ÜRETILDI</div><div style="text-align:center">İMZALI</div>
+    </div>
+    <div style="padding:8px 12px;font-size:11px;border-bottom:1px solid #f1f5f9;display:grid;grid-template-columns:1fr 80px 80px;align-items:center">
+      <div>28 Haziran Ortaokulu</div>
+      <div style="text-align:center;color:#059669">✅</div>
+      <div style="text-align:center;color:#d97706">⏳</div>
+    </div>
+    <div style="padding:8px 12px;font-size:11px;border-bottom:1px solid #f1f5f9;display:grid;grid-template-columns:1fr 80px 80px;align-items:center">
+      <div>50.Yıl Cumhuriyet Ortaokulu</div>
+      <div style="text-align:center;color:#059669">✅</div>
+      <div style="text-align:center;color:#059669">✅</div>
+    </div>
+    <div style="padding:8px 12px;font-size:11px;display:grid;grid-template-columns:1fr 80px 80px;align-items:center">
+      <div>Kartepe Pirelli AL</div>
+      <div style="text-align:center;color:#dc2626">✗</div>
+      <div style="text-align:center;color:#dc2626">✗</div>
+    </div>
+  </div>
+  <button style="width:100%;margin-top:10px;padding:9px;background:#059669;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">📄 Tüm Okullara Toplu Üret (45 okul)</button>
+</div>
+</div>
+</div>
+
+
+<!-- ══ DRIVE → ERASDESK HARİTA ════════════════════════════ -->
+<h2 id="drive-map">🗺️ Drive Klasör Yapısı → ErasDesk Karşılığı</h2>
+
+<div class="box" style="border-top:4px solid #475569">
+<table class="dtbl">
+<tr><th>Drive Klasör / Yapı</th><th>ErasDesk Karşılığı</th><th>İyileştirme</th></tr>
+<tr>
+  <td><code>[Okul] / 4. Hareketlilikler / [Tip] / Öncesi / 3. Hibe Sözleşmeleri / 2. İmzalı Dokümanlar_PDF</code></td>
+  <td>Hareketlilik → Belgeler → Hibe Sözleşmesi (İmzalı)</td>
+  <td>Tek tıkla erişim, isimlendirme otomatik</td>
+</tr>
+<tr>
+  <td><code>… / 5. Taslak Program / 2. İmzalı Dokümanlar_PDF</code></td>
+  <td>Hareketlilik → Belgeler → Faaliyet Programı</td>
+  <td>AI taslak + ev sahibi imza akışı</td>
+</tr>
+<tr>
+  <td><code>… / 7. Öğrenme Sözleşmeleri / 2. İmzalı Dokümanlar_PDF</code></td>
+  <td>Hareketlilik → Belgeler → Öğrenme Anlaşması</td>
+  <td>AI öğrenme çıktısı önerisi, 3 taraf imza akışı</td>
+</tr>
+<tr>
+  <td><code>… / 10. Konaklama Dokümanları</code></td>
+  <td>Hareketlilik → Belgeler → Konaklama</td>
+  <td>Katılımcı bazlı, AI tarih doğrulama</td>
+</tr>
+<tr>
+  <td><code>… / 11. Ulaşım ve Seyahat Dokümanları</code></td>
+  <td>Hareketlilik → Belgeler → Ulaşım/Bilet</td>
+  <td>—</td>
+</tr>
+<tr>
+  <td><code>… / Sonrası / 3. Boarding Pass</code></td>
+  <td>Hareketlilik → Belgeler → Boarding Pass</td>
+  <td>AI OCR tarih/isim doğrulama</td>
+</tr>
+<tr>
+  <td><code>… / Sonrası / 2. Europass … İmzalı</code></td>
+  <td>Hareketlilik → Belgeler → Europass (İmzalı)</td>
+  <td>—</td>
+</tr>
+<tr>
+  <td><code>… / Sonrası / 5. Erasmus Katılımcı Anket Formları</code></td>
+  <td>Hareketlilik → Anket (Dahili Form)</td>
+  <td>Drive'dan bağımsız, sonuçlar otomatik istatistik</td>
+</tr>
+<tr>
+  <td>Google Sheets Kontrol Listesi (Öncesi / Sırası / Sonrası)</td>
+  <td>ErasDesk Checklist (engelleyici kurallarla)</td>
+  <td>Belge yüklemeden Evet seçilemiyor, anlık senkron</td>
+</tr>
+<tr>
+  <td>Katılımcı Seçim Tutanağı (Word taslak)</td>
+  <td>ErasDesk Form → Otomatik PDF</td>
+  <td>Kurul bilgileri sistemde, taslak manuel değil</td>
+</tr>
+<tr>
+  <td>Ortaklık Sözleşmesi (Word + Drive)</td>
+  <td>ErasDesk → Otomatik PDF, imza akışı</td>
+  <td>Toplu üretim (45 okul tek tıkla), takip paneli</td>
+</tr>
+<tr>
+  <td>Duolingo, OLS, Yabancı Dil Gelişim Planı</td>
+  <td>ErasDesk Dahili Form + link</td>
+  <td>Tamamlanma kontrolü checklistle bağlı</td>
+</tr>
+<tr>
+  <td>Sonuçların Kullanımı — Padlet bağlantısı</td>
+  <td>ErasDesk link alanı + kanıt yükleme</td>
+  <td>Padlet hala kullanılabilir, link kaydedilir</td>
+</tr>
+</table>
+</div>
+
+</div>
+</body>
+</html>

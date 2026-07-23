@@ -1,0 +1,2880 @@
+[
+  {
+    "name": "GÖLCÜK-GÖLCÜK GONCAGÜLLER ANAOKULU",
+    "ilce": "GÖLCÜK",
+    "drive_id": "1gdZnY2FLtx--dRwZrKqE0falS9bQf0c-",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "oncesi",
+        "evet": 17,
+        "hayir": 40,
+        "total": 57,
+        "pct": 30,
+        "sec": {
+          "oncesi": {
+            "e": 17,
+            "h": 22
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1rgMCtCkJnkWO7xJ11mWj2N6XipBUkyulm1wtpdTVRZo",
+        "mob_folder_id": "1clFJVWfjogZNwdlnLJul4-vjp32mlneY",
+        "modifiedTime": "2026-06-22T05:49:29.605Z",
+        "folders": {
+          "secim": "17UDxTHEb0q0eGLNspvw8Jb8gWbnTcKxR",
+          "oncesi": "1voKOsLmxeCENNgoaeLEf-UUz13YPH4y3",
+          "sonrasi": "1SzAxlPCvJYum_vm-gf7z4x9ZUUwtc3F4",
+          "olcme": "1DjfU5OBNcf1wPn1Or9cE1db0sSaOnxn7",
+          "tamam_beyani": "1Qwgv_R0cCfOmcDOInKLC0CysqpzqnTg0"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 18,
+        "hayir": 39,
+        "total": 57,
+        "pct": 32,
+        "sec": {
+          "oncesi": {
+            "e": 18,
+            "h": 21
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1wYd4m7QUcKPaa_R32eGqHGRd8ymWqgudHUaBLqR4NxQ",
+        "mob_folder_id": "18-OxL4PqgcyD1NYht-d7iOdmSpmYXNAD",
+        "modifiedTime": "2026-06-18T06:15:57.802Z",
+        "folders": {
+          "secim": "1QxNuTjOJzGmXgmrm4YnViCCCkG2uh3-7",
+          "oncesi": "1z3n9t_o_1Wxt_SIhpBkEtmRdLLE-q9S4",
+          "sonrasi": "1syP6cDwdDyBHKl9xWTOSldFxYByAqdXR",
+          "olcme": "1XwDgH5XoUFRXf8Mr6GcEEwHvxI077u1G",
+          "tamam_beyani": "1tDeb2rq9y2a1cxzURPmdogJ1HPurZwqA"
+        },
+        "gidis_tarihi": "2026-09-21",
+        "donus_tarihi": "2026-09-25",
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "ÇAYIROVA-ALPARSLAN İLKOKULU",
+    "ilce": "ÇAYIROVA",
+    "drive_id": "1rkKnHIahk3GFO7Gt9I_AxJdKqROMXNcW",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "sonrasi",
+        "evet": 51,
+        "hayir": 6,
+        "total": 57,
+        "pct": 89,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 9,
+            "h": 5
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1JSQbv-qk-678qxEDoEwklANqXtmR139g-e9KvrQfFgU",
+        "mob_folder_id": "1nFNjW8t_RhNrmLHXqX3S1GBGIFOlQGJc",
+        "modifiedTime": "2026-06-09T10:13:31.090Z",
+        "folders": {
+          "secim": "1veKxJtoQsPv2SVMeTbiKixdCxOE-TjrE",
+          "oncesi": "1EPeUoBjaa51VF6PzFPZ3qoSz7j3nN-sy",
+          "sonrasi": "1_ojUTLDsXVxtj_1-SbKC2YvlfXbJ2JB5",
+          "olcme": "1BPeLwZJKSovhCPYtFpii479pMBfLJ5fy",
+          "tamam_beyani": "1pWgUyyNEyJKD57bH3t4iA68l1bsnW28N"
+        },
+        "gidis_tarihi": "2026-05-04",
+        "donus_tarihi": "2026-05-08",
+        "hibe_teslim": true
+      }
+    ]
+  },
+  {
+    "name": "GÖLCÜK-İHSANİYE YAZLIK ICS-OPEL ULUSLARARASI DOSTLUK ORTAOKULU",
+    "ilce": "GÖLCÜK",
+    "drive_id": "194rqBfbx2wrELHCyEmiFp7nw42eTZmtw",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "sonrasi",
+        "evet": 45,
+        "hayir": 12,
+        "total": 57,
+        "pct": 79,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 3,
+            "h": 11
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1EMeCByGdXJaW67OdzWOoAXpTJ6CcO4gI_7rynsmVG_8",
+        "mob_folder_id": "1lvHI_0bdpwuUGb6JQBK5IEC1Sw2GVcni",
+        "modifiedTime": "2026-06-21T10:44:32.723Z",
+        "folders": {
+          "secim": "1720eU80sfcCszlGc4tcyaWuhGEEOPoN6",
+          "oncesi": "1JUu9qYTSDUHlDgGf5GibdTRvLb-EsUB3",
+          "sonrasi": "10RW3T2MhmmfmzcxbNNzuIv4OTTB4qgdJ",
+          "olcme": "1RaHAdWF0XixusGrSkLAPybxwBpGPQaYe",
+          "tamam_beyani": "1LNCxFJNKqtvuSJYPdLJ4zpbHLOqXlhkZ"
+        },
+        "gidis_tarihi": "2026-05-18",
+        "donus_tarihi": "2026-05-22",
+        "hibe_teslim": true
+      }
+    ]
+  },
+  {
+    "name": "KÖRFEZ-ÖZEL KÖRFEZ UĞUR ANADOLU LİSESİ",
+    "ilce": "KÖRFEZ",
+    "drive_id": "1BNtPL8H0331G-aaz5Yil-sqBvjNfAf94",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "Kısa dönemli bireysel öğrenci hareketliliği",
+        "durum": "oncesi",
+        "evet": 15,
+        "hayir": 42,
+        "total": 57,
+        "pct": 26,
+        "sec": {
+          "oncesi": {
+            "e": 15,
+            "h": 24
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı yapıldı ve Padlet'e eklendi",
+        "sheet_id": "1JATe-rF-giBckB-25LldkO3jDW0oG8K2QcP60JdFZXo",
+        "mob_folder_id": "1dhHtpNeLOTxd-jW30uIddijr7Z8QuOfu",
+        "modifiedTime": "2026-03-12T12:08:24.397Z",
+        "folders": {
+          "secim": "1Sg_dZ2nvC7jyqe0d3pkpgyEcXRbZq8jh",
+          "oncesi": "1nrYRyS9LSiVcXi_XkJsg7KWzh1xZPAvQ",
+          "sonrasi": "1BUWQC6U1GyPEMWcZb_Eiy_YTD1sRAlpQ",
+          "olcme": "1BCSoeXyq4koxb-efZkeD9EcnEztLHd4K",
+          "tamam_beyani": "14qZcHY1QQuQGdXa_u_IagGGJ8VdXHIvJ"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Uzun dönemli bireysel öğrenci hareketliliği",
+        "durum": "secim",
+        "evet": 9,
+        "hayir": 48,
+        "total": 57,
+        "pct": 16,
+        "sec": {
+          "oncesi": {
+            "e": 9,
+            "h": 30
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1b2WYzdVjBDpPqNE3UClMWlIK_c1wVPiB8GazKudHokM",
+        "mob_folder_id": "11tic549BsK1b_Fsbo_ZRQ21TcphHgArH",
+        "modifiedTime": "2026-03-12T12:08:55.909Z",
+        "folders": {
+          "secim": "1yuuvVhkxa1hK3J43UvNyVt5EnnMmcwnn",
+          "oncesi": "1ezZyHbYahzQsX75ci0c0_BWPefwlZ9mo",
+          "sonrasi": "1luU4XSGnrAUxbc-hAyfNogs3iAx99Wx_",
+          "olcme": "1XraA1BNZfevdtykuHc5OVLLs-YLipDjJ",
+          "tamam_beyani": "1Pm9tOMUS6QaZkYcXOwdQ5z16t5sh6Ss_"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğrenci gruplarının hareketliliği",
+        "durum": "sonrasi",
+        "evet": 54,
+        "hayir": 3,
+        "total": 57,
+        "pct": 95,
+        "sec": {
+          "oncesi": {
+            "e": 37,
+            "h": 2
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 13,
+            "h": 1
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1tZoO0lVkWb7MYM53SUf_WsqqiTih4Fsb0xAOj0LklnI",
+        "mob_folder_id": "1UDly8eAI-vM3w-3OndYBt_721bejRJI7",
+        "modifiedTime": "2026-06-17T13:08:09.080Z",
+        "folders": {
+          "secim": "1bn5ntHP1mmzC_WFzIiaAPXDjvrEExHoI",
+          "oncesi": "1AxEYqZhzQQuTAxN25C8JFMppDA2wvcBr",
+          "sonrasi": "1lXAFVtZbBLKyBPH6idbx6IfTM6NFTyYn",
+          "olcme": "1TYRFZyEJRxIzjYiNEt46Fgb9T9ce9K04",
+          "tamam_beyani": "1VxtMignKYfwiu679I0p1oox17ng7beXJ"
+        },
+        "gidis_tarihi": "2026-05-10",
+        "donus_tarihi": "2026-05-16",
+        "hibe_teslim": true
+      }
+    ]
+  },
+  {
+    "name": "BAŞİSKELE-ÖZEL BAŞİSKELE UĞUR İLKOKULU",
+    "ilce": "BAŞİSKELE",
+    "drive_id": "1T8ODYQcH52D83d3VztXf49b2mUxehaM1",
+    "durum": "secim",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "secim",
+        "evet": 4,
+        "hayir": 53,
+        "total": 57,
+        "pct": 7,
+        "sec": {
+          "oncesi": {
+            "e": 4,
+            "h": 35
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Yürütme Kurulu oluşturuldu",
+        "sheet_id": "1IIzkI0W4u3cwx5FQgV9atNmyakW4qt2ZOb6nsIzghgQ",
+        "mob_folder_id": "1SQFlZcm905pZ58Cftp0TjozxXLR79N1F",
+        "modifiedTime": "2026-02-26T12:16:25.184Z",
+        "folders": {
+          "secim": "1va54iYRL3ALAnucO-HX5HX2eaicrPdVH",
+          "oncesi": "1o5x8tYCh5mRXVt_0Luwh0qI96tHmONOP",
+          "sonrasi": "1YnX0Qbco9YQiDGdffiWecUt5WPszfszi",
+          "olcme": "1x2h-kNh2iICbQQiraJTJHhkv28Zb6n9M",
+          "tamam_beyani": "1CENE7oScLCwOI0DmCUDzv0IkWZcbtBs3"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "secim",
+        "evet": 4,
+        "hayir": 53,
+        "total": 57,
+        "pct": 7,
+        "sec": {
+          "oncesi": {
+            "e": 4,
+            "h": 35
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Yürütme Kurulu oluşturuldu",
+        "sheet_id": "1xU_xHXLAVMndz9RhHXHwigwQ7WhhxLFzmy5ucK304FE",
+        "mob_folder_id": "1CdZXWGpZkoSlfpDfQ2TrAbHxOTuKq5zB",
+        "modifiedTime": "2026-02-26T12:16:45.853Z",
+        "folders": {
+          "secim": "1-KGmdJLRmCtLlaZb2OfVozrSche4k3YE",
+          "oncesi": "1UgJiybGQ453odchehy2kHbeYX5UPAvcd",
+          "sonrasi": "1m9kmAzPZQaki1atT1KdyihW_RPHdm9Ky",
+          "olcme": "1HueMYnDYBGf6av3GHJnteaiUkjcvWRS8",
+          "tamam_beyani": "1GSh4j50GU9ue7fJldY6Ef9ptZB5r4ooD"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "İZMİT-AKMEŞE ORTAOKULU",
+    "ilce": "İZMİT",
+    "drive_id": "1lKXwvhhWKf6Lg-oLnhcnJHWaiO4kQt_t",
+    "durum": "surasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 15,
+        "hayir": 42,
+        "total": 57,
+        "pct": 26,
+        "sec": {
+          "oncesi": {
+            "e": 15,
+            "h": 24
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı",
+        "sheet_id": "1dqQ04e3m5HuyKLLyllTFoXuBm7cCGRoyz3jiqkT9QGo",
+        "mob_folder_id": "18Py7-auR2tSP30WGe9ozhM8uHCvya1s4",
+        "modifiedTime": "2026-02-26T12:38:24.517Z",
+        "folders": {
+          "secim": "1XBKHX5UyakgOQZqAoibSsVPKbZ024zam",
+          "oncesi": "1Zpqw8jXtY7R7yuzMrYVW9b78IcV8AJ3e",
+          "sonrasi": "1SHCZwefDk1Yr42ZhSTKYh8L9v8mDtF69",
+          "olcme": "1C_5KAG6LoC-mBmfwa-HG_OrITXdtDqAv",
+          "tamam_beyani": "1B5Po6yU1iNUgh9h_0kGEQ0gv69g1J-2G"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Kurs",
+        "durum": "surasi",
+        "evet": 39,
+        "hayir": 18,
+        "total": 57,
+        "pct": 68,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 1,
+            "h": 3
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Yabancı Dil hazırlığı tamamlandı",
+        "sheet_id": "1TmiUCMI6IawJ2r2oeX1gWTI9Q32Bww0KUehzJfQZABc",
+        "mob_folder_id": "1TYa4DudPIW2wFVHjLgSnQ13v6IOZC0yU",
+        "modifiedTime": "2026-06-18T14:15:30.796Z",
+        "folders": {
+          "secim": "1nzK1Bb5DFFez33SfmD0iblEO2a2mES3R",
+          "oncesi": "1lN4z1D-HNB6sjkCwxIiKGhW2jZjT2A3j",
+          "sonrasi": "1s40Xjy0BaV9FUjRxChUIvyszezDCim0c",
+          "olcme": "1zNbqSoiOvzxPQHDcxJnonuxSKKF-h9v_",
+          "tamam_beyani": "1IG3nPeyfL_2zZ6thoSWIG1jNxXKmonKG"
+        },
+        "gidis_tarihi": "2026-07-05",
+        "donus_tarihi": "2026-07-11",
+        "hibe_teslim": true
+      }
+    ]
+  },
+  {
+    "name": "GEBZE-GEBZE 23 NİSAN BİLİM VE SANAT MERKEZİ",
+    "ilce": "GEBZE",
+    "drive_id": "1rsiVZny2Cet-f-XLGpQRaTOG4EO5oPjX",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "sonrasi",
+        "evet": 55,
+        "hayir": 2,
+        "total": 57,
+        "pct": 96,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 13,
+            "h": 1
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi (YAPILANDIRILMIŞ KURS HAREKETLİLİKLERİ İÇİN)",
+        "sheet_id": "1rd_BXUAixl9sj6e6G8WPR1--FDIzLs6MXiNwqFdGevg",
+        "mob_folder_id": "1WeF-BbEUfR8yNMg5rfvEGaZ1uoTHFTXx",
+        "modifiedTime": "2026-06-17T13:44:39.277Z",
+        "folders": {
+          "secim": "1AKIZIqoI4hGMA6hR8eaJLHxuC1cl4FrB",
+          "oncesi": "1uufLPQVC3KSxfGtq9Pz51KK9w6v_Yxuv",
+          "sonrasi": "1ixwO--dVvfpZskP-9-ANPkMHPh0QZeHF",
+          "olcme": "13FELcbLdfNRAE7wT391u_CBnknnLFrul",
+          "tamam_beyani": "1sU68evDLGa1Ize3uO4-AZeQ44zE9akwD"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": true
+      }
+    ]
+  },
+  {
+    "name": "İZMİT-EMEK DAYANIŞMASI İLKOKULU",
+    "ilce": "İZMİT",
+    "drive_id": "1B_IJkVgOCcZkIMfg8Mpvnc2HxRWUO40s",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "Kurs",
+        "durum": "oncesi",
+        "evet": 18,
+        "hayir": 39,
+        "total": 57,
+        "pct": 32,
+        "sec": {
+          "oncesi": {
+            "e": 18,
+            "h": 21
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Öğrenme kazanımları ev sahibi kurumla birlikte belirlendi.",
+        "sheet_id": "1uX45SiT0KbT4NZ-idk3s7W6iMvdFZHDLIzvM6OVzYIU",
+        "mob_folder_id": "1Q1HbsJ1IP_QdkXwFSyj83K2mqVYwdczM",
+        "modifiedTime": "2026-06-08T08:09:01.157Z",
+        "folders": {
+          "secim": "1wvEZRHiWmFDHNVIeS0_avWbx9807LBct",
+          "oncesi": "1hgJwa3-l_7iU6fZyIYD-jcSbr338H-nT",
+          "sonrasi": "1zaMMCk_BED8dRlzHV4ruvR60Fsuy08px",
+          "olcme": "18bMY8RVgVWKkF4kHwn0GGIXZXrcdmzXm",
+          "tamam_beyani": "15dKGJ8yVwYuIOOFaHnY58i3_icBBeecr"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "GEBZE-SARKUYSAN ANADOLU LİSESİ",
+    "ilce": "GEBZE",
+    "drive_id": "1G9ir0s7noa4fMTVHpeXX0EgGlIhG5QeV",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 22,
+        "hayir": 35,
+        "total": 57,
+        "pct": 39,
+        "sec": {
+          "oncesi": {
+            "e": 22,
+            "h": 17
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı",
+        "sheet_id": "12OIa-28M_2j_82Ylzmh5SSgJPikK4f-5WFSARZmcPmc",
+        "mob_folder_id": "1HvF5BSSDE99sOpsa1X8FTDQQgaFWAatC",
+        "modifiedTime": "2026-06-09T11:19:46.875Z",
+        "folders": {
+          "secim": "1EEs38sYDzvHdWtvL2ScsgwtdDaxMBbdY",
+          "oncesi": "1fpjdKcKXn1SH0oi2IXZZj7W7iW9Mcyco",
+          "sonrasi": "1vqUzGtyeJcd_TM6_-9N0KHbhIst1-aYs",
+          "olcme": "1FnV-ciUSr3br1mfK_JTUgBzWs1pHuIGp",
+          "tamam_beyani": "16oVCbQNMpI50o_nRg0h9PlmtsarN2LsJ"
+        },
+        "gidis_tarihi": "2026-10-26",
+        "donus_tarihi": "2026-10-30",
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğrenci gruplarının hareketliliği",
+        "durum": "oncesi",
+        "evet": 22,
+        "hayir": 35,
+        "total": 57,
+        "pct": 39,
+        "sec": {
+          "oncesi": {
+            "e": 22,
+            "h": 17
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı",
+        "sheet_id": "1IR2DHYRSBCTUqjWll8S_Oyc7dZuZDpjEUGgeSBI82hU",
+        "mob_folder_id": "17rROrVFrtVbJsiQKkPO54jKibdqApNsD",
+        "modifiedTime": "2026-05-10T07:25:22.482Z",
+        "folders": {
+          "secim": "1JCFCYAXifpJeldm-bsTNKYhPeFD-9DUp",
+          "oncesi": "1B0mz6EkI68zbG7WwkouU5cgZ5FESA1D3",
+          "sonrasi": "1SVIuct9NNNLTtwGfXdA6UQfzT4xoQccb",
+          "olcme": "1cP-WRdJjSxyTnXrAb1u9ASKMmN-yBvvc",
+          "tamam_beyani": "1YgYi63Hj4hdX8Xi7Zx0eICuys9B2KW6g"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "DARICA-DARICA İMAM HATİP ORTAOKULU",
+    "ilce": "DARICA",
+    "drive_id": "1rHyLgjfrCGgUMPoTjhdfFi_RuQ-0tqu-",
+    "durum": "surasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "surasi",
+        "evet": 35,
+        "hayir": 22,
+        "total": 57,
+        "pct": 61,
+        "sec": {
+          "oncesi": {
+            "e": 32,
+            "h": 7
+          },
+          "sirasi": {
+            "e": 3,
+            "h": 1
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi (YAPILANDIRILMIŞ KURS HAREKETLİLİKLERİ İÇİN)",
+        "sheet_id": "1m4-isWQTwpsKG0k-q0PSzmB09IoxitjApWn_eOUUwDk",
+        "mob_folder_id": "14mHVa2-b6-p3tnVxKjed0JJXvK3B8TNf",
+        "modifiedTime": "2026-06-18T10:00:13.799Z",
+        "folders": {
+          "secim": "1lr2yL1fM92yjneBsFg1eEpKQtmSo2acN",
+          "oncesi": "1f3NW6fi77AQQTRXh6__0eAhKZ7h4sCfN",
+          "sonrasi": "1oRSw_102ApoNWoQ4l7qrFkr-_JbmlCdH",
+          "olcme": "1EeyVvY_wFJTWyPz42l7MIWGEqTKnek61",
+          "tamam_beyani": "1gmX4Z00BIQxXO6dGvto9vZ68zxqrpiJZ"
+        },
+        "gidis_tarihi": "2026-06-08",
+        "donus_tarihi": "2026-06-12",
+        "hibe_teslim": true
+      }
+    ]
+  },
+  {
+    "name": "İZMİT-İZMİT LİSESİ",
+    "ilce": "İZMİT",
+    "drive_id": "1fwhqNpe1f6F_VzemmvQVuMnXCvx0wx25",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 11,
+        "hayir": 46,
+        "total": 57,
+        "pct": 19,
+        "sec": {
+          "oncesi": {
+            "e": 11,
+            "h": 28
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1OO1BKxeIgl6Iy2CeXutME-54LEEjVjhBmuj-xwriBow",
+        "mob_folder_id": "1mB481ykepd2EMRxaym35BhzN6x97cBKS",
+        "modifiedTime": "2026-02-26T12:39:29.422Z",
+        "folders": {
+          "secim": "1xWzhN5UN7dVXIveLqXDsXi513OQEB6Xl",
+          "oncesi": "1axxyrr8B6tfFRx0nG1b44A8CHnptid0C",
+          "sonrasi": "1ng0n0XRD4qDDaoX5B_l-h4AjGF_hoVFm",
+          "olcme": "1KQ0Euv_W7RLbgFq1ypiPj1wakh-z6PzB",
+          "tamam_beyani": "1Y8cQpEU66PPxmmrdGYYyDRfmuP-NzyFt"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Uzun dönemli bireysel öğrenci hareketliliği",
+        "durum": "oncesi",
+        "evet": 11,
+        "hayir": 46,
+        "total": 57,
+        "pct": 19,
+        "sec": {
+          "oncesi": {
+            "e": 11,
+            "h": 28
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1tI2Zxvnpk02sQSY-Itq9NorUJUpl7S12lwnc9UIlKA0",
+        "mob_folder_id": "1A0kUqru5gnRJ5Blu-cRUbnz3wTrgRVNz",
+        "modifiedTime": "2026-02-26T12:39:40.450Z",
+        "folders": {
+          "secim": "1qL8MNCWg6V-3LGkYxKvOAe2xwkN8WXX9",
+          "oncesi": "1WJlfRyQueTZd6L78Ejc-KZ_2QdO4tXin",
+          "sonrasi": "18jlVZgszqHxTLJ4PPeqy9ntAHJ0vK5SM",
+          "olcme": "1qWRfwEwQgg5ebGt0t5oRy4xZ7DdD5Ngs",
+          "tamam_beyani": "1NWoY26ZUbtlcf4eAlpbMa5b-jnPzPkyG"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğrenci gruplarının hareketliliği",
+        "durum": "oncesi",
+        "evet": 11,
+        "hayir": 46,
+        "total": 57,
+        "pct": 19,
+        "sec": {
+          "oncesi": {
+            "e": 11,
+            "h": 28
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1BnK-e_tENN350QMH3lY-WbKOeUsBf_DjYYaYfctvlrU",
+        "mob_folder_id": "1qsSm_IN6UyWCy0p3E1wF2uy65gHSfVEd",
+        "modifiedTime": "2026-06-09T08:09:26.604Z",
+        "folders": {
+          "secim": "1s9TSJgMEWeyLWpFpADHqiML5odkbxksB",
+          "oncesi": "1-T_EaP31d1Z0itlh6245c7jAB1R8gOOH",
+          "sonrasi": "155w31SGPSEJphx9XPFWSzqxJbB5ACb-2",
+          "olcme": "1xLkvyNbis5xxU_bLinmKeHsY-p2-AydE",
+          "tamam_beyani": "13WaH7AENedAZbt3L5oR4M-_tyEijlwiG"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "KÖRFEZ-KÖRFEZ BİLİM VE SANAT MERKEZİ",
+    "ilce": "KÖRFEZ",
+    "drive_id": "1VqpTi1FVljtsaZN9O0a-O42tKLXMJ78_",
+    "durum": "secim",
+    "mobs": [
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "secim",
+        "evet": 10,
+        "hayir": 47,
+        "total": 57,
+        "pct": 18,
+        "sec": {
+          "oncesi": {
+            "e": 10,
+            "h": 29
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, TURNAPORTAL üzerinden Değerlendirme sürecini kılavuza uygun olarak t",
+        "sheet_id": "1UcZv_XK83boQlpzy82KxendqLFQgIqEpxv2Uw9WAeWA",
+        "mob_folder_id": "16jemJ-4TzOmRRUclWgsd1_f29bDJufSU",
+        "modifiedTime": "2026-02-26T12:47:38.822Z",
+        "folders": {
+          "secim": "1xQH_pdCM6aV0BDkMNaHaqZl0Wr9Y9Uwo",
+          "oncesi": "1lmoF8PP2q5H2-lo094PQw1wTGExB20HR",
+          "sonrasi": "15wnQhZD1paw34l58pq2JHnKfVP8v9wDz",
+          "olcme": "11tItuI7_X_uvzxHTEFUpZ904X0tzbYbC",
+          "tamam_beyani": "1B1uEv1UlQZCTXXIWkMUqBmoz-jtpdr0t"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğrenci gruplarının hareketliliği",
+        "durum": "secim",
+        "evet": 10,
+        "hayir": 47,
+        "total": 57,
+        "pct": 18,
+        "sec": {
+          "oncesi": {
+            "e": 10,
+            "h": 29
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, TURNAPORTAL üzerinden Değerlendirme sürecini kılavuza uygun olarak t",
+        "sheet_id": "1ceLYmhc8yGz1i5Acg3WjRX9_3Th1llolx2IVuzhzPZM",
+        "mob_folder_id": "1dZmcb5ygI9QZg8LeC39CVJlxi9ejNaEX",
+        "modifiedTime": "2026-02-26T12:47:52.250Z",
+        "folders": {
+          "secim": "1eQ8MTMsviMani5pvQDlgjl2XbJLMiAkB",
+          "oncesi": "18uNb0t-pnM7bCXcFeIfRVnGDR4hvFsqH",
+          "sonrasi": "1C5zIPA6V5qOjSxuf5_Uj7_93x3rcYk-O",
+          "olcme": "1xN8faxYavvczUikeARzZiG59wpS7bjC9",
+          "tamam_beyani": "12PGuX4y2TFPaPKMJ3983dpBFfw-fUMiH"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "KARAMÜRSEL-YALAKDERE ORTAOKULU",
+    "ilce": "KARAMÜRSEL",
+    "drive_id": "1YjErN4pf25LxaIeiHdoYiwUGJcGo9oD-",
+    "durum": "baslamamis",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "baslamamis",
+        "evet": 0,
+        "hayir": 57,
+        "total": 57,
+        "pct": 0,
+        "sec": {
+          "oncesi": {
+            "e": 0,
+            "h": 39
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Kocaeli MEM ile Okul/Kurum arasında Ortaklık Sözleşmesi imzalandı",
+        "sheet_id": "1hBlrXpHltiyhvJBnpT5jHLGCIOxKBUP-fcMP1eIjCe4",
+        "mob_folder_id": "1u_HATl030aofsEbPt8lSLDq0yKmman4X",
+        "modifiedTime": "2026-02-26T12:43:10.613Z",
+        "folders": {
+          "secim": "1GwvkoFOJt32XRujFdW4zQLfnixp6senb",
+          "oncesi": "1dX2-UtZ6970WirParPsDUEkv527sENZb",
+          "sonrasi": "1QwwmsM3i735FwE8fDfpyS6npgxsSKGau",
+          "olcme": "1mPQ0CX383Toc3c6xvfci_J2u3DkLSIIY",
+          "tamam_beyani": "1DLjaLoBDZH3L5I4XxgV_27CkZFAxDhTZ"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "GEBZE-YAVUZ SELİM ORTAOKULU",
+    "ilce": "GEBZE",
+    "drive_id": "1IWfhBJNxZjrI_hqn8eh-y-idy94X95vW",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "Kurs",
+        "durum": "oncesi",
+        "evet": 12,
+        "hayir": 45,
+        "total": 57,
+        "pct": 21,
+        "sec": {
+          "oncesi": {
+            "e": 12,
+            "h": 27
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1MK0uca8ZnruC4NzubWbvQ5L8gM_HnC5dxjDG2GFa-vQ",
+        "mob_folder_id": "1y3KLXfWOMWElOHOHUuaxo-HdcrrRh_FG",
+        "modifiedTime": "2026-06-09T13:34:43.378Z",
+        "folders": {
+          "secim": "139voMbXurmplgZ5m8cCoXUQhaid6OZlN",
+          "oncesi": "1_e0UJL9S1nek-c1aKX0EHtNVlS3v_Hcb",
+          "sonrasi": "1Be_Uwh99vOInrproizS9I4qMk1fuL80R",
+          "olcme": "1TN3RV9K0ekq_M43GlB10it3E80_2VH6-",
+          "tamam_beyani": "1pY4SdtgGIwFAIKhzEKEWa5uPnw-2RtY0"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "baslamamis",
+        "evet": 0,
+        "hayir": 57,
+        "total": 57,
+        "pct": 0,
+        "sec": {
+          "oncesi": {
+            "e": 0,
+            "h": 39
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Kocaeli MEM ile Okul/Kurum arasında Ortaklık Sözleşmesi imzalandı",
+        "sheet_id": "1Cg-fNchv1iXBjUc3iPpfpzeR0U8hbnKtBPSPXRzBQgA",
+        "mob_folder_id": "1S295DoREDMCmceE80rQDvtXRBpf6xst1",
+        "modifiedTime": "2026-02-26T12:35:47.876Z",
+        "folders": {
+          "secim": "1mgKMinsUdr-T9HUTff06HMkMNTfW-dJd",
+          "oncesi": "1NiDaq-1AMzRiJFBwoXA-rOApKLXpENXG",
+          "sonrasi": "1JHEEeem1AOWz_MBdFiGq1m9GfMoSEPYL",
+          "olcme": "1YbXrYd2MgEviL1iNPWN_2PwJN_888STV",
+          "tamam_beyani": "1TmgMbyeU7_cN6UXn3ongp3FiFzbCvYRs"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "KARTEPE-ÖZEL SINAV KOLEJİ ŞAHİN ORTAOKULU",
+    "ilce": "KARTEPE",
+    "drive_id": "1FgYnq1PY75fDZOPUoi6WcHrEFGzPjcRw",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 14,
+        "hayir": 43,
+        "total": 57,
+        "pct": 25,
+        "sec": {
+          "oncesi": {
+            "e": 14,
+            "h": 25
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1n-uW9lvcun1OlUpokjwIy40nS5AzWjau0dvePTnVHRQ",
+        "mob_folder_id": "1XzmHcWv2pZ8z93CLGZdswyFMuya_hCs-",
+        "modifiedTime": "2026-05-22T10:51:40.929Z",
+        "folders": {
+          "secim": "1bhqVC4uBFHn84PXUl964gWjSxxL0w8SH",
+          "oncesi": "1tA3cCvACd7nz0hC373vAojSn4c-i2cUm",
+          "sonrasi": "1RiHNhY1ZWa3E_IT0A6OI6VfRA1u-Yzvd",
+          "olcme": "19svjnvQ3b4NR_e6S5ZfNuc-gO6jyo-bA",
+          "tamam_beyani": "1oigbTXUfCJq6Ruw7XCqqisWLhoecQjZR"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "secim",
+        "evet": 9,
+        "hayir": 48,
+        "total": 57,
+        "pct": 16,
+        "sec": {
+          "oncesi": {
+            "e": 9,
+            "h": 30
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, Okul müdürü tarafından TURNAPORTAL'a eklendi",
+        "sheet_id": "1t3m5_k7onGwP5yTAvw620ONSk_3o1bvS6iiDgDhlQOI",
+        "mob_folder_id": "1WsRk_OtcwdvdqwNqxf97xA6hB3ljngO2",
+        "modifiedTime": "2026-02-26T12:46:51.276Z",
+        "folders": {
+          "secim": "1wrOU61p3uBkmgLSQ1xV40Dl5UUx7Kvta",
+          "oncesi": "1REpeeTrMfU3XhE-7IoUalE45u_vZAjPl",
+          "sonrasi": "1JLl75yu1If3vK4TEW45oEF-aR4CEek0e",
+          "olcme": "14CKl2auBo2zlcj3Ktx4hcmTl4mErg69D",
+          "tamam_beyani": "1lNuh21mLhZpyFvnU8zdOsNJZc0JfyYLe"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "BAŞİSKELE-KULLAR HACI MUSTAFA ÖZSOY ORTAOKULU",
+    "ilce": "BAŞİSKELE",
+    "drive_id": "1HD2crOkWYc0ecx242bMDAiLsDBqCIBZi",
+    "durum": "secim",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "secim",
+        "evet": 2,
+        "hayir": 55,
+        "total": 57,
+        "pct": 4,
+        "sec": {
+          "oncesi": {
+            "e": 2,
+            "h": 37
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Okul/Kurum'da Hareketlilik Dokümanlarının Saklanması için Fiziksel Dosya oluşturuldu",
+        "sheet_id": "1YRunkhXzrIl1wTb8KOkTCgPcUw7T6JH_wmXUjt5sQVQ",
+        "mob_folder_id": "17tvzLYvGItG-HUgufrnUanR8W1CJeKD0",
+        "modifiedTime": "2026-02-26T12:15:41.958Z",
+        "folders": {
+          "secim": "1KtaNYcWtJckXsJpz_ktYEA_mAut9WPgL",
+          "oncesi": "1w_RZjGCcbotTQRNT6SYNesuQSVuVrC3W",
+          "sonrasi": "1md-JrVN1_mVOMspdk5JpXoPMgvCsLebv",
+          "olcme": "1CwAwB5gopVxc5ZTyzFNnVSn_pilpS-R8",
+          "tamam_beyani": "1S6RKOsA9anEDMIka8eiJclAqNOXdQu0X"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "secim",
+        "evet": 2,
+        "hayir": 55,
+        "total": 57,
+        "pct": 4,
+        "sec": {
+          "oncesi": {
+            "e": 2,
+            "h": 37
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Fiziksel Dosya oluşturuldu",
+        "sheet_id": "1YIqPg6VovMDA6nhlq8Oi0bKdXC_z2YsBl80FkeudC0A",
+        "mob_folder_id": "1RYANPjjvH2dQbsauuJFRgbTE3xfZDjEE",
+        "modifiedTime": "2026-02-26T12:15:58.858Z",
+        "folders": {
+          "secim": "1W9ADglC2jAMXf-jna_9FMPOoGxjEwbvU",
+          "oncesi": "1mF8nwz0oENGrquLB8V7Z1P_ndpDEUEVL",
+          "sonrasi": "1NDDWiq5CmUyHGZ48IQ8bntoSIePCcF1m",
+          "olcme": "1OyGYFEvOnuo6gGNu9dMPOPKKgp3DMsmX",
+          "tamam_beyani": "1zziFtl3y1AE7GCibBxrgugbDxVaHUXCm"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "İZMİT-23 NİSAN İLKOKULU",
+    "ilce": "İZMİT",
+    "drive_id": "1v_STLm01HaoErnyE0jas-cNWB-EITcwd",
+    "durum": "secim",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "secim",
+        "evet": 9,
+        "hayir": 48,
+        "total": 57,
+        "pct": 16,
+        "sec": {
+          "oncesi": {
+            "e": 9,
+            "h": 30
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1ztK1YkXCqVncDE-6GLlHyIidom0D14uToNen4ofetw0",
+        "mob_folder_id": "1e9NVbU3Aufy8sfkyRi7Tf0dou6a5SFuj",
+        "modifiedTime": "2026-02-26T12:37:43.598Z",
+        "folders": {
+          "secim": "1wLAKpCLCn6YqZeay9Kw7hBdzxANPaTzc",
+          "oncesi": "1EJuBDAnDdX9ClGU_l7RgsdZZUr4yCFSL",
+          "sonrasi": "1B8eMASIkBji-C4xgDz8CGzcb3Gc2D-z1",
+          "olcme": "1XjEfv1wf69O7WxBgrZvxy2bXdv0E8LyF",
+          "tamam_beyani": "1ajq6t3sZmkR7q7zwOMOJFGJM0IruykE0"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "secim",
+        "evet": 9,
+        "hayir": 48,
+        "total": 57,
+        "pct": 16,
+        "sec": {
+          "oncesi": {
+            "e": 9,
+            "h": 30
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1iAE9na6Lb4EEysSR32xuGnmAc7QLfQgNCMiTokzYOkg",
+        "mob_folder_id": "1RKxK1MUx8cZapP6aZuEtDOeIdEIGcbaF",
+        "modifiedTime": "2026-02-26T12:37:52.713Z",
+        "folders": {
+          "secim": "1Xws3WBs0rJnP51k2_ALfBNDtT9MsOH1e",
+          "oncesi": "1lu8rqeQzoqTx6v4ukgO-YUHP8-p2yy-A",
+          "sonrasi": "1rPtp5QPU-cupkviGaxw48UsmaIR2tjYH",
+          "olcme": "1cL0jKT-rm07h2n7jGSj31tbDRVfbQ4fo",
+          "tamam_beyani": "1XZ_B4JKv-6KGdgoeLVYf8nxCP4oiCjwD"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "GÖLCÜK-GÖLCÜK TURGUT ÖZAL İLKOKULU",
+    "ilce": "GÖLCÜK",
+    "drive_id": "1Jdwq18kQRfARqLomZKROgAxdr2be0Dmz",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 14,
+        "hayir": 43,
+        "total": 57,
+        "pct": 25,
+        "sec": {
+          "oncesi": {
+            "e": 14,
+            "h": 25
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "sheet_id": "1mSugh11bm3qss4XuPbfh74mYel8X3YDDAKd1F87T3jc",
+        "mob_folder_id": "1PxVdioGIwvX-TAEFY0CMMhwi7EsPJ8a8",
+        "modifiedTime": "2026-05-13T18:53:42.779Z",
+        "folders": {
+          "secim": "1f2N9ALmk3tK8CdgSi7b0eLag1_2ZFIgH",
+          "oncesi": "1_fnjbuzzz4xlXiK9QFUwh7h3k804Ahj3",
+          "sonrasi": "18tQtBcRLzPfEm6FttzgYc6oyzW945r-S",
+          "olcme": "1TzCpsYg_UuVZvzqYvHC3S-E8WqI-gmwe",
+          "tamam_beyani": "1i0UGyPQyOkLj371IF5bcGrWLKOr1WTkp"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "GEBZE-KOÇ ORTAOKULU",
+    "ilce": "GEBZE",
+    "drive_id": "1ieztxeZAif7x7Io_3j4tsQWEJwaFrgdA",
+    "durum": "secim",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "secim",
+        "evet": 8,
+        "hayir": 49,
+        "total": 57,
+        "pct": 14,
+        "sec": {
+          "oncesi": {
+            "e": 8,
+            "h": 31
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1iifroET2fCvhvxnIXE7jGF6VJ9QcjPGgV2_7NL0n8Hs",
+        "mob_folder_id": "11_kxl5LG1_pu3pdy3gvCIyPoeREwu2iY",
+        "modifiedTime": "2026-02-26T12:32:45.096Z",
+        "folders": {
+          "secim": "10yRmdchJzNSvxlPv65tysJ1q4S01dJEN",
+          "oncesi": "1-iH3UPaghAOex7egI1ndQdYoLUwuo2x5",
+          "sonrasi": "1QNaQFiWyBUSDjSWgc27LkKtPZVMg8EF-",
+          "olcme": "1WtjCqnKrZ4zRGotxrOdM5IoxRCXg-prD",
+          "tamam_beyani": "1yDOdjoFA_Sin7PtYf3XAFqBzYhHgB92j"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      },
+      {
+        "tur": "Öğretme görevlendirme",
+        "durum": "secim",
+        "evet": 8,
+        "hayir": 49,
+        "total": 57,
+        "pct": 14,
+        "sec": {
+          "oncesi": {
+            "e": 8,
+            "h": 31
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı",
+        "sheet_id": "1UH2tpPIj3mWTG6OexoPqH6Zx-ZkRHx13rqCPSkd5bLs",
+        "mob_folder_id": "1xT55f2xblaXXwMOmc3b7wPzZMmtzY6uk",
+        "modifiedTime": "2026-02-26T12:33:01.604Z",
+        "folders": {
+          "secim": "1Cbd5nWsBV67qPdd9NBpo3ArgLn_Y1qH7",
+          "oncesi": "1EUBh2HORBmHinHrL9IYZSdZma1YtlmXk",
+          "sonrasi": "1VtfIxYOyGyQRx2ryYA62fhx9sziQOVg9",
+          "olcme": "1TgtCmYlMubAXv3yD5fEMIVs4Yk5JGF6i",
+          "tamam_beyani": "1chzaqrvKfk7VjcHGxwvg3frCjpoC3Op0"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "KARTEPE-ALİ GÜNERİ İLKOKULU",
+    "ilce": "KARTEPE",
+    "drive_id": "12FYkXkHRJeZqHj73F6iazzfpPfiECue_",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı Öğrenme",
+        "durum": "oncesi",
+        "evet": 15,
+        "hayir": 42,
+        "total": 57,
+        "pct": 26,
+        "sec": {
+          "oncesi": {
+            "e": 15,
+            "h": 24
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı",
+        "sheet_id": "1nc9I98FD9K5wUAQYASIcEnqqAFXKGXCmhVMKBjyQpYs",
+        "mob_folder_id": "1u9RpakQ_p8oWkfJxiwtQ3USKVtldM0zm",
+        "modifiedTime": "2026-03-11T05:49:18.910Z",
+        "folders": {
+          "secim": "1snosFmfBxQ59T0AudFYRxKGKl4QNdze8",
+          "oncesi": "1NCVMRkysRYy_kAcJxGyOsvED-3O_v2H3",
+          "sonrasi": "1Sv1E1ANTWHBoki5bZxickICYg45np8jx",
+          "olcme": "10Kjwj9EQXABt6870RWKNkvGQADR03Dd1",
+          "tamam_beyani": "14tDYeX68nf3RDAyBXFONim_g9EwyJXux"
+        },
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false
+      }
+    ]
+  },
+  {
+    "name": "EŞME ORTAOKULU",
+    "ilce": "KARTEPE",
+    "drive_id": "1dOZbJBJcD4EvxOvHkIQa31CKGsxUNvUL",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "type": "İşbaşı Öğrenme",
+        "sheet_id": "17M73k1NAorLG_lRzRSI7GI-YG0fY9LAvUKgm8CtONsw",
+        "oncesi": {
+          "e": 24,
+          "h": 15
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 13
+        },
+        "total": 57,
+        "evet": 24,
+        "hayir": 33,
+        "pct": 42,
+        "durum": "oncesi",
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi (YAPILANDIRILMIŞ KURS HAREKETLİLİKLERİ İÇİN)",
+        "gidis_tarihi": "2026-06-06",
+        "donus_tarihi": "2026-06-13",
+        "hibe_teslim": true,
+        "sec": {
+          "oncesi": {
+            "e": 24,
+            "h": 15
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "ÖZEL SINAV KOLEJİ ŞAHİN FEN LİSESİ",
+    "ilce": "KARTEPE",
+    "drive_id": "1zvkjifVyEy79ehqVb3S34dnNzBGt_Yei",
+    "durum": "secim",
+    "mobs": [
+      {
+        "type": "İşbaşı Öğrenme",
+        "sheet_id": "1W3cmc0Vmz6rpH9hwV1geBFHE0ufQOmUWuB6bli6t908",
+        "oncesi": {
+          "e": 8,
+          "h": 31
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "total": 57,
+        "evet": 8,
+        "hayir": 49,
+        "pct": 14,
+        "durum": "secim",
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, Hareketlilik Bilgileri Tablosu'nun ilgili kısmına girildi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "sec": {
+          "oncesi": {
+            "e": 8,
+            "h": 31
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        }
+      },
+      {
+        "type": "Öğrenci gruplarının hareketliliği",
+        "sheet_id": "13eGZsnX1dsWeLTVMZWEMIKPGsiu5XXYnKpb38mM-5qk",
+        "oncesi": {
+          "e": 8,
+          "h": 31
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "total": 57,
+        "evet": 8,
+        "hayir": 49,
+        "pct": 14,
+        "durum": "secim",
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, Hareketlilik Bilgileri Tablosu'nun ilgili kısmına girildi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "sec": {
+          "oncesi": {
+            "e": 8,
+            "h": 31
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "KOCAKAYMAZ YUNUS EMRE İLKOKULU",
+    "ilce": "KANDIRA",
+    "drive_id": "1UX5v-qSnRNsmyWIhRbQZgdUA53SHp6s9",
+    "durum": "surasi",
+    "mobs": [
+      {
+        "type": "Kurs",
+        "sheet_id": "1PkBD5ySAKFu2INM8vt3eLrUj0Py0_oUZ7iMlAkPZX_E",
+        "oncesi": {
+          "e": 38,
+          "h": 1
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "total": 57,
+        "evet": 42,
+        "hayir": 15,
+        "pct": 74,
+        "durum": "surasi",
+        "firstHayir": "Hareketlililik Bilgileri tablosu eksiksiz dolduruldu.",
+        "gidis_tarihi": "2026-03-14",
+        "donus_tarihi": "2026-03-21",
+        "hibe_teslim": true,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        }
+      },
+      {
+        "type": "İşbaşı Öğrenme",
+        "sheet_id": "1lo3YKTYE7N9QzZ3rS-ZzJfFxKSkyJ_odsfBps3vwNdI",
+        "oncesi": {
+          "e": 20,
+          "h": 19
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "total": 57,
+        "evet": 20,
+        "hayir": 37,
+        "pct": 35,
+        "durum": "oncesi",
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "gidis_tarihi": "2026-06-06",
+        "donus_tarihi": "2026-06-13",
+        "hibe_teslim": true,
+        "sec": {
+          "oncesi": {
+            "e": 20,
+            "h": 19
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "KOCAKAYMAZ YUNUS EMRE ORTAOKULU",
+    "ilce": "KANDIRA",
+    "drive_id": "1XK43crZG9iSeKZuk2FiemrX7v7DJySfM",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "type": "İşbaşı Öğrenme",
+        "sheet_id": "1Nt-9OXFe5c0wiR6CKLcXL5U4oPXp5YqdMsiJLurj--Q",
+        "oncesi": {
+          "e": 23,
+          "h": 16
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 13
+        },
+        "total": 57,
+        "evet": 23,
+        "hayir": 34,
+        "pct": 40,
+        "durum": "oncesi",
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi",
+        "gidis_tarihi": "2026-06-06",
+        "donus_tarihi": "2026-06-13",
+        "hibe_teslim": true,
+        "sec": {
+          "oncesi": {
+            "e": 23,
+            "h": 16
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "KARAMÜRSEL-GÜZELKIYI ORTAOKULU",
+    "ilce": "KARAMÜRSEL",
+    "drive_id": "1mYtwt7I7YzqaThPnnPJmK2z5KncBYA3P",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1ZHHO3I3SnPq6g_ZkCRzmRtfkrqgfCEe3KCA-D5O0P74",
+        "oncesi": {
+          "e": 16,
+          "h": 23
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 15,
+        "hayir": 42,
+        "total": 57,
+        "pct": 26,
+        "sec": {
+          "oncesi": {
+            "e": 15,
+            "h": 24
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı"
+      }
+    ]
+  },
+  {
+    "name": "ÇAYIROVA-ŞEHİT DAVUT ALİ KARADAĞ MESLEKİ VE TEKNİK ANADOLU LİSESİ",
+    "ilce": "ÇAYIROVA",
+    "drive_id": "1ffTpomTh1GRfSon21uMXDOPZBOmhyZ0x",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1wmTVr7QX4faaoE1gEA9a8V8ENbQ_oZ608aAKy-rqczc",
+        "oncesi": {
+          "e": 11,
+          "h": 28
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 11,
+        "hayir": 46,
+        "total": 57,
+        "pct": 19,
+        "sec": {
+          "oncesi": {
+            "e": 11,
+            "h": 28
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, Okul müdürü tarafından TURNAPORTAL'a eklendi"
+      }
+    ]
+  },
+  {
+    "name": "KÖRFEZ-MİMAR SİNAN İLKOKULU",
+    "ilce": "KÖRFEZ",
+    "drive_id": "1FU8WPxCt7BgZjHCCx8UPXkc4tE2vyXT4",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1P7yRrEaHmSSK1a9tFlUmSGsSBV-kCNCCx8nTBZ1x6uQ",
+        "oncesi": {
+          "e": 12,
+          "h": 27
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 12,
+        "hayir": 45,
+        "total": 57,
+        "pct": 21,
+        "sec": {
+          "oncesi": {
+            "e": 12,
+            "h": 27
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Asil ve yedek katılımcı listeleri ilgili matbu dokümanlar kullanılarak ilan edildi"
+      }
+    ]
+  },
+  {
+    "name": "DERİNCE-MELİKŞAH ANADOLU LİSESİ",
+    "ilce": "DERİNCE",
+    "drive_id": "1nivc6dlyFtAzvqGxdWzNzP6aTL2rkZ05",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1DJCpZRtCPuhnT3L7QV8ufpnQFUukcCIzpDXYJWBjClg",
+        "oncesi": {
+          "e": 38,
+          "h": 1
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 12,
+          "h": 2
+        },
+        "durum": "sonrasi",
+        "gidis_tarihi": "2026-05-02",
+        "donus_tarihi": "2026-05-08",
+        "hibe_teslim": true,
+        "evet": 54,
+        "hayir": 3,
+        "total": 57,
+        "pct": 95,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 12,
+            "h": 2
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi (YAPILANDIRILMIŞ KURS HAREKETLİLİKLERİ İÇİN)"
+      },
+      {
+        "tur": "KısaSüreli",
+        "sheet_id": "1MSYn_SE5JXPKusbHWr330dSyg9Db1_B-dTaQU3W-YMI",
+        "oncesi": {
+          "e": 11,
+          "h": 28
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 12,
+        "hayir": 45,
+        "total": 57,
+        "pct": 21,
+        "sec": {
+          "oncesi": {
+            "e": 12,
+            "h": 27
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı"
+      },
+      {
+        "tur": "UzunSüreli",
+        "sheet_id": "1rJ5Yp-mUdjgu_LOAT5AFw8clarj_ojnKgs1of6QsB14",
+        "oncesi": {
+          "e": 8,
+          "h": 31
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "secim",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 8,
+        "hayir": 49,
+        "total": 57,
+        "pct": 14,
+        "sec": {
+          "oncesi": {
+            "e": 8,
+            "h": 31
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Portalı üyeliği tamamlandı"
+      },
+      {
+        "tur": "GrupHar",
+        "sheet_id": "1LHQFktChXai1011ETlIgoN9VUn9MP7nlyrC6tqICuOE",
+        "oncesi": {
+          "e": 12,
+          "h": 27
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 12,
+        "hayir": 45,
+        "total": 57,
+        "pct": 21,
+        "sec": {
+          "oncesi": {
+            "e": 12,
+            "h": 27
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi"
+      }
+    ]
+  },
+  {
+    "name": "KÖRFEZ-MİLANGAZ HACER DEMİRÖREN MESLEKİ VE TEKNİK ANADOLU LİSESİ",
+    "ilce": "KÖRFEZ",
+    "drive_id": "1OLozCqBvjg91HDh-Lrl4SNSwz_iVgXt1",
+    "durum": "tamam",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1fXZGb9PyARsakB7QZLbKyX0VXA9AZ1FyXU9L_HgIcz4",
+        "oncesi": {
+          "e": 39,
+          "h": 0
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 13,
+          "h": 1
+        },
+        "durum": "tamam",
+        "gidis_tarihi": "2026-04-27",
+        "donus_tarihi": "2026-04-29",
+        "hibe_teslim": true,
+        "evet": 56,
+        "hayir": 0,
+        "total": 56,
+        "pct": 100,
+        "sec": {
+          "oncesi": {
+            "e": 39,
+            "h": 0
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 13,
+            "h": 0
+          }
+        },
+        "firstHayir": ""
+      },
+      {
+        "tur": "ÖğretmeGörev",
+        "sheet_id": "1iOxLAnGc9APqwJl8wij9V9gxYx5LgGZXLOg8EFHoXhU",
+        "oncesi": {
+          "e": 18,
+          "h": 21
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 18,
+        "hayir": 39,
+        "total": 57,
+        "pct": 32,
+        "sec": {
+          "oncesi": {
+            "e": 18,
+            "h": 21
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "İlgili katılımcılar için Bireysel Yabancı Dil Gelişim planı dolduruldu"
+      }
+    ]
+  },
+  {
+    "name": "KARTEPE-KUBİLAY ORTAOKULU",
+    "ilce": "KARTEPE",
+    "drive_id": "1wBSL0OqMd1W3t1OMZ9NWKVEa5cqr3grF",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1YZreHeSK4fk2ybMFwG4X1rHqyXzD8YsTE2BXErixquw",
+        "oncesi": {
+          "e": 26,
+          "h": 13
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": "2027-02-20",
+        "donus_tarihi": "2027-02-28",
+        "hibe_teslim": true,
+        "evet": 26,
+        "hayir": 31,
+        "total": 57,
+        "pct": 46,
+        "sec": {
+          "oncesi": {
+            "e": 26,
+            "h": 13
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi"
+      },
+      {
+        "tur": "ÖğretmeGörev",
+        "sheet_id": "1lncTl-1SHMeiYp0OInZEc5bGaLIXMG42-0iZLfhwg3k",
+        "oncesi": {
+          "e": 26,
+          "h": 13
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": "2026-11-28",
+        "donus_tarihi": "2026-12-06",
+        "hibe_teslim": true,
+        "evet": 26,
+        "hayir": 31,
+        "total": 57,
+        "pct": 46,
+        "sec": {
+          "oncesi": {
+            "e": 26,
+            "h": 13
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi"
+      }
+    ]
+  },
+  {
+    "name": "İZMİT-YUNUS EMRE KIZ ANADOLU İMAM HATİP LİSESİ",
+    "ilce": "İZMİT",
+    "drive_id": "1z-StIhP2C_iioXLbwOgib_ul0tsh5Rfq",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "ÖğrenciGrubu",
+        "sheet_id": "1dmxagdVhygQtyuFHK4K1gy_xVLHYbbQ7zMNtMn1pp0Q",
+        "oncesi": {
+          "e": 27,
+          "h": 12
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": "2026-09-20",
+        "donus_tarihi": "2026-09-26",
+        "hibe_teslim": true,
+        "evet": 29,
+        "hayir": 28,
+        "total": 57,
+        "pct": 51,
+        "sec": {
+          "oncesi": {
+            "e": 29,
+            "h": 10
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlililik Bilgileri tablosu eksiksiz dolduruldu."
+      }
+    ]
+  },
+  {
+    "name": "KARTEPE-KARATEPE ORTAOKULU",
+    "ilce": "KARTEPE",
+    "drive_id": "1Anj7RTOTmUFE0NMo_PQO3f7WdhrQxaxU",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1cR4IYCvGKhHUmL8Y6DJul5RRCpzsKRzVKEoOmx1TEoc",
+        "oncesi": {
+          "e": 16,
+          "h": 23
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 16,
+        "hayir": 41,
+        "total": 57,
+        "pct": 28,
+        "sec": {
+          "oncesi": {
+            "e": 16,
+            "h": 23
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı"
+      }
+    ]
+  },
+  {
+    "name": "GEBZE-İL GENEL MECLİSİ İLKOKULU",
+    "ilce": "GEBZE",
+    "drive_id": "10H8_xgXZb4iOHgYQC9h9YQptfWOjTw8h",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1cgc9E1HeVAQQezxK-HDu_SosKKX-N8kwDt1A0zFOL78",
+        "oncesi": {
+          "e": 15,
+          "h": 24
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 15,
+        "hayir": 42,
+        "total": 57,
+        "pct": 26,
+        "sec": {
+          "oncesi": {
+            "e": 15,
+            "h": 24
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberindeki sonuçların kullanımı bölümü incelendi, Sonuçların Kullanımı Planı"
+      }
+    ]
+  },
+  {
+    "name": "DARICA-ÖĞRETMEN FÜSUN ERDEMİR MESLEKİ VE TEKNİK ANADOLU LİSESİ",
+    "ilce": "DARICA",
+    "drive_id": "16NhoobUD-cWKQlX4J7r2I9YpzTDZT2sE",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "Kurs",
+        "sheet_id": "1cLZyaZgTEHevM4BkUdxvKPbVTvjHdfVm6UGI7UPEh8Q",
+        "oncesi": {
+          "e": 39,
+          "h": 0
+        },
+        "sirasi": {
+          "e": 1,
+          "h": 3
+        },
+        "sonrasi": {
+          "e": 1,
+          "h": 13
+        },
+        "durum": "sonrasi",
+        "gidis_tarihi": "2026-06-22",
+        "donus_tarihi": "2026-06-27",
+        "hibe_teslim": true,
+        "evet": 41,
+        "hayir": 16,
+        "total": 57,
+        "pct": 72,
+        "sec": {
+          "oncesi": {
+            "e": 39,
+            "h": 0
+          },
+          "sirasi": {
+            "e": 1,
+            "h": 3
+          },
+          "sonrasi": {
+            "e": 1,
+            "h": 13
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Blegesi için akış bitirme işlemi yapıldı"
+      },
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1kscqdN2My-HKj5Pyuj4eODGBorAayDzHqyjSbpayHUw",
+        "oncesi": {
+          "e": 39,
+          "h": 0
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 9,
+          "h": 5
+        },
+        "durum": "sonrasi",
+        "gidis_tarihi": "2026-05-16",
+        "donus_tarihi": "2026-05-21",
+        "hibe_teslim": true,
+        "evet": 52,
+        "hayir": 5,
+        "total": 57,
+        "pct": 91,
+        "sec": {
+          "oncesi": {
+            "e": 39,
+            "h": 0
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 9,
+            "h": 5
+          }
+        },
+        "firstHayir": "Kurs Faturası ilgili Drive Klasörüne yüklendi"
+      }
+    ]
+  },
+  {
+    "name": "DARICA-DARICA MEHMET AKİF ORTAOKULU",
+    "ilce": "DARICA",
+    "drive_id": "16GCNSkUV5weGQmN09wpYBfSkUKTnZlJ8",
+    "durum": "surasi",
+    "mobs": [
+      {
+        "tur": "Kurs",
+        "sheet_id": "1OXvUAj5_kEsfxbGznn7ser_lIttrgiVBRzlGhRwyP6I",
+        "oncesi": {
+          "e": 39,
+          "h": 0
+        },
+        "sirasi": {
+          "e": 1,
+          "h": 3
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "surasi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": true,
+        "evet": 40,
+        "hayir": 17,
+        "total": 57,
+        "pct": 70,
+        "sec": {
+          "oncesi": {
+            "e": 39,
+            "h": 0
+          },
+          "sirasi": {
+            "e": 1,
+            "h": 3
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Europass Hareketlilik Blegesi için akış bitirme işlemi yapıldı, çıktı alındı ve imzalatıldı"
+      },
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1xUeMI0B4oyn2Kj0yNtTZsDnGixAErxPrdkKLJ0ByDjg",
+        "oncesi": {
+          "e": 10,
+          "h": 29
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "secim",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 10,
+        "hayir": 47,
+        "total": 57,
+        "pct": 18,
+        "sec": {
+          "oncesi": {
+            "e": 10,
+            "h": 29
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, TURNAPORTAL üzerinden Değerlendirme sürecini kılavuza uygun olarak t"
+      }
+    ]
+  },
+  {
+    "name": "KÖRFEZ-KÖRFEZ ATATÜRK ANADOLU LİSESİ",
+    "ilce": "KÖRFEZ",
+    "drive_id": "1fPbB1x3qBfjAUO3R27tUqbZe0gXCGv8-",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "Kurs",
+        "sheet_id": "1g4WxdFMkFl18U_00jQtJtNUuqiTjTnUBEnekgEsFP20",
+        "oncesi": {
+          "e": 25,
+          "h": 14
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 25,
+        "hayir": 32,
+        "total": 57,
+        "pct": 44,
+        "sec": {
+          "oncesi": {
+            "e": 25,
+            "h": 14
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hibe sözleşmeleri imzalandı, AR-GE birimine elden teslim edildi"
+      }
+    ]
+  },
+  {
+    "name": "BAŞİSKELE-YUVACIK LEVENT KIRCA-OYA BAŞAR ORTAOKULU",
+    "ilce": "BAŞİSKELE",
+    "drive_id": "1a0AF7CfqSbAJfGkDv4C49TjryUyq_Cg8",
+    "durum": "tamam",
+    "mobs": [
+      {
+        "tur": "Kurs",
+        "sheet_id": "1WgT9FICj9PMPb30pZkLSoOSzdMPp1n_wRIRtKdCNUIc",
+        "oncesi": {
+          "e": 39,
+          "h": 0
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 14,
+          "h": 0
+        },
+        "durum": "tamam",
+        "gidis_tarihi": "2026-05-02",
+        "donus_tarihi": "2026-05-09",
+        "hibe_teslim": true,
+        "evet": 57,
+        "hayir": 0,
+        "total": 57,
+        "pct": 100,
+        "sec": {
+          "oncesi": {
+            "e": 39,
+            "h": 0
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 14,
+            "h": 0
+          }
+        },
+        "firstHayir": ""
+      },
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1UGxLsN58kALkNJqljB7dWGJUccWVcXS0xj53GxGb9HU",
+        "oncesi": {
+          "e": 38,
+          "h": 1
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 1,
+          "h": 13
+        },
+        "durum": "sonrasi",
+        "gidis_tarihi": "2026-06-07",
+        "donus_tarihi": "2026-06-12",
+        "hibe_teslim": true,
+        "evet": 50,
+        "hayir": 7,
+        "total": 57,
+        "pct": 88,
+        "sec": {
+          "oncesi": {
+            "e": 38,
+            "h": 1
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 8,
+            "h": 6
+          }
+        },
+        "firstHayir": "Kurs Proforma Faturası ilgili Drive klasörüne yüklendi (YAPILANDIRILMIŞ KURS HAREKETLİLİKLERİ İÇİN)"
+      }
+    ]
+  },
+  {
+    "name": "BAŞİSKELE-YUVACIK SERDAR İLKOKULU",
+    "ilce": "BAŞİSKELE",
+    "drive_id": "1pmyhte777H1zy7Siu-sc8a7s7qyOkY9z",
+    "durum": "sonrasi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1NMNU-CedxE3a9uhJg4HwIilx9lm4xNwmh_wIBYWQO9k",
+        "oncesi": {
+          "e": 39,
+          "h": 0
+        },
+        "sirasi": {
+          "e": 4,
+          "h": 0
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "sonrasi",
+        "gidis_tarihi": "2026-04-27",
+        "donus_tarihi": "2026-04-30",
+        "hibe_teslim": true,
+        "evet": 55,
+        "hayir": 2,
+        "total": 57,
+        "pct": 96,
+        "sec": {
+          "oncesi": {
+            "e": 39,
+            "h": 0
+          },
+          "sirasi": {
+            "e": 4,
+            "h": 0
+          },
+          "sonrasi": {
+            "e": 12,
+            "h": 2
+          }
+        },
+        "firstHayir": "Kurs Faturası ilgili Drive Klasörüne yüklendi (YAPILANDIRILMIŞ KURS HAREKETLİLİKLERİ İÇİN)"
+      },
+      {
+        "tur": "ÖğretmeGörev",
+        "sheet_id": "1CGTsQ8qQ68fkxXuLm_DdpEjQBNsTj1ZVjKXZM65aqKg",
+        "oncesi": {
+          "e": 10,
+          "h": 29
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "secim",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 10,
+        "hayir": 47,
+        "total": 57,
+        "pct": 18,
+        "sec": {
+          "oncesi": {
+            "e": 10,
+            "h": 29
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, TURNAPORTAL üzerinden Değerlendirme sürecini kılavuza uygun olarak t"
+      }
+    ]
+  },
+  {
+    "name": "BAŞİSKELE-MAHMUTPAŞA ORTAOKULU",
+    "ilce": "BAŞİSKELE",
+    "drive_id": "1r-SwVSW3eT-6Ayq8fBhErSd7ikkVncaW",
+    "durum": "secim",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1ywbCskNlbWYgaPRL6IxsY3PZMs4VAutBlcFaoLYxWYg",
+        "oncesi": {
+          "e": 10,
+          "h": 29
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "secim",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 10,
+        "hayir": 47,
+        "total": 57,
+        "pct": 18,
+        "sec": {
+          "oncesi": {
+            "e": 10,
+            "h": 29
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, TURNAPORTAL üzerinden Değerlendirme sürecini kılavuza uygun olarak t"
+      }
+    ]
+  },
+  {
+    "name": "GÖLCÜK-ULAŞLI NURİ BERMEK İLKOKULU",
+    "ilce": "GÖLCÜK",
+    "drive_id": "1O0kWnhrgTb1_gAyhdoP4Ja5Z03Yus8V7",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1Z5497i1XanLyNnzwSHyYZ4MGyblT1Aj-wClru73hHjM",
+        "oncesi": {
+          "e": 16,
+          "h": 23
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 16,
+        "hayir": 41,
+        "total": 57,
+        "pct": 28,
+        "sec": {
+          "oncesi": {
+            "e": 16,
+            "h": 23
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Hareketlilik Uygulama Rehberi'nde bulunan Öğrenme kazanımları nasıl belirlenir bölümü incelendi"
+      }
+    ]
+  },
+  {
+    "name": "DERİNCE-DERİNCE BİLİM VE SANAT MERKEZİ",
+    "ilce": "DERİNCE",
+    "drive_id": "1UIna2HGABvFqVGWOq7zzD1UPmlsCyXw8",
+    "durum": "oncesi",
+    "mobs": [
+      {
+        "tur": "İşbaşı",
+        "sheet_id": "1jbrNBFoC1rJUW8O4AhFukQ2vmSpOIqR9SqIVZkE1txA",
+        "oncesi": {
+          "e": 9,
+          "h": 30
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "secim",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 9,
+        "hayir": 48,
+        "total": 57,
+        "pct": 16,
+        "sec": {
+          "oncesi": {
+            "e": 9,
+            "h": 30
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Katılımcı Seçim Kurulu Üyeleri, Okul müdürü tarafından TURNAPORTAL'a eklendi"
+      },
+      {
+        "tur": "KısaSüreli",
+        "sheet_id": "18WOqDIY17se4lwp0-vGkPhZWi-Iqqa6gGpTKC9eU-yM",
+        "oncesi": {
+          "e": 11,
+          "h": 28
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 11,
+        "hayir": 46,
+        "total": 57,
+        "pct": 19,
+        "sec": {
+          "oncesi": {
+            "e": 11,
+            "h": 28
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Asil ve yedek katılımcı listeleri ilgili matbu dokümanlar kullanılarak ilan edildi"
+      },
+      {
+        "tur": "GrupHar",
+        "sheet_id": "1S2oMqMgsFeaJ95-IYcNItOaI8ddzZv-ZQEzSu7rtOzA",
+        "oncesi": {
+          "e": 12,
+          "h": 27
+        },
+        "sirasi": {
+          "e": 0,
+          "h": 4
+        },
+        "sonrasi": {
+          "e": 0,
+          "h": 14
+        },
+        "durum": "oncesi",
+        "gidis_tarihi": null,
+        "donus_tarihi": null,
+        "hibe_teslim": false,
+        "evet": 12,
+        "hayir": 45,
+        "total": 57,
+        "pct": 21,
+        "sec": {
+          "oncesi": {
+            "e": 12,
+            "h": 27
+          },
+          "sirasi": {
+            "e": 0,
+            "h": 4
+          },
+          "sonrasi": {
+            "e": 0,
+            "h": 14
+          }
+        },
+        "firstHayir": "Görev yeri belgeleri / Öğrenci Belgeleri ilgili Drive klasörüne yüklendi"
+      }
+    ]
+  }
+]
