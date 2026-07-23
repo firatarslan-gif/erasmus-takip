@@ -9799,7 +9799,7 @@ function renderTakip24() {
   // 2024 okullarını FLAT'tan çek
   var schools2024 = [];
   var seen = {};
-  (window.FLAT || []).forEach(function(r) {
+  (typeof FLAT !== "undefined" ? FLAT : []).forEach(function(r) {
     if (r.year !== '2024') return;
     var key = (r.send_org || '').trim();
     if (!key || seen[key]) return;
