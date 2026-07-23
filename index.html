@@ -9864,6 +9864,14 @@ function renderTakip24() {
       .then(function(r) { return r.json(); })
       .then(function(d) {
         _t24Data  = d.status || {};
+        // localStorage'dan merge et — GAS başarısız olsa bile yerel değişiklikler korunur
+        try {
+          var _lsS = JSON.parse(localStorage.getItem('t24_status') || '{}');
+          Object.keys(_lsS).forEach(function(mid) {
+            if (!_t24Data[mid]) _t24Data[mid] = {};
+            Object.assign(_t24Data[mid], _lsS[mid]);
+          });
+        } catch(e) {}
         var notes = d.notes  || [];
         _t24Notes = {};
         notes.forEach(function(n) {
@@ -9874,7 +9882,12 @@ function renderTakip24() {
         _t24Loaded = true;
         renderTakip24();
       })
-      .catch(function() { _t24Loaded = true; renderTakip24(); });
+      .catch(function() {
+        // GAS başarısız — localStorage'dan yükle
+        try { _t24Data = JSON.parse(localStorage.getItem('t24_status') || '{}'); } catch(e) { _t24Data = {}; }
+        _t24Loaded = true;
+        renderTakip24();
+      });
     return;
   }
 
@@ -10041,6 +10054,14 @@ window._t24SaveCb = function(encKey, field, value) {
   var key = decodeURIComponent(encKey);
   if (!_t24Data[key]) _t24Data[key] = {};
   _t24Data[key][field] = value;
+  // localStorage'a kaydet (sayfa yenilenince kaybolmasın)
+  try {
+    var _ls = JSON.parse(localStorage.getItem('t24_status') || '{}');
+    if (!_ls[key]) _ls[key] = {};
+    if (value) _ls[key][field] = true;
+    else { delete _ls[key][field]; if (!Object.keys(_ls[key]).length) delete _ls[key]; }
+    localStorage.setItem('t24_status', JSON.stringify(_ls));
+  } catch(e) {}
   renderTakip24();
   fetch(GAS_URL + '?action=saveTakip24&key=' + encKey + '&field=' + field + '&val=' + (value?'1':'0')).catch(function(){});
 };
