@@ -9797,9 +9797,23 @@ function _t24GetData() {
   var cm = (typeof CONTRACT_MEMBERS !== 'undefined' && CONTRACT_MEMBERS['2024']) || {};
   var bm = typeof OID_BM_MAP !== 'undefined' ? OID_BM_MAP : {};
   var flat = typeof FLAT !== 'undefined' ? FLAT : [];
+
+  // Grup kayıtlarında send_oid boş gelir → send_org → oid reverse map
+  var orgToOid = {};
+  Object.keys(bm).forEach(function(k) {
+    if (k.indexOf('||2024') < 0) return;
+    var oid  = k.split('||')[0];
+    var name = bm[k].split('||')[0].trim().toLowerCase();
+    orgToOid[name] = oid;
+  });
+
   var mobsByOid = {};
   flat.forEach(function(m) {
     var oid = m.send_oid || '';
+    if (!oid && m.send_org) {
+      oid = orgToOid[(m.send_org || '').trim().toLowerCase()] || '';
+    }
+    if (!oid) return;
     if (!mobsByOid[oid]) mobsByOid[oid] = [];
     mobsByOid[oid].push(m);
   });
