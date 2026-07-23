@@ -9792,6 +9792,7 @@ function _iletisimFilter() {
 var _t24Data   = {};   // {mobId: {beyan, onay}}
 var _t24Notes  = {};   // {mobId: [{not, tarih}]}
 var _t24Loaded = false;
+var _t24Filter = {q: '', beyan: false, onay: false};
 
 function _t24GetData() {
   var cm = (typeof CONTRACT_MEMBERS !== 'undefined' && CONTRACT_MEMBERS['2024']) || {};
@@ -9901,9 +9902,42 @@ function renderTakip24() {
   h += '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 20px;flex:1;min-width:120px;text-align:center"><div style="font-size:26px;font-weight:700;color:#b45309">' + nNot + '</div><div style="font-size:11px;color:#92400e;font-weight:600">Notlu Hareketlilik</div></div>';
   h += '</div>';
 
+  // ── Filtre & Arama ──────────────────────────────────
+  var activeFilters = _t24Filter.beyan || _t24Filter.onay || _t24Filter.q.trim();
+  h += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px">';
+  h += '<input id="_t24SearchInp" type="text" value="'+(_t24Filter.q||'').replace(/"/g,'&quot;')+'" oninput="_t24SetFilter('q',this.value)" placeholder="🔍 Okul ara…" style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
+  h += '<button onclick="_t24SetFilter('beyan',!_t24Filter.beyan)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.beyan?'#2563eb':'#e2e8f0')+';background:'+(_t24Filter.beyan?'#eff6ff':'white')+';color:'+(_t24Filter.beyan?'#1d4ed8':'#64748b')+'">📤 Beyan Yüklendi</button>';
+  h += '<button onclick="_t24SetFilter('onay',!_t24Filter.onay)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.onay?'#7c3aed':'#e2e8f0')+';background:'+(_t24Filter.onay?'#faf5ff':'white')+';color:'+(_t24Filter.onay?'#6d28d9':'#64748b')+'">✅ Onaylandı</button>';
+  if (activeFilters) h += '<button onclick="_t24ClearFilter()" style="padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid #fecdd3;background:#fff1f2;color:#be123c">✕ Temizle</button>';
+  h += '</div>';
+
+  // ── Filtre uygula ───────────────────────────────────
+  var visSchools = schools.filter(function(s) {
+    // Metin arama
+    if (_t24Filter.q.trim()) {
+      var q = _t24Filter.q.trim().toLowerCase();
+      if (s.name.toLowerCase().indexOf(q) < 0 && s.oid.toLowerCase().indexOf(q) < 0 && s.city.toLowerCase().indexOf(q) < 0) return false;
+    }
+    // Beyan filtresi — okulun en az 1 mob'u beyan işaretli
+    if (_t24Filter.beyan) {
+      var hasB = s.mobs.some(function(m) { var mid = m._trackId||m.mob_id||m.mob_folder_id||''; return (_t24Data[mid]||{}).beyan; });
+      if (!hasB) return false;
+    }
+    // Onay filtresi
+    if (_t24Filter.onay) {
+      var hasO = s.mobs.some(function(m) { var mid = m._trackId||m.mob_id||m.mob_folder_id||''; return (_t24Data[mid]||{}).onay; });
+      if (!hasO) return false;
+    }
+    return true;
+  });
+
+  if (visSchools.length === 0) {
+    h += '<div style="text-align:center;padding:40px;color:#94a3b8;font-size:14px">Filtreyle eşleşen okul bulunamadı.</div>';
+  }
+
   h += '<div style="display:flex;flex-direction:column;gap:10px">';
 
-  schools.forEach(function(s, si) {
+  visSchools.forEach(function(s, si) {
     var sBeyan = 0, sOnay = 0;
     s.mobs.forEach(function(m) {
       var mid = m._trackId || m.mob_id || m.mob_folder_id || '';
@@ -9980,7 +10014,27 @@ function renderTakip24() {
 
   h += '</div></div>';
   root.innerHTML = h;
+  // Re-focus search if it was active
+  if (_t24Filter.q) {
+    var inp = document.getElementById('_t24SearchInp');
+    if (inp) { inp.focus(); inp.setSelectionRange(9999,9999); }
+  }
 }
+
+// Filtre fonksiyonları
+window._t24SetFilter = function(key, val) {
+  if (key === 'q') {
+    _t24Filter.q = val;
+  } else {
+    _t24Filter[key] = val;
+  }
+  renderTakip24();
+};
+
+window._t24ClearFilter = function() {
+  _t24Filter = {q: '', beyan: false, onay: false};
+  renderTakip24();
+};
 
 // Checkbox kaydet (key = mob_id)
 window._t24SaveCb = function(encKey, field, value) {
