@@ -9905,9 +9905,9 @@ function renderTakip24() {
   // ── Filtre & Arama ──────────────────────────────────
   var activeFilters = _t24Filter.beyan || _t24Filter.onay || _t24Filter.q.trim();
   h += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px">';
-  h += '<input id="_t24SearchInp" type="text" value="'+(_t24Filter.q||'').replace(/"/g,'&quot;')+'" oninput="_t24SetFilter('q',this.value)" placeholder="🔍 Okul ara…" style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
-  h += '<button onclick="_t24SetFilter('beyan',!_t24Filter.beyan)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.beyan?'#2563eb':'#e2e8f0')+';background:'+(_t24Filter.beyan?'#eff6ff':'white')+';color:'+(_t24Filter.beyan?'#1d4ed8':'#64748b')+'">📤 Beyan Yüklendi</button>';
-  h += '<button onclick="_t24SetFilter('onay',!_t24Filter.onay)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.onay?'#7c3aed':'#e2e8f0')+';background:'+(_t24Filter.onay?'#faf5ff':'white')+';color:'+(_t24Filter.onay?'#6d28d9':'#64748b')+'">✅ Onaylandı</button>';
+  h += '<input id="_t24SearchInp" type="text" value="'+(_t24Filter.q||'').replace(/"/g,'&quot;')+'" oninput="_t24SetFilter(&quot;q&quot;,this.value)" placeholder="🔍 Okul ara…" style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
+  h += '<button onclick="_t24SetFilter(&quot;beyan&quot;,!_t24Filter.beyan)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.beyan?'#2563eb':'#e2e8f0')+';background:'+(_t24Filter.beyan?'#eff6ff':'white')+';color:'+(_t24Filter.beyan?'#1d4ed8':'#64748b')+'">📤 Beyan Yüklendi</button>';
+  h += '<button onclick="_t24SetFilter(&quot;onay&quot;,!_t24Filter.onay)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.onay?'#7c3aed':'#e2e8f0')+';background:'+(_t24Filter.onay?'#faf5ff':'white')+';color:'+(_t24Filter.onay?'#6d28d9':'#64748b')+'">✅ Onaylandı</button>';
   if (activeFilters) h += '<button onclick="_t24ClearFilter()" style="padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid #fecdd3;background:#fff1f2;color:#be123c">✕ Temizle</button>';
   h += '</div>';
 
