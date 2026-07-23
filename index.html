@@ -9794,18 +9794,21 @@ var _t24Notes  = {};   // {schoolKey: [{not, tarih}]}
 var _t24Loaded = false;
 
 function _t24GetSchools() {
+  var cm = (typeof CONTRACT_MEMBERS !== 'undefined' && CONTRACT_MEMBERS['2024']) || {};
+  var bm = typeof OID_BM_MAP !== 'undefined' ? OID_BM_MAP : {};
   var schools = [];
-  var seen = {};
-  (typeof FLAT !== 'undefined' ? FLAT : []).forEach(function(r) {
-    if (r.year !== '2024') return;
-    var key = (r.send_org || '').trim();
-    if (!key || seen[key]) return;
-    seen[key] = true;
+  Object.keys(cm).forEach(function(oid) {
+    var name = (cm[oid] || '').split(' ').slice(0,6).join(' ').trim(); // ilk birkaç kelime - tam ad OID_BM_MAP'ten
+    // OID_BM_MAP'ten daha temiz isim + şehir al
+    var bmVal = bm[oid + '||2024'] || '';
+    var parts = bmVal.split('||');
+    var cleanName = parts[0] || name;
+    var city = parts[1] || '';
     schools.push({
-      key:  key,
-      name: key,
-      oid:  r.send_oid  || '',
-      city: (r.send_city || '').trim()
+      key:  oid,
+      name: cleanName || name,
+      oid:  oid,
+      city: city
     });
   });
   schools.sort(function(a, b) { return a.name.localeCompare(b.name, 'tr'); });
