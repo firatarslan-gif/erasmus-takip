@@ -234,13 +234,13 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 })();
 
 // Auth durum değişikliğini dinle
+let _settingPassword = false;
 db.auth.onAuthStateChange((event, session) => {
   if (event === 'PASSWORD_RECOVERY') {
+    _settingPassword = true;
     showSetPassword();
-  } else if (event === 'SIGNED_IN' && session) {
-    if (!document.getElementById('setpw-form') || document.getElementById('setpw-form').style.display === 'none') {
-      redirectToPortal(session.user);
-    }
+  } else if (event === 'SIGNED_IN' && session && !_settingPassword) {
+    redirectToPortal(session.user);
   }
 });
 
@@ -252,16 +252,20 @@ if (!window.location.hash) {
 }
 
 async function redirectToPortal(user) {
-  // Kullanıcı rolüne göre yönlendir
-  const { data: userData } = await db
-    .from('users')
-    .select('role, school_id')
-    .eq('id', user.id)
-    .single();
+  try {
+    const { data: userData } = await db
+      .from('users')
+      .select('role, school_id')
+      .eq('id', user.id)
+      .single();
 
-  if (userData?.role === 'coordinator' || userData?.role === 'admin') {
-    window.location.href = 'erasdesk_koordinator.html';
-  } else {
+    if (userData?.role === 'coordinator' || userData?.role === 'admin') {
+      window.location.href = 'erasdesk_koordinator.html';
+    } else {
+      window.location.href = 'erasdesk_portal.html';
+    }
+  } catch(e) {
+    // users tablosunda kayıt yoksa portala gönder
     window.location.href = 'erasdesk_portal.html';
   }
 }
