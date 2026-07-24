@@ -380,6 +380,7 @@ input:focus, select:focus { border-color: var(--blue); }
                 <th>Tür</th>
                 <th>Gerekli Belge</th>
                 <th>Aktivite Tipleri</th>
+                <th>Şablon / Rehber</th>
               </tr>
             </thead>
             <tbody id="checklistBody">
@@ -933,8 +934,13 @@ function renderChecklistDefs(phaseFilter = '') {
       <td><span class="badge ${TYPE_BADGE[c.check_type] || 'badge-gray'}">${TYPE_LABEL[c.check_type] || c.check_type}</span></td>
       <td class="mono">${c.required_doc_type || '—'}</td>
       <td style="font-size:11px;color:var(--muted)">${c.activity_types ? c.activity_types.join(', ') : 'Tümü'}</td>
+      <td style="font-size:11px">
+        ${(c.template_urls || []).length ? `<span class="badge badge-green">📎 ${c.template_urls.length} şablon</span>` : ''}
+        ${c.helper_url ? `<span class="badge badge-blue">📖 rehber</span>` : ''}
+        ${!(c.template_urls || []).length && !c.helper_url && c.check_type !== 'info' ? `<span class="badge badge-red">eksik</span>` : ''}
+      </td>
     </tr>`).join('')
-    : `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Checklist tanımı bulunamadı.</td></tr>`;
+    : `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Checklist tanımı bulunamadı.</td></tr>`;
 }
 
 function filterChecklist() {
