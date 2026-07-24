@@ -241,6 +241,130 @@ input[type="file"] { display: none; }
   </div>
 </div>
 
+<!-- OVERLAY: Katılımcı formu -->
+<div class="overlay" id="participant-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="participant-modal-title">Katılımcı Ekle</div>
+      <div class="modal-close" onclick="closeParticipantForm()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="part-id">
+      <div class="form-group">
+        <label class="form-label">Ad Soyad</label>
+        <input class="form-input" id="part-full-name" placeholder="Ad Soyad">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TC Kimlik No</label>
+        <input class="form-input" id="part-tc" placeholder="11 haneli TC kimlik no">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Doğum Tarihi</label>
+        <input class="form-input" id="part-birth" type="date" onchange="toggleGuardianFields()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rol</label>
+        <select class="form-input" id="part-role">
+          <option value="student">Öğrenci</option>
+          <option value="teacher">Öğretmen</option>
+          <option value="accompanying">Refakatçi</option>
+          <option value="expert">Uzman</option>
+          <option value="staff">Personel</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-posta</label>
+        <input class="form-input" id="part-email" type="email" placeholder="ornek@ornek.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" id="part-phone" placeholder="05xx xxx xx xx">
+      </div>
+      <div class="form-group">
+        <label class="form-label">IBAN</label>
+        <input class="form-input" id="part-iban" placeholder="TR__ ____ ____ ____ ____ ____ __">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Banka Adı / Şube</label>
+        <input class="form-input" id="part-bank" placeholder="Banka adı / şube">
+      </div>
+      <div id="guardian-fields" style="display:none;background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:12px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:#9d174d;margin-bottom:8px">👨‍👩‍👦 18 Yaş Altı — Yasal Vasi Bilgileri</div>
+        <div class="form-group">
+          <label class="form-label">Veli Adı Soyadı</label>
+          <input class="form-input" id="part-guardian-name" placeholder="Veli adı soyadı">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Veli TC Kimlik No</label>
+          <input class="form-input" id="part-guardian-tc" placeholder="Veli TC kimlik no">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Veli Telefon</label>
+          <input class="form-input" id="part-guardian-phone" placeholder="Veli telefon">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeParticipantForm()">İptal</button>
+      <button class="btn btn-primary" id="participant-save-btn" onclick="saveParticipant()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Dil Gelişim Planı -->
+<div class="overlay" id="langplan-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="langplan-modal-title">Bireysel Yabancı Dil Gelişim Planı</div>
+      <div class="modal-close" onclick="closeLangPlan()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="lp-part-id">
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px">CEFR (Avrupa Dilleri Ortak Çerçeve Programı) seviyelerine göre doldurun.</p>
+      <div class="form-group">
+        <label class="form-label">Mevcut Seviye (CEFR)</label>
+        <select class="form-input" id="lp-current">
+          <option value="">— Seçin —</option>
+          <option value="A1">A1 — Başlangıç</option>
+          <option value="A2">A2 — Temel</option>
+          <option value="B1">B1 — Orta Altı</option>
+          <option value="B2">B2 — Orta Üstü</option>
+          <option value="C1">C1 — İleri</option>
+          <option value="C2">C2 — Yetkin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hedef Seviye (CEFR)</label>
+        <select class="form-input" id="lp-target">
+          <option value="">— Seçin —</option>
+          <option value="A1">A1 — Başlangıç</option>
+          <option value="A2">A2 — Temel</option>
+          <option value="B1">B1 — Orta Altı</option>
+          <option value="B2">B2 — Orta Üstü</option>
+          <option value="C1">C1 — İleri</option>
+          <option value="C2">C2 — Yetkin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kullanılan Kaynaklar / Yöntem</label>
+        <textarea class="form-input" id="lp-resources" rows="3" placeholder="Örn: Duolingo, OLS, online kurs, özel ders…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Planlanan Tamamlanma Tarihi</label>
+        <input class="form-input" id="lp-deadline" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notlar</label>
+        <textarea class="form-input" id="lp-notes" rows="2" placeholder="İsteğe bağlı"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeLangPlan()">İptal</button>
+      <button class="btn btn-primary" id="langplan-save-btn" onclick="saveLangPlan()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
 <!-- ANA LAYOUT -->
 <div class="layout">
 
@@ -259,6 +383,7 @@ input[type="file"] { display: none; }
       <div class="sb-item active" onclick="showTab('dashboard')"><span class="icon">🏠</span>Ana Sayfa</div>
       <div class="sb-item" onclick="showTab('checklist')"><span class="icon">✅</span>Kontrol Listesi <span class="sb-badge" id="badge-cl">—</span></div>
       <div class="sb-item" onclick="showTab('documents')"><span class="icon">📁</span>Belgeler <span class="sb-badge" id="badge-doc">—</span></div>
+      <div class="sb-item" onclick="showTab('participants')"><span class="icon">👥</span>Katılımcılar</div>
       <div class="sb-section">Hareketlilikler</div>
       <div id="mob-sidebar"></div>
       <div class="sb-section">Diğer</div>
@@ -357,6 +482,20 @@ input[type="file"] { display: none; }
         </div>
       </div>
 
+      <!-- ── KATILIMCILAR ── -->
+      <div id="tab-participants" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Katılımcılar</div>
+          <select id="part-mob-select" onchange="loadParticipants()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+          <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openParticipantForm()">+ Katılımcı Ekle</button>
+        </div>
+        <div id="participant-list">
+          <div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>
+        </div>
+      </div>
+
       <!-- ── NOTLAR ── -->
       <div id="tab-notes" style="display:none">
         <div class="section-header"><div class="section-title">Koordinatörle Mesajlar</div></div>
@@ -441,16 +580,19 @@ async function loadMobilities() {
   const sbMob = document.getElementById('mob-sidebar');
   const clSel = document.getElementById('cl-mob-select');
   const docSel = document.getElementById('doc-mob-select');
+  const partSel = document.getElementById('part-mob-select');
 
   sbMob.innerHTML = '';
   clSel.innerHTML  = '<option value="">— Hareketlilik Seçin —</option>';
   docSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
+  partSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
 
   mobilities.forEach(m => {
     const label = actLabel(m.activity_type) + ' — ' + (m.destination_country || '?');
     sbMob.innerHTML += `<div class="sb-item" onclick="focusMobility('${m.id}')"><span class="icon">${actIcon(m.activity_type)}</span>${label}</div>`;
     clSel.innerHTML  += `<option value="${m.id}">${label}</option>`;
     docSel.innerHTML += `<option value="${m.id}">${label}</option>`;
+    partSel.innerHTML += `<option value="${m.id}">${label}</option>`;
   });
 }
 
@@ -557,11 +699,12 @@ async function loadChecklist() {
 
   document.getElementById('checklist-panel').style.display = 'block';
 
-  // Checklist tanımlarını, ilerlemeyi ve bu hareketlilik için yüklenmiş belgeleri çek
-  const [{ data: defs }, { data: prog }, { data: docs }] = await Promise.all([
+  // Checklist tanımlarını, ilerlemeyi, belgeleri ve katılımcıları çek
+  const [{ data: defs }, { data: prog }, { data: docs }, { data: parts }] = await Promise.all([
     db.from('checklist_definitions').select('*').eq('is_active', true).order('sort_order'),
     db.from('checklist_progress').select('*').eq('mobility_id', mobId),
-    db.from('documents').select('*').eq('mobility_id', mobId).neq('status', 'archived').order('created_at', { ascending: false })
+    db.from('documents').select('*').eq('mobility_id', mobId).neq('status', 'archived').order('created_at', { ascending: false }),
+    db.from('participants').select('*').eq('mobility_id', mobId).order('created_at')
   ]);
 
   checklistData = {};
@@ -574,6 +717,7 @@ async function loadChecklist() {
     window._clDocs[d.doc_type].push(d);
   });
 
+  mobParticipants = parts || [];
   window._clDefs = defs || [];
   window._clMobType = mob.activity_type;
 
@@ -622,27 +766,45 @@ function renderPhase(phase) {
           </div>`).join('')}
       </div>` : '';
 
+    // Dil Gelişim Planı — katılımcı bazlı doldurma durumu
+    const langPlanList = (d.check_type === 'form' && d.required_form_type === 'lang_plan') ? `
+      <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+        ${!mobParticipants.length ? `<div style="font-size:10px;color:var(--orange)">⚠ Önce <span class="cl-link" onclick="showTab('participants')">Katılımcılar</span> sekmesinden katılımcı ekleyin.</div>` :
+          mobParticipants.map(p => {
+            const lp = p.lang_plan || {};
+            const done = !!(lp.current_level && lp.target_level);
+            return `<div style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+              <span>${done ? '✅' : '⬜'} ${p.full_name}</span>
+              ${done ? `<span style="color:var(--green)">${lp.current_level} → ${lp.target_level}</span>` : ''}
+              <span class="cl-link" onclick="openLangPlan('${p.id}')">${done ? 'Düzenle' : 'Doldur'}</span>
+            </div>`;
+          }).join('')}
+      </div>` : '';
+
     return `
     <div class="cl-item ${isDone ? 'done' : ''}" id="cl-${d.id}">
-      <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}')">
+      <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}','${d.required_form_type || ''}')">
         ${isDone ? '' : ''}
       </div>
       <div class="cl-body">
         <div class="cl-text ${textClass}">${d.title}</div>
+        ${d.helper_text ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4">${d.helper_text}</div>` : ''}
         <div class="cl-meta">
           <span class="cl-type ${d.check_type}">${typeLabel}</span>
           ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
+          ${(d.template_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📎 ${t.label}</a>`).join('')}
           ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${docs.length ? 'Başka Belge Ekle' : 'Belge Yükle'}</span>` : ''}
           ${isDone && prog?.completed_at ? `<span style="font-size:10px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
         </div>
         ${docsList}
+        ${langPlanList}
       </div>
       ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
     </div>`;
   }).join('');
 }
 
-async function toggleChecklist(defId, checkType, reqDoc) {
+async function toggleChecklist(defId, checkType, reqDoc, reqForm) {
   const prog = checklistData[defId];
   if (prog?.status === 'done') return; // geri alma ayrı
 
@@ -656,13 +818,19 @@ async function toggleChecklist(defId, checkType, reqDoc) {
     // belge var — devam edip aşağıda "done" olarak kaydedilir
   }
 
-  // Form gerektiriyorsa (ileride form açılacak)
+  // Form gerektiriyorsa
   if (checkType === 'form') {
-    alert('Form özelliği yakında eklenecek!');
-    return;
+    if (reqForm === 'lang_plan') {
+      if (!mobParticipants.length) { alert('Önce Katılımcılar sekmesinden katılımcı ekleyin.'); return; }
+      if (!allLangPlansFilled()) { alert('Tüm katılımcıların Dil Gelişim Planı doldurulmadan bu madde tamamlanamaz.'); return; }
+      // hepsi dolu — devam edip aşağıda "done" olarak kaydedilir
+    } else {
+      alert('Form özelliği yakında eklenecek!');
+      return;
+    }
   }
 
-  // Bilgi onayı — direkt kaydet
+  // Bilgi onayı / tamamlanmış form — direkt kaydet
   await saveChecklistProgress(defId, 'done');
 }
 
@@ -900,12 +1068,13 @@ const tabTitles = {
   dashboard: 'Ana Sayfa',
   checklist: 'Kontrol Listesi',
   documents: 'Belgelerim',
+  participants: 'Katılımcılar',
   notes:     'Mesajlar',
   profile:   'Okul Bilgileri'
 };
 
 function showTab(name) {
-  ['dashboard','checklist','documents','notes','profile'].forEach(t => {
+  ['dashboard','checklist','documents','participants','notes','profile'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
   });
   document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
@@ -919,8 +1088,211 @@ function focusMobility(mobId) {
   currentMobId = mobId;
   document.getElementById('cl-mob-select').value  = mobId;
   document.getElementById('doc-mob-select').value = mobId;
+  document.getElementById('part-mob-select').value = mobId;
   showTab('checklist');
   loadChecklist();
+}
+
+// ─────────────────────────────────────────────
+// KATILIMCILAR
+// ─────────────────────────────────────────────
+let mobParticipants = [];
+
+function calcAge(birthDate) {
+  if (!birthDate) return null;
+  const b = new Date(birthDate);
+  const t = new Date();
+  let age = t.getFullYear() - b.getFullYear();
+  const m = t.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) age--;
+  return age;
+}
+
+function roleLabel(r) {
+  return { student:'Öğrenci', teacher:'Öğretmen', accompanying:'Refakatçi', expert:'Uzman', staff:'Personel' }[r] || r;
+}
+
+function cefrLabel(c) {
+  return c ? c : '—';
+}
+
+async function loadParticipants() {
+  const mobId = document.getElementById('part-mob-select').value;
+  const el = document.getElementById('participant-list');
+  if (!mobId) { el.innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>'; mobParticipants = []; return; }
+
+  currentMobId = mobId;
+
+  const { data } = await db.from('participants').select('*').eq('mobility_id', mobId).order('created_at');
+  mobParticipants = data || [];
+  renderParticipants();
+}
+
+function renderParticipants() {
+  const el = document.getElementById('participant-list');
+  if (!mobParticipants.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Bu hareketlilik için henüz katılımcı eklenmedi.</div>';
+    return;
+  }
+
+  el.innerHTML = `<div class="panel">${mobParticipants.map(p => {
+    const age = calcAge(p.birth_date);
+    const lp = p.lang_plan || {};
+    const lpDone = !!(lp.current_level || lp.target_level);
+    return `
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:22px">${p.role === 'student' ? '🧑‍🎒' : p.role === 'teacher' ? '👩‍🏫' : '👤'}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${p.full_name}${age !== null ? ` <span style="font-weight:400;color:var(--muted);font-size:11px">(${age} yaş)</span>` : ''}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${roleLabel(p.role)} ${p.tc_no ? '· TC: ' + p.tc_no : ''}</div>
+        </div>
+        <span class="cl-link" onclick="openParticipantForm('${p.id}')">✏️ Düzenle</span>
+        <span class="cl-link" style="color:#dc2626" onclick="deleteParticipant('${p.id}')">🗑 Sil</span>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:8px;padding:8px 12px">
+        <span style="font-size:11px;color:var(--muted)">🗣️ Dil Gelişim Planı:</span>
+        ${lpDone
+          ? `<span style="font-size:11px;color:var(--green);font-weight:700">${cefrLabel(lp.current_level)} → ${cefrLabel(lp.target_level)} ✓</span>`
+          : `<span style="font-size:11px;color:var(--orange);font-weight:700">Doldurulmadı</span>`}
+        <span class="cl-link" style="margin-left:auto" onclick="openLangPlan('${p.id}')">${lpDone ? 'Düzenle' : 'Doldur'}</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function toggleGuardianFields() {
+  const birth = document.getElementById('part-birth').value;
+  const age = calcAge(birth);
+  document.getElementById('guardian-fields').style.display = (age !== null && age < 18) ? 'block' : 'none';
+}
+
+function openParticipantForm(partId = null) {
+  const p = partId ? mobParticipants.find(x => x.id === partId) : null;
+  document.getElementById('participant-modal-title').textContent = p ? 'Katılımcı Düzenle' : 'Katılımcı Ekle';
+  document.getElementById('part-id').value = p?.id || '';
+  document.getElementById('part-full-name').value = p?.full_name || '';
+  document.getElementById('part-tc').value = p?.tc_no || '';
+  document.getElementById('part-birth').value = p?.birth_date || '';
+  document.getElementById('part-role').value = p?.role || 'student';
+  document.getElementById('part-email').value = p?.email || '';
+  document.getElementById('part-phone').value = p?.phone || '';
+  document.getElementById('part-iban').value = p?.iban || '';
+  document.getElementById('part-bank').value = p?.bank_name || '';
+  document.getElementById('part-guardian-name').value = p?.guardian_name || '';
+  document.getElementById('part-guardian-tc').value = p?.guardian_tc || '';
+  document.getElementById('part-guardian-phone').value = p?.guardian_phone || '';
+  toggleGuardianFields();
+  document.getElementById('participant-overlay').classList.add('show');
+}
+
+function closeParticipantForm() {
+  document.getElementById('participant-overlay').classList.remove('show');
+}
+
+async function saveParticipant() {
+  const mobId = document.getElementById('part-mob-select').value;
+  if (!mobId) { alert('Önce hareketlilik seçin.'); return; }
+
+  const fullName = document.getElementById('part-full-name').value.trim();
+  if (!fullName) { alert('Ad Soyad gereklidir.'); return; }
+
+  const partId = document.getElementById('part-id').value;
+  const btn = document.getElementById('participant-save-btn');
+  btn.disabled = true;
+
+  const payload = {
+    mobility_id:    mobId,
+    school_id:      currentSchool.id,
+    full_name:      fullName,
+    tc_no:          document.getElementById('part-tc').value.trim() || null,
+    birth_date:     document.getElementById('part-birth').value || null,
+    role:           document.getElementById('part-role').value,
+    email:          document.getElementById('part-email').value.trim() || null,
+    phone:          document.getElementById('part-phone').value.trim() || null,
+    iban:           document.getElementById('part-iban').value.trim() || null,
+    bank_name:      document.getElementById('part-bank').value.trim() || null,
+    guardian_name:  document.getElementById('part-guardian-name').value.trim() || null,
+    guardian_tc:    document.getElementById('part-guardian-tc').value.trim() || null,
+    guardian_phone: document.getElementById('part-guardian-phone').value.trim() || null
+  };
+
+  let error;
+  if (partId) {
+    ({ error } = await db.from('participants').update(payload).eq('id', partId));
+  } else {
+    ({ error } = await db.from('participants').insert(payload));
+  }
+
+  btn.disabled = false;
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+
+  closeParticipantForm();
+  await loadParticipants();
+}
+
+async function deleteParticipant(partId) {
+  if (!confirm('Bu katılımcıyı silmek istediğinize emin misiniz?')) return;
+  const { error } = await db.from('participants').delete().eq('id', partId).eq('school_id', currentSchool.id);
+  if (error) { alert('Silme hatası: ' + error.message); return; }
+  await loadParticipants();
+}
+
+// ─────────────────────────────────────────────
+// DİL GELİŞİM PLANI
+// ─────────────────────────────────────────────
+function openLangPlan(partId) {
+  const p = mobParticipants.find(x => x.id === partId);
+  if (!p) return;
+  const lp = p.lang_plan || {};
+  document.getElementById('lp-part-id').value = partId;
+  document.getElementById('langplan-modal-title').textContent = 'Dil Gelişim Planı — ' + p.full_name;
+  document.getElementById('lp-current').value   = lp.current_level || '';
+  document.getElementById('lp-target').value    = lp.target_level || '';
+  document.getElementById('lp-resources').value = lp.resources || '';
+  document.getElementById('lp-deadline').value  = lp.deadline || '';
+  document.getElementById('lp-notes').value     = lp.notes || '';
+  document.getElementById('langplan-overlay').classList.add('show');
+}
+
+function closeLangPlan() {
+  document.getElementById('langplan-overlay').classList.remove('show');
+}
+
+async function saveLangPlan() {
+  const partId = document.getElementById('lp-part-id').value;
+  const current = document.getElementById('lp-current').value;
+  const target  = document.getElementById('lp-target').value;
+
+  if (!current || !target) { alert('Mevcut ve hedef seviye seçilmelidir.'); return; }
+
+  const btn = document.getElementById('langplan-save-btn');
+  btn.disabled = true;
+
+  const lang_plan = {
+    current_level: current,
+    target_level:  target,
+    resources:     document.getElementById('lp-resources').value.trim(),
+    deadline:      document.getElementById('lp-deadline').value || null,
+    notes:         document.getElementById('lp-notes').value.trim(),
+    updated_at:    new Date().toISOString()
+  };
+
+  const { error } = await db.from('participants').update({ lang_plan }).eq('id', partId);
+
+  btn.disabled = false;
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+
+  closeLangPlan();
+  await loadParticipants();
+  // Checklist'te lang_plan maddesi açıksa güncelle
+  if (currentMobId && window._clDefs) renderPhase(currentPhase);
+}
+
+function allLangPlansFilled(mobId) {
+  // Bu fonksiyon checklist tarafından çağrılıyor; mobParticipants son yüklenen hareketlilik ise kullan
+  if (!mobParticipants.length) return false;
+  return mobParticipants.every(p => p.lang_plan && p.lang_plan.current_level && p.lang_plan.target_level);
 }
 
 // ─────────────────────────────────────────────
