@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAYP — Koordinatör Paneli</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #f8fafc;
+  --white:   #ffffff;
+  --border:  #e2e8f0;
+  --text:    #1e293b;
+  --muted:   #64748b;
+  --light:   #f1f5f9;
+  --blue:    #2563eb;
+  --green:   #059669;
+  --orange:  #d97706;
+  --red:     #dc2626;
+  --purple:  #7c3aed;
+  --sidebar: #0f172a;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; }
+.layout { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 230px; flex-shrink: 0;
+  background: var(--sidebar); color: white;
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100;
+}
+.sb-logo { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sb-logo-badge { display: inline-block; background: linear-gradient(135deg,#2563eb,#7c3aed); border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: 800; letter-spacing: .5px; margin-bottom: 8px; }
+.sb-logo-title { font-size: 15px; font-weight: 800; }
+.sb-logo-sub { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.sb-user { padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; }
+.sb-avatar { width: 30px; height: 30px; background: linear-gradient(135deg,#2563eb,#7c3aed); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.sb-user-name { font-size: 12px; font-weight: 600; }
+.sb-user-role { font-size: 10px; color: rgba(255,255,255,.4); }
+.sb-nav { flex: 1; padding: 12px 0; }
+.sb-section { font-size: 9px; font-weight: 700; color: rgba(255,255,255,.25); text-transform: uppercase; letter-spacing: .8px; padding: 12px 18px 4px; }
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px; cursor: pointer; font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,.6); border-left: 3px solid transparent;
+  transition: all .15s;
+}
+.sb-item:hover { background: rgba(255,255,255,.06); color: white; }
+.sb-item.active { background: rgba(37,99,235,.2); color: white; border-left-color: #2563eb; }
+.sb-item .icon { width: 18px; text-align: center; font-size: 14px; }
+.sb-item .badge { margin-left: auto; background: #dc2626; color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700; }
+.sb-bottom { padding: 12px 18px; border-top: 1px solid rgba(255,255,255,.08); }
+.sb-logout { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,.4); cursor: pointer; padding: 6px 0; }
+.sb-logout:hover { color: rgba(255,255,255,.7); }
+
+/* MAIN */
+.main { margin-left: 230px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { background: white; border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; }
+.topbar-title { font-size: 15px; font-weight: 700; flex: 1; }
+.topbar-sub { font-size: 11px; color: var(--muted); }
+.topbar-refresh { background: var(--light); border: 1px solid var(--border); border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--muted); }
+.topbar-refresh:hover { background: var(--border); }
+.content { padding: 20px 24px; flex: 1; }
+
+/* STAT CARDS */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+.stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 800; color: var(--text); font-family: monospace; }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.stat-bar { height: 4px; background: var(--light); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+
+/* PANELS */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* TABLE */
+.table-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.table-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.table-title { font-size: 13px; font-weight: 700; flex: 1; }
+.search-box { padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12px; width: 220px; outline: none; font-family: inherit; }
+.search-box:focus { border-color: var(--blue); }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: #f8fafc; border-bottom: 1px solid var(--border); }
+td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 12px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafbfc; }
+.mono { font-family: monospace; font-size: 11px; color: var(--muted); }
+
+/* BADGES */
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+.badge-blue   { background: #dbeafe; color: #1d4ed8; }
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-orange { background: #fef3c7; color: #92400e; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+.badge-purple { background: #ede9fe; color: #5b21b6; }
+.badge-gray   { background: #f1f5f9; color: #475569; }
+
+/* PROGRESS BAR */
+.prog-wrap { display: flex; align-items: center; gap: 8px; }
+.prog-bar { flex: 1; height: 6px; background: var(--light); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width .3s; }
+.prog-pct { font-size: 11px; font-weight: 700; color: var(--muted); min-width: 28px; text-align: right; }
+
+/* BUTTONS */
+.btn { padding: 8px 16px; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+.btn-primary { background: linear-gradient(135deg,#2563eb,#7c3aed); color: white; }
+.btn-primary:hover { opacity: .88; }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--light); }
+.btn-green { background: #059669; color: white; }
+.btn-red { background: #dc2626; color: white; }
+
+/* DOCUMENT REVIEW */
+.doc-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
+.doc-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.doc-icon { width: 36px; height: 36px; background: var(--light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.doc-info { flex: 1; }
+.doc-name { font-size: 13px; font-weight: 700; }
+.doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.doc-actions { display: flex; gap: 6px; }
+
+/* AI VALIDATION */
+.ai-box { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.ai-box-title { font-size: 11px; font-weight: 700; color: #6d28d9; margin-bottom: 6px; }
+.ai-check { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 3px; }
+.ai-check .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-ok  { background: #059669; }
+.dot-warn { background: #d97706; }
+.dot-err { background: #dc2626; }
+
+/* INVITE MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 16px; padding: 28px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+input, select { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; outline: none; font-family: inherit; transition: border-color .2s; }
+input:focus, select:focus { border-color: var(--blue); }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+
+/* ACTIVITY FEED */
+.feed-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.feed-item:last-child { border-bottom: none; }
+.feed-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); margin-top: 4px; flex-shrink: 0; }
+.feed-text { flex: 1; font-size: 12px; }
+.feed-time { font-size: 10px; color: var(--muted); flex-shrink: 0; }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-text { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.empty-sub { font-size: 12px; }
+
+/* SPINNER */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* TOAST */
+#toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: white; border-radius: 10px; padding: 12px 18px; font-size: 13px; font-weight: 600; transform: translateY(80px); opacity: 0; transition: all .3s; z-index: 999; max-width: 320px; }
+#toast.show { transform: translateY(0); opacity: 1; }
+
+/* GRID HELPERS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.card-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-badge">KAYP</div>
+      <div class="sb-logo-title">Koordinatör Paneli</div>
+      <div class="sb-logo-sub">Kocaeli MEM · 2026</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">K</div>
+      <div>
+        <div class="sb-user-name" id="sbName">Yükleniyor…</div>
+        <div class="sb-user-role">Koordinatör</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Genel Bakış</div>
+      <div class="sb-item active" onclick="showPanel('dashboard')">
+        <span class="icon">📊</span> Ana Pano
+      </div>
+      <div class="sb-section">Yönetim</div>
+      <div class="sb-item" onclick="showPanel('schools')">
+        <span class="icon">🏫</span> Okullar
+      </div>
+      <div class="sb-item" onclick="showPanel('mobilities')">
+        <span class="icon">✈️</span> Hareketlilikler
+      </div>
+      <div class="sb-item" onclick="showPanel('documents')">
+        <span class="icon">📄</span> Belge İnceleme
+        <span class="badge" id="docBadge" style="display:none">0</span>
+      </div>
+      <div class="sb-section">Sistem</div>
+      <div class="sb-item" onclick="showPanel('users')">
+        <span class="icon">👥</span> Kullanıcılar
+      </div>
+      <div class="sb-item" onclick="showPanel('checklist')">
+        <span class="icon">✅</span> Checklist Tanımları
+      </div>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-logout" onclick="doLogout()">
+        <span>🚪</span> Çıkış Yap
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Ana Pano</div>
+        <div class="topbar-sub" id="topbarSub">Son güncelleme: —</div>
+      </div>
+      <button class="topbar-refresh" onclick="refreshCurrentPanel()">⟳ Yenile</button>
+      <button class="btn btn-primary btn-sm" onclick="openInviteModal()">+ Okul Davet Et</button>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="panel-dashboard" class="panel active">
+        <div class="stat-grid" id="dashStats">
+          <div class="stat-card"><div class="stat-label">Toplam Okul</div><div class="stat-value" id="ds-schools">—</div></div>
+          <div class="stat-card"><div class="stat-label">Hareketlilik</div><div class="stat-value" id="ds-mobs">—</div></div>
+          <div class="stat-card"><div class="stat-label">Bekleyen Belge</div><div class="stat-value" id="ds-docs">—</div></div>
+          <div class="stat-card"><div class="stat-label">Tamamlanan</div><div class="stat-value" id="ds-done">—</div><div class="stat-sub">checklist öğesi</div></div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">📋 Hareketlilik Durumları</div>
+            <div id="dashMobStatus"><div style="color:var(--muted);font-size:12px">Yükleniyor…</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🕐 Son Aktiviteler</div>
+            <div id="dashActivity"><div style="color:var(--muted);font-size:12px">Yükleniyor…</div></div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="card">
+            <div class="card-title">🏫 Okul Checklist İlerleme</div>
+            <div id="dashProgress"><div style="color:var(--muted);font-size:12px">Yükleniyor…</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── OKULLAR ── -->
+      <div id="panel-schools" class="panel">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Tüm Okullar</div>
+            <input class="search-box" id="schoolSearch" placeholder="🔍 Okul veya OID ara…" oninput="filterSchools()">
+            <button class="btn btn-primary btn-sm" onclick="openInviteModal()">+ Davet Et</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Okul</th>
+                <th>OID</th>
+                <th>İlçe</th>
+                <th>Hareketlilik</th>
+                <th>Checklist</th>
+                <th>Durum</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="schoolsBody">
+              <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── HAREKETLİLİKLER ── -->
+      <div id="panel-mobilities" class="panel">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Tüm Hareketlilikler</div>
+            <select id="mobStatusFilter" onchange="filterMobilities()" style="width:160px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none">
+              <option value="">Tüm Durumlar</option>
+              <option value="planned">Planlandı</option>
+              <option value="active">Devam Ediyor</option>
+              <option value="completed">Tamamlandı</option>
+            </select>
+            <input class="search-box" id="mobSearch" placeholder="🔍 Okul veya tür ara…" oninput="filterMobilities()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Okul</th>
+                <th>Tür</th>
+                <th>Tarih</th>
+                <th>Katılımcı</th>
+                <th>Durum</th>
+                <th>Checklist</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mobilitiesBody">
+              <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── BELGE İNCELEME ── -->
+      <div id="panel-documents" class="panel">
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" onclick="setDocFilter('ai_checked')" id="dfBtn-ai_checked" style="border-color:var(--purple);color:var(--purple)">🤖 AI Kontrol Edildi</button>
+          <button class="btn btn-outline btn-sm" onclick="setDocFilter('uploaded')" id="dfBtn-uploaded">📤 Yüklendi</button>
+          <button class="btn btn-outline btn-sm" onclick="setDocFilter('approved')" id="dfBtn-approved">✅ Onaylandı</button>
+          <button class="btn btn-outline btn-sm" onclick="setDocFilter('rejected')" id="dfBtn-rejected">❌ Reddedildi</button>
+          <button class="btn btn-outline btn-sm" onclick="setDocFilter('')" id="dfBtn-">Tümü</button>
+        </div>
+        <div id="docsContainer">
+          <div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Yükleniyor…</div></div>
+        </div>
+      </div>
+
+      <!-- ── KULLANICILAR ── -->
+      <div id="panel-users" class="panel">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Kullanıcı Listesi</div>
+            <button class="btn btn-primary btn-sm" onclick="openInviteModal()">+ Okul Davet Et</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Ad / E-posta</th>
+                <th>Okul</th>
+                <th>Rol</th>
+                <th>Son Giriş</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CHECKLİST TANIMLARI ── -->
+      <div id="panel-checklist" class="panel">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Checklist Tanımları</div>
+            <select id="clPhaseFilter" onchange="filterChecklist()" style="width:140px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none">
+              <option value="">Tüm Fazlar</option>
+              <option value="oncesi">Önce</option>
+              <option value="sirasi">Sırası</option>
+              <option value="sonrasi">Sonrası</option>
+            </select>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Faz</th>
+                <th>Sıra</th>
+                <th>Başlık</th>
+                <th>Tür</th>
+                <th>Gerekli Belge</th>
+                <th>Aktivite Tipleri</th>
+              </tr>
+            </thead>
+            <tbody id="checklistBody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<!-- INVITE MODAL -->
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal">
+    <div class="modal-title">🏫 Okul Hesabı Davet Et</div>
+    <div class="form-group">
+      <label>Okul Seç</label>
+      <select id="inviteSchool">
+        <option value="">— Okul Seçin —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>E-posta Adresi</label>
+      <input type="email" id="inviteEmail" placeholder="okul@example.com">
+    </div>
+    <div id="inviteError" style="display:none;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:8px 12px;font-size:12px;color:#dc2626;margin-top:8px"></div>
+    <div id="inviteSuccess" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:8px 12px;font-size:12px;color:#166534;margin-top:8px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeInviteModal()">İptal</button>
+      <button class="btn btn-primary" id="inviteBtn" onclick="doInvite()">Davet Gönder</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────
+// SUPABASE
+// ─────────────────────────────────────────
+const SUPABASE_URL  = 'https://qmgfqwvbmgmteshopqgc.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_HhrToT0X6VV99lQXtubZGw_1z0ctaxG';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let currentPanel    = 'dashboard';
+let allSchools      = [];
+let allMobilities   = [];
+let allDocuments    = [];
+let allUsers        = [];
+let allChecklist    = [];
+let docFilter       = 'ai_checked';
+let currentUser     = null;
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) { window.location.href = 'erasdesk_login.html'; return; }
+
+  const { data: userData } = await db
+    .from('users')
+    .select('*, schools(name)')
+    .eq('id', session.user.id)
+    .single();
+
+  if (!userData || (userData.role !== 'coordinator' && userData.role !== 'admin')) {
+    window.location.href = 'erasdesk_portal.html';
+    return;
+  }
+
+  currentUser = userData;
+  document.getElementById('sbName').textContent = userData.full_name || session.user.email.split('@')[0];
+  document.getElementById('sbAvatar').textContent = (userData.full_name || 'K')[0].toUpperCase();
+  document.getElementById('topbarSub').textContent = 'Son güncelleme: ' + new Date().toLocaleString('tr-TR');
+
+  await Promise.all([loadSchools(), loadMobilities(), loadDocuments(), loadUsers(), loadChecklist()]);
+  renderDashboard();
+}
+
+// ─────────────────────────────────────────
+// DATA LOADERS
+// ─────────────────────────────────────────
+async function loadSchools() {
+  const { data } = await db.from('schools').select('*').order('name');
+  allSchools = data || [];
+  populateInviteSchools();
+}
+
+async function loadMobilities() {
+  const { data } = await db
+    .from('mobilities')
+    .select('*, schools(name, city), participants(count), mobility_checklist_summary(*)')
+    .order('created_at', { ascending: false });
+  allMobilities = data || [];
+}
+
+async function loadDocuments() {
+  const { data } = await db
+    .from('documents')
+    .select('*, mobilities(activity_type, schools(name))')
+    .order('created_at', { ascending: false });
+  allDocuments = data || [];
+
+  const pending = allDocuments.filter(d => d.status === 'ai_checked' || d.status === 'uploaded').length;
+  const badge = document.getElementById('docBadge');
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? 'inline-block' : 'none';
+  document.getElementById('ds-docs').textContent = pending;
+}
+
+async function loadUsers() {
+  const { data } = await db.from('users').select('*, schools(name)').order('created_at', { ascending: false });
+  allUsers = data || [];
+}
+
+async function loadChecklist() {
+  const { data } = await db.from('checklist_definitions').select('*').order('phase').order('sort_order');
+  allChecklist = data || [];
+}
+
+// ─────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────
+function renderDashboard() {
+  document.getElementById('ds-schools').textContent   = allSchools.length;
+  document.getElementById('ds-mobs').textContent      = allMobilities.length;
+
+  // Checklist done count
+  const doneCount = allMobilities.reduce((sum, m) => {
+    const cs = m.mobility_checklist_summary;
+    return sum + (cs ? (cs.done_count || 0) : 0);
+  }, 0);
+  document.getElementById('ds-done').textContent = doneCount;
+
+  // Mob status breakdown
+  const statusCount = { planned: 0, active: 0, completed: 0, cancelled: 0 };
+  allMobilities.forEach(m => { if (statusCount[m.status] !== undefined) statusCount[m.status]++; });
+  document.getElementById('dashMobStatus').innerHTML = [
+    { k: 'planned',   l: 'Planlandı',       c: 'badge-blue'   },
+    { k: 'active',    l: 'Devam Ediyor',    c: 'badge-orange' },
+    { k: 'completed', l: 'Tamamlandı',      c: 'badge-green'  },
+    { k: 'cancelled', l: 'İptal',           c: 'badge-red'    },
+  ].map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span class="badge ${s.c}">${s.l}</span>
+      <span style="font-size:18px;font-weight:700;font-family:monospace">${statusCount[s.k]}</span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:12px">Henüz hareketlilik yok.</div>';
+
+  // Activity feed (recent docs/notes)
+  const recentDocs = allDocuments.slice(0, 6);
+  document.getElementById('dashActivity').innerHTML = recentDocs.length
+    ? recentDocs.map(d => `
+        <div class="feed-item">
+          <div class="feed-dot" style="background:${statusColor(d.status)}"></div>
+          <div class="feed-text">
+            <strong>${docTypeLabel(d.doc_type)}</strong> — ${d.mobilities?.schools?.name || '?'}
+            <div style="font-size:10px;color:var(--muted);margin-top:1px">${statusLabel(d.status)}</div>
+          </div>
+          <div class="feed-time">${relTime(d.created_at)}</div>
+        </div>`).join('')
+    : '<div style="color:var(--muted);font-size:12px">Henüz belge yok.</div>';
+
+  // School progress table
+  const schoolMobMap = {};
+  allMobilities.forEach(m => {
+    const sid = m.school_id;
+    if (!schoolMobMap[sid]) schoolMobMap[sid] = { mobs: 0, done: 0, total: 0 };
+    schoolMobMap[sid].mobs++;
+    const cs = m.mobility_checklist_summary;
+    if (cs) { schoolMobMap[sid].done += cs.done_count || 0; schoolMobMap[sid].total += cs.total_count || 0; }
+  });
+
+  document.getElementById('dashProgress').innerHTML = `
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="text-align:left;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Okul</th>
+        <th style="text-align:center;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:60px">Mob.</th>
+        <th style="padding:6px 8px;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Checklist</th>
+      </tr></thead>
+      <tbody>
+      ${allSchools.slice(0,15).map(s => {
+        const sm = schoolMobMap[s.id] || { mobs: 0, done: 0, total: 0 };
+        const pct = sm.total > 0 ? Math.round(sm.done / sm.total * 100) : 0;
+        const barColor = pct === 100 ? 'var(--green)' : pct > 50 ? 'var(--blue)' : 'var(--orange)';
+        return `<tr>
+          <td style="padding:7px 8px;font-size:12px;font-weight:600">${s.name}</td>
+          <td style="padding:7px 8px;text-align:center;font-size:12px;color:var(--muted)">${sm.mobs}</td>
+          <td style="padding:7px 8px">
+            <div class="prog-wrap">
+              <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barColor}"></div></div>
+              <span class="prog-pct">${pct}%</span>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─────────────────────────────────────────
+// SCHOOLS PANEL
+// ─────────────────────────────────────────
+function renderSchools(filter = '') {
+  const q = filter.toLowerCase();
+  const schoolMobMap = {};
+  allMobilities.forEach(m => {
+    if (!schoolMobMap[m.school_id]) schoolMobMap[m.school_id] = { mobs: 0, done: 0, total: 0 };
+    schoolMobMap[m.school_id].mobs++;
+    const cs = m.mobility_checklist_summary;
+    if (cs) { schoolMobMap[m.school_id].done += cs.done_count||0; schoolMobMap[m.school_id].total += cs.total_count||0; }
+  });
+
+  const filtered = allSchools.filter(s =>
+    !q || s.name.toLowerCase().includes(q) || (s.oid||'').toLowerCase().includes(q) || (s.city||'').toLowerCase().includes(q)
+  );
+
+  const hasPortal = new Set(allUsers.filter(u => u.role === 'school').map(u => u.school_id));
+
+  document.getElementById('schoolsBody').innerHTML = filtered.length ? filtered.map((s, i) => {
+    const sm = schoolMobMap[s.id] || { mobs: 0, done: 0, total: 0 };
+    const pct = sm.total > 0 ? Math.round(sm.done / sm.total * 100) : 0;
+    const barColor = pct === 100 ? 'var(--green)' : pct > 50 ? 'var(--blue)' : 'var(--orange)';
+    const registered = hasPortal.has(s.id);
+    return `<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><strong>${s.name}</strong></td>
+      <td class="mono">${s.oid || '—'}</td>
+      <td>${s.city || '—'}</td>
+      <td><span style="font-size:12px;font-weight:700">${sm.mobs}</span> <span style="color:var(--muted)">mob.</span></td>
+      <td style="min-width:140px">
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <span class="prog-pct">${pct}%</span>
+        </div>
+      </td>
+      <td><span class="badge ${registered ? 'badge-green' : 'badge-gray'}">${registered ? '✓ Kayıtlı' : 'Davet Yok'}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="viewSchool('${s.id}')">Detay</button>
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Okul bulunamadı.</td></tr>`;
+}
+
+function filterSchools() {
+  renderSchools(document.getElementById('schoolSearch').value);
+}
+
+function viewSchool(schoolId) {
+  const school = allSchools.find(s => s.id === schoolId);
+  if (!school) return;
+  // TODO: okul detay modal veya sayfaya geç
+  showToast(`📋 ${school.name} — Detay yakında gelecek`);
+}
+
+// ─────────────────────────────────────────
+// MOBILITIES PANEL
+// ─────────────────────────────────────────
+function renderMobilities() {
+  const statusFilter = document.getElementById('mobStatusFilter').value;
+  const q = (document.getElementById('mobSearch').value || '').toLowerCase();
+
+  const filtered = allMobilities.filter(m => {
+    if (statusFilter && m.status !== statusFilter) return false;
+    if (q) {
+      const schoolName = m.schools?.name?.toLowerCase() || '';
+      if (!schoolName.includes(q) && !m.activity_type.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  const ACT_LABEL = {
+    'SM-JOB-SHDW': 'İş Başı Öğrenme', 'SM-TTA': 'Öğretim Görevi',
+    'SM-COUR-TRAIN': 'Kurs ve Eğitim', 'LM-GRP-PUPIL': 'Grup Öğrenci',
+    'LM-SCH-SHORT': 'Kısa Dönem', 'LM-SCH-LONG': 'Uzun Dönem',
+    'LM-BOTH-PUPIL': 'Kısa+Uzun Dönem',
+  };
+
+  document.getElementById('mobilitiesBody').innerHTML = filtered.length ? filtered.map(m => {
+    const act   = ACT_LABEL[m.activity_type] || m.activity_type;
+    const start = m.start_date ? m.start_date.substring(0,10) : '—';
+    const end   = m.end_date   ? m.end_date.substring(0,10)   : '—';
+    const pax   = m.participants?.[0]?.count || '—';
+    const cs    = m.mobility_checklist_summary;
+    const pct   = cs && cs.total_count > 0 ? Math.round(cs.done_count / cs.total_count * 100) : 0;
+    const stBadge = { planned: 'badge-blue', active: 'badge-orange', completed: 'badge-green', cancelled: 'badge-red' }[m.status] || 'badge-gray';
+    const stLabel = { planned: 'Planlandı', active: 'Devam', completed: 'Tamamlandı', cancelled: 'İptal' }[m.status] || m.status;
+    return `<tr>
+      <td><strong>${m.schools?.name || '?'}</strong><div style="font-size:10px;color:var(--muted)">${m.schools?.city||''}</div></td>
+      <td><span class="badge badge-blue">${act}</span></td>
+      <td style="font-size:11px">${start}<br><span style="color:var(--muted)">${end}</span></td>
+      <td style="text-align:center">${pax}</td>
+      <td><span class="badge ${stBadge}">${stLabel}</span></td>
+      <td style="min-width:120px">
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+          <span class="prog-pct">${pct}%</span>
+        </div>
+      </td>
+      <td><button class="btn btn-outline btn-sm" onclick="showToast('Detay yakında…')">Detay</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Hareketlilik bulunamadı.</td></tr>`;
+}
+
+function filterMobilities() { renderMobilities(); }
+
+// ─────────────────────────────────────────
+// DOCUMENTS PANEL
+// ─────────────────────────────────────────
+function setDocFilter(status) {
+  docFilter = status;
+  document.querySelectorAll('[id^="dfBtn-"]').forEach(b => b.classList.remove('btn-primary'));
+  const activeBtn = document.getElementById('dfBtn-' + status);
+  if (activeBtn) activeBtn.classList.add('btn-primary');
+  renderDocuments();
+}
+
+function renderDocuments() {
+  const filtered = docFilter ? allDocuments.filter(d => d.status === docFilter) : allDocuments;
+  const container = document.getElementById('docsContainer');
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Bu kategoride belge yok.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(d => {
+    const ai = d.ai_validation || {};
+    const aiChecks = ai.checks || [];
+    const school = d.mobilities?.schools?.name || '?';
+    const actType = d.mobilities?.activity_type || '';
+
+    return `<div class="doc-card">
+      <div class="doc-card-header">
+        <div class="doc-icon">📄</div>
+        <div class="doc-info">
+          <div class="doc-name">${docTypeLabel(d.doc_type)}</div>
+          <div class="doc-meta">${school} · ${actType} · ${relTime(d.created_at)}</div>
+        </div>
+        <span class="badge ${statusBadgeClass(d.status)}">${statusLabel(d.status)}</span>
+      </div>
+      ${aiChecks.length ? `
+        <div class="ai-box">
+          <div class="ai-box-title">🤖 AI Değerlendirmesi</div>
+          ${aiChecks.map(c => `
+            <div class="ai-check">
+              <div class="dot ${c.ok ? 'dot-ok' : c.warn ? 'dot-warn' : 'dot-err'}"></div>
+              <span>${c.text}</span>
+            </div>`).join('')}
+          ${ai.summary ? `<div style="font-size:11px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid #e9d5ff">${ai.summary}</div>` : ''}
+        </div>` : ''}
+      <div class="doc-actions">
+        ${d.file_path ? `<button class="btn btn-outline btn-sm" onclick="viewDocument('${d.id}')">👁 Görüntüle</button>` : ''}
+        ${(d.status === 'uploaded' || d.status === 'ai_checked') ? `
+          <button class="btn btn-green btn-sm" onclick="approveDoc('${d.id}')">✅ Onayla</button>
+          <button class="btn btn-red btn-sm" onclick="rejectDoc('${d.id}')">❌ Reddet</button>` : ''}
+        ${d.status === 'approved' ? `<button class="btn btn-outline btn-sm" onclick="revokeDocApproval('${d.id}')">↩ Onayı Kaldır</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function approveDoc(docId) {
+  const { error } = await db.from('documents').update({ status: 'approved', approved_by: currentUser.id, approved_at: new Date().toISOString() }).eq('id', docId);
+  if (!error) { showToast('✅ Belge onaylandı'); await loadDocuments(); renderDocuments(); }
+  else showToast('❌ Hata: ' + error.message);
+}
+
+async function rejectDoc(docId) {
+  const reason = prompt('Red nedeni (isteğe bağlı):') || '';
+  const { error } = await db.from('documents').update({ status: 'rejected', rejection_reason: reason }).eq('id', docId);
+  if (!error) { showToast('❌ Belge reddedildi'); await loadDocuments(); renderDocuments(); }
+  else showToast('❌ Hata: ' + error.message);
+}
+
+async function revokeDocApproval(docId) {
+  const { error } = await db.from('documents').update({ status: 'uploaded', approved_by: null, approved_at: null }).eq('id', docId);
+  if (!error) { showToast('↩ Onay kaldırıldı'); await loadDocuments(); renderDocuments(); }
+  else showToast('❌ Hata: ' + error.message);
+}
+
+async function viewDocument(docId) {
+  const doc = allDocuments.find(d => d.id === docId);
+  if (!doc || !doc.file_path) return;
+  const { data } = await db.storage.from('KAYP').createSignedUrl(doc.file_path, 300);
+  if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+  else showToast('❌ Dosya URL alınamadı');
+}
+
+// ─────────────────────────────────────────
+// USERS PANEL
+// ─────────────────────────────────────────
+function renderUsers() {
+  document.getElementById('usersBody').innerHTML = allUsers.length ? allUsers.map(u => `
+    <tr>
+      <td>
+        <strong>${u.full_name || '—'}</strong>
+        <div class="mono">${u.email || '—'}</div>
+      </td>
+      <td>${u.schools?.name || (u.role === 'coordinator' ? '(Koordinatör)' : '—')}</td>
+      <td><span class="badge ${u.role === 'coordinator' || u.role === 'admin' ? 'badge-purple' : 'badge-blue'}">${u.role}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('tr-TR') : 'Hiç'}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="showToast('Kullanıcı yönetimi yakında…')">Yönet</button></td>
+    </tr>`).join('')
+    : `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Kullanıcı bulunamadı.</td></tr>`;
+}
+
+// ─────────────────────────────────────────
+// CHECKLIST PANEL
+// ─────────────────────────────────────────
+function renderChecklistDefs(phaseFilter = '') {
+  const filtered = phaseFilter ? allChecklist.filter(c => c.phase === phaseFilter) : allChecklist;
+  const PHASE_LABEL = { oncesi: '⏳ Önce', sirasi: '▶️ Sırası', sonrasi: '✅ Sonrası' };
+  const TYPE_BADGE  = { info: 'badge-blue', document: 'badge-orange', form: 'badge-purple' };
+  const TYPE_LABEL  = { info: 'Bilgi', document: 'Belge', form: 'Form' };
+
+  document.getElementById('checklistBody').innerHTML = filtered.length ? filtered.map(c => `
+    <tr>
+      <td><span class="badge badge-gray">${PHASE_LABEL[c.phase] || c.phase}</span></td>
+      <td style="text-align:center;color:var(--muted)">${c.sort_order}</td>
+      <td><strong>${c.title}</strong>${c.description ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">${c.description}</div>` : ''}</td>
+      <td><span class="badge ${TYPE_BADGE[c.check_type] || 'badge-gray'}">${TYPE_LABEL[c.check_type] || c.check_type}</span></td>
+      <td class="mono">${c.required_doc_type || '—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${c.activity_types ? c.activity_types.join(', ') : 'Tümü'}</td>
+    </tr>`).join('')
+    : `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Checklist tanımı bulunamadı.</td></tr>`;
+}
+
+function filterChecklist() {
+  renderChecklistDefs(document.getElementById('clPhaseFilter').value);
+}
+
+// ─────────────────────────────────────────
+// INVITE MODAL
+// ─────────────────────────────────────────
+function populateInviteSchools() {
+  const sel = document.getElementById('inviteSchool');
+  const registeredSchools = new Set(allUsers.filter(u => u.school_id).map(u => u.school_id));
+  sel.innerHTML = '<option value="">— Okul Seçin —</option>' +
+    allSchools.map(s => `<option value="${s.id}" ${registeredSchools.has(s.id) ? '' : ''}>${s.name}${registeredSchools.has(s.id) ? ' ✓' : ''}</option>`).join('');
+}
+
+function openInviteModal() {
+  document.getElementById('inviteModal').classList.add('show');
+  document.getElementById('inviteError').style.display   = 'none';
+  document.getElementById('inviteSuccess').style.display = 'none';
+  document.getElementById('inviteEmail').value = '';
+}
+
+function closeInviteModal() {
+  document.getElementById('inviteModal').classList.remove('show');
+}
+
+async function doInvite() {
+  const schoolId = document.getElementById('inviteSchool').value;
+  const email    = document.getElementById('inviteEmail').value.trim();
+  const errEl    = document.getElementById('inviteError');
+  const sucEl    = document.getElementById('inviteSuccess');
+  const btn      = document.getElementById('inviteBtn');
+
+  errEl.style.display = 'none';
+  sucEl.style.display = 'none';
+
+  if (!schoolId) { errEl.textContent = 'Lütfen bir okul seçin.'; errEl.style.display = 'block'; return; }
+  if (!email)    { errEl.textContent = 'E-posta adresi gereklidir.'; errEl.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Gönderiliyor…';
+
+  // Supabase Admin API davete yetki gerektiriyor; service_role key olmadan invite edilemiyor.
+  // Geçici çözüm: kullanıcıya SQL talimatı göster
+  const school = allSchools.find(s => s.id === schoolId);
+  sucEl.innerHTML = `
+    <strong>Supabase Admin gerekli!</strong><br>
+    Supabase Dashboard → Authentication → Users → <strong>Invite user</strong> ile <code>${email}</code> adresine davet gönder.<br>
+    Sonra SQL Editor'da çalıştır:<br>
+    <code style="display:block;margin-top:6px;padding:6px;background:#e7f3e8;border-radius:4px;font-size:11px;word-break:break-all">
+    INSERT INTO users (id, school_id, role, email, full_name)<br>
+    VALUES ('AUTH_UID', '${schoolId}', 'school', '${email}', '${school?.name || ''}');<br>
+    -- AUTH_UID: Authentication > Users > kullanıcının UUID'si
+    </code>`;
+  sucEl.style.display = 'block';
+
+  btn.disabled = false;
+  btn.innerHTML = 'Davet Gönder';
+}
+
+// ─────────────────────────────────────────
+// PANEL NAVİGASYON
+// ─────────────────────────────────────────
+const PANEL_TITLES = {
+  dashboard: ['Ana Pano', 'Genel durum ve özet'],
+  schools:   ['Okullar', '39 okul · 2026 akreditasyonu'],
+  mobilities:['Hareketlilikler', 'Tüm hareketlilik kayıtları'],
+  documents: ['Belge İnceleme', 'Yüklenen belgeleri onayla veya reddet'],
+  users:     ['Kullanıcılar', 'Okul hesapları ve roller'],
+  checklist: ['Checklist Tanımları', 'Faz ve görev yapılandırması'],
+};
+
+function showPanel(id) {
+  currentPanel = id;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('panel-' + id)?.classList.add('active');
+  document.querySelector(`.sb-item[onclick="showPanel('${id}')"]`)?.classList.add('active');
+
+  const [title, sub] = PANEL_TITLES[id] || [id, ''];
+  document.getElementById('topbarTitle').textContent = title;
+  document.getElementById('topbarSub').textContent   = sub;
+
+  if (id === 'schools')    renderSchools();
+  if (id === 'mobilities') renderMobilities();
+  if (id === 'documents')  renderDocuments();
+  if (id === 'users')      renderUsers();
+  if (id === 'checklist')  renderChecklistDefs();
+}
+
+async function refreshCurrentPanel() {
+  await Promise.all([loadSchools(), loadMobilities(), loadDocuments(), loadUsers(), loadChecklist()]);
+  document.getElementById('topbarSub').textContent = 'Son güncelleme: ' + new Date().toLocaleString('tr-TR');
+  showPanel(currentPanel);
+  if (currentPanel === 'dashboard') renderDashboard();
+}
+
+// ─────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────
+function statusLabel(s) {
+  return { pending: 'Bekliyor', generated: 'Üretildi', uploaded: 'Yüklendi', ai_checked: 'AI Kontrol', approved: 'Onaylandı', rejected: 'Reddedildi', archived: 'Arşiv' }[s] || s;
+}
+function statusBadgeClass(s) {
+  return { pending:'badge-gray', generated:'badge-blue', uploaded:'badge-orange', ai_checked:'badge-purple', approved:'badge-green', rejected:'badge-red', archived:'badge-gray' }[s] || 'badge-gray';
+}
+function statusColor(s) {
+  return { pending:'#94a3b8', generated:'#2563eb', uploaded:'#d97706', ai_checked:'#7c3aed', approved:'#059669', rejected:'#dc2626' }[s] || '#94a3b8';
+}
+function docTypeLabel(t) {
+  const m = { hibe_soz:'Hibe Sözleşmesi', ogrenme_anlasma:'Öğrenme Anlaşması', sertifika:'Sertifika', katilimci_listesi:'Katılımcı Listesi', beyan:'Harcama Beyanı', sigorta:'Sigorta', bilet:'Uçak Bileti / Boarding', konaklama:'Konaklama', kurs_faturasi:'Kurs Faturası', valilik_olur:'Valilik Oluru PDF', kimlik:'Kimlik / Pasaport' };
+  return m[t] || t;
+}
+function relTime(iso) {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60000)    return 'az önce';
+  if (diff < 3600000)  return Math.floor(diff/60000) + ' dk önce';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' sa önce';
+  return Math.floor(diff/86400000) + ' gün önce';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function doLogout() {
+  await db.auth.signOut();
+  window.location.href = 'erasdesk_login.html';
+}
+
+// Başlat
+init();
+</script>
+</body>
+</html>
