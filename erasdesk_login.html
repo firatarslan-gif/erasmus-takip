@@ -277,11 +277,11 @@ async function redirectToPortal(user) {
     if (userData?.role === 'coordinator' || userData?.role === 'admin') {
       window.location.href = 'erasdesk_koordinator.html';
     } else {
-      window.location.href = 'erasdesk_portal.html';
+      window.location.href = 'kayp_portal.html';
     }
   } catch(e) {
     // users tablosunda kayıt yoksa portala gönder
-    window.location.href = 'erasdesk_portal.html';
+    window.location.href = 'kayp_portal.html';
   }
 }
 
