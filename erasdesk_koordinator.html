@@ -453,7 +453,7 @@ async function init() {
     .single();
 
   if (!userData || (userData.role !== 'coordinator' && userData.role !== 'admin')) {
-    window.location.href = 'erasdesk_portal.html';
+    window.location.href = 'kayp_portal.html';
     return;
   }
 
@@ -749,20 +749,20 @@ function renderDocuments() {
 }
 
 async function approveDoc(docId) {
-  const { error } = await db.from('documents').update({ status: 'approved', approved_by: currentUser.id, approved_at: new Date().toISOString() }).eq('id', docId);
+  const { error } = await db.from('documents').update({ status: 'approved', reviewed_by: currentUser.id, reviewed_at: new Date().toISOString() }).eq('id', docId);
   if (!error) { showToast('✅ Belge onaylandı'); await loadDocuments(); renderDocuments(); }
   else showToast('❌ Hata: ' + error.message);
 }
 
 async function rejectDoc(docId) {
   const reason = prompt('Red nedeni (isteğe bağlı):') || '';
-  const { error } = await db.from('documents').update({ status: 'rejected', rejection_reason: reason }).eq('id', docId);
+  const { error } = await db.from('documents').update({ status: 'rejected', coordinator_note: reason, reviewed_by: currentUser.id, reviewed_at: new Date().toISOString() }).eq('id', docId);
   if (!error) { showToast('❌ Belge reddedildi'); await loadDocuments(); renderDocuments(); }
   else showToast('❌ Hata: ' + error.message);
 }
 
 async function revokeDocApproval(docId) {
-  const { error } = await db.from('documents').update({ status: 'uploaded', approved_by: null, approved_at: null }).eq('id', docId);
+  const { error } = await db.from('documents').update({ status: 'uploaded', reviewed_by: null, reviewed_at: null }).eq('id', docId);
   if (!error) { showToast('↩ Onay kaldırıldı'); await loadDocuments(); renderDocuments(); }
   else showToast('❌ Hata: ' + error.message);
 }
