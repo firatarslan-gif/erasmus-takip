@@ -556,14 +556,19 @@ async function loadChecklist() {
 
   document.getElementById('checklist-panel').style.display = 'block';
 
-  // Checklist tanımlarını ve ilerlemeyi çek
-  const [{ data: defs }, { data: prog }] = await Promise.all([
+  // Checklist tanımlarını, ilerlemeyi ve bu hareketlilik için yüklenmiş belgeleri çek
+  const [{ data: defs }, { data: prog }, { data: docs }] = await Promise.all([
     db.from('checklist_definitions').select('*').eq('is_active', true).order('sort_order'),
-    db.from('checklist_progress').select('*').eq('mobility_id', mobId)
+    db.from('checklist_progress').select('*').eq('mobility_id', mobId),
+    db.from('documents').select('*').eq('mobility_id', mobId).neq('status', 'archived').order('created_at', { ascending: false })
   ]);
 
   checklistData = {};
   (prog || []).forEach(p => { checklistData[p.definition_id] = p; });
+
+  // Belge tipi başına en güncel yüklemeyi tut
+  window._clDocs = {};
+  (docs || []).forEach(d => { if (!window._clDocs[d.doc_type]) window._clDocs[d.doc_type] = d; });
 
   window._clDefs = defs || [];
   window._clMobType = mob.activity_type;
@@ -596,16 +601,9 @@ function renderPhase(phase) {
   el.innerHTML = defs.map(d => {
     const prog   = checklistData[d.id];
     const isDone = prog?.status === 'done';
+    const doc    = d.check_type === 'document' ? window._clDocs?.[d.required_doc_type] : null;
 
-    // Engelleme kontrolü
-    let isBlocked = false;
-    let blockMsg  = '';
-    if (!isDone && d.check_type === 'document' && d.required_doc_type) {
-      // İleride gerçek belge kontrolü buraya gelecek
-      // Şimdilik UI tasarımı için placeholder
-    }
-
-    const cbClass   = isDone ? 'done' : isBlocked ? 'blocked' : '';
+    const cbClass   = isDone ? 'done' : '';
     const textClass = isDone ? 'done' : '';
     const typeLabel = { info: 'Bilgi', document: 'Belge', form: 'Form' }[d.check_type];
 
@@ -619,10 +617,10 @@ function renderPhase(phase) {
         <div class="cl-meta">
           <span class="cl-type ${d.check_type}">${typeLabel}</span>
           ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
-          ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ Belge Yükle</span>` : ''}
+          ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${doc ? 'Yeniden Yükle' : 'Belge Yükle'}</span>` : ''}
           ${isDone && prog?.completed_at ? `<span style="font-size:10px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
         </div>
-        ${isBlocked ? `<div class="cl-block-msg">⚠ ${blockMsg}</div>` : ''}
+        ${doc ? `<div style="font-size:10px;color:var(--muted);margin-top:4px">📄 ${doc.file_name} · <span style="cursor:pointer;color:var(--blue)" onclick="viewOwnDocument('${doc.file_path}')">Görüntüle</span> · ${statusLabel(doc.status)}</div>` : ''}
       </div>
       ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
     </div>`;
@@ -633,10 +631,14 @@ async function toggleChecklist(defId, checkType, reqDoc) {
   const prog = checklistData[defId];
   if (prog?.status === 'done') return; // geri alma ayrı
 
-  // Belge gerektiriyorsa önce yükle
+  // Belge gerektiriyorsa: zaten yüklenmişse tamamlandı işaretle, yoksa önce yükle
   if (checkType === 'document' && reqDoc) {
-    openUpload(reqDoc, currentMobId, null, defId);
-    return;
+    const doc = window._clDocs?.[reqDoc];
+    if (!doc) {
+      openUpload(reqDoc, currentMobId, null, defId);
+      return;
+    }
+    // belge var — devam edip aşağıda "done" olarak kaydedilir
   }
 
   // Form gerektiriyorsa (ileride form açılacak)
