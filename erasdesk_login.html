@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ErasDesk — Giriş</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+}
+.logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logo-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  border-radius: 16px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.logo-title { font-size: 22px; font-weight: 800; color: #1e293b; }
+.logo-sub   { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+h2 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 20px; }
+
+.form-group { margin-bottom: 16px; }
+label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+input {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  transition: border-color .2s;
+}
+input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+input.error { border-color: #dc2626; }
+
+.btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity .2s, transform .1s;
+}
+.btn:hover { opacity: .92; }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.error-msg {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #dc2626;
+  margin-bottom: 16px;
+  display: none;
+}
+.error-msg.show { display: block; }
+
+.success-msg {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #166534;
+  margin-bottom: 16px;
+  display: none;
+}
+.success-msg.show { display: block; }
+
+.forgot-link {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  color: #2563eb;
+  text-decoration: none;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.forgot-link:hover { text-decoration: underline; }
+
+.divider {
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 20px 0;
+  position: relative;
+}
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px; background: #e2e8f0;
+}
+.divider span { background: white; padding: 0 12px; position: relative; }
+
+.footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 28px; }
+.footer a { color: #2563eb; text-decoration: none; }
+
+/* Şifre sıfırlama formu */
+.reset-form { display: none; }
+.back-btn { background: none; border: none; color: #2563eb; font-size: 12px; cursor: pointer; margin-bottom: 16px; padding: 0; }
+.back-btn:hover { text-decoration: underline; }
+
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.4); border-top-color: white;
+  border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">🎓</div>
+    <div class="logo-title">ErasDesk</div>
+    <div class="logo-sub">Kocaeli MEM Erasmus Akreditasyon Platformu</div>
+  </div>
+
+  <!-- Giriş Formu -->
+  <div id="login-form">
+    <h2>Okul Girişi</h2>
+
+    <div class="error-msg" id="login-error"></div>
+
+    <div class="form-group">
+      <label>E-posta Adresi</label>
+      <input type="email" id="email" placeholder="okul@ornek.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label>Şifre</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      <a class="forgot-link" onclick="showReset()">Şifremi unuttum</a>
+    </div>
+
+    <button class="btn" id="login-btn" onclick="doLogin()">Giriş Yap</button>
+  </div>
+
+  <!-- Şifre Sıfırlama -->
+  <div class="reset-form" id="reset-form">
+    <button class="back-btn" onclick="showLogin()">← Giriş ekranına dön</button>
+    <h2>Şifre Sıfırla</h2>
+    <p style="font-size:12px;color:#64748b;margin-bottom:16px">E-posta adresinizi girin, şifre sıfırlama bağlantısı göndereceğiz.</p>
+
+    <div class="error-msg" id="reset-error"></div>
+    <div class="success-msg" id="reset-success"></div>
+
+    <div class="form-group">
+      <label>E-posta Adresi</label>
+      <input type="email" id="reset-email" placeholder="okul@ornek.com">
+    </div>
+
+    <button class="btn" id="reset-btn" onclick="doReset()">Sıfırlama Bağlantısı Gönder</button>
+  </div>
+
+  <div class="footer">
+    Sorun mu var? <a href="mailto:erasmus41@kocaeliarge.gov.tr">erasmus41@kocaeliarge.gov.tr</a>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// Supabase Bağlantısı
+// Bu değerleri Supabase Dashboard > Settings > API'den alın
+// ─────────────────────────────────────────────
+const SUPABASE_URL  = 'https://qmgfqwvbmgmteshopqgc.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_HhrToT0X6VV99lQXtubZGw_1z0ctaxG';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// Zaten giriş yapılmışsa portala yönlendir
+db.auth.getSession().then(({ data: { session } }) => {
+  if (session) redirectToPortal(session.user);
+});
+
+// Auth durum değişikliğini dinle
+db.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    redirectToPortal(session.user);
+  }
+});
+
+async function redirectToPortal(user) {
+  // Kullanıcı rolüne göre yönlendir
+  const { data: userData } = await db
+    .from('users')
+    .select('role, school_id')
+    .eq('id', user.id)
+    .single();
+
+  if (userData?.role === 'coordinator' || userData?.role === 'admin') {
+    window.location.href = 'erasdesk_koordinator.html';
+  } else {
+    window.location.href = 'erasdesk_portal.html';
+  }
+}
+
+async function doLogin() {
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('login-btn');
+  const errEl    = document.getElementById('login-error');
+
+  errEl.classList.remove('show');
+
+  if (!email || !password) {
+    showError(errEl, 'E-posta ve şifre gereklidir.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Giriş yapılıyor…';
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    btn.disabled = false;
+    btn.innerHTML = 'Giriş Yap';
+    let msg = 'Giriş başarısız.';
+    if (error.message.includes('Invalid login')) msg = 'E-posta veya şifre hatalı.';
+    if (error.message.includes('Email not confirmed')) msg = 'E-posta adresiniz henüz doğrulanmamış.';
+    showError(errEl, msg);
+  }
+  // Başarılıysa onAuthStateChange yakalar
+}
+
+async function doReset() {
+  const email  = document.getElementById('reset-email').value.trim();
+  const btn    = document.getElementById('reset-btn');
+  const errEl  = document.getElementById('reset-error');
+  const sucEl  = document.getElementById('reset-success');
+
+  errEl.classList.remove('show');
+  sucEl.classList.remove('show');
+
+  if (!email) { showError(errEl, 'E-posta adresi gereklidir.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Gönderiliyor…';
+
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/erasdesk_sifre_guncelle.html'
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = 'Sıfırlama Bağlantısı Gönder';
+
+  if (error) {
+    showError(errEl, 'Gönderilemedi: ' + error.message);
+  } else {
+    sucEl.textContent = 'Bağlantı gönderildi! E-posta kutunuzu kontrol edin.';
+    sucEl.classList.add('show');
+  }
+}
+
+function showError(el, msg) {
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function showReset() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('reset-form').style.display = 'block';
+}
+
+function showLogin() {
+  document.getElementById('reset-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+// Enter tuşu desteği
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('login-form').style.display !== 'none') doLogin();
+    else doReset();
+  }
+});
+</script>
+</body>
+</html>
