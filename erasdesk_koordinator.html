@@ -892,9 +892,28 @@ function renderUsers() {
       <td>${u.schools?.name || (u.role === 'coordinator' ? '(Koordinatör)' : '—')}</td>
       <td><span class="badge ${u.role === 'coordinator' || u.role === 'admin' ? 'badge-purple' : 'badge-blue'}">${u.role}</span></td>
       <td style="font-size:11px;color:var(--muted)">${u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('tr-TR') : 'Hiç'}</td>
-      <td><button class="btn btn-outline btn-sm" onclick="showToast('Kullanıcı yönetimi yakında…')">Yönet</button></td>
+      <td><button class="btn btn-outline btn-sm" onclick="viewUserDetail('${u.id}')">Detay</button></td>
     </tr>`).join('')
     : `<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Kullanıcı bulunamadı.</td></tr>`;
+}
+
+function viewUserDetail(userId) {
+  const u = allUsers.find(x => x.id === userId);
+  if (!u) return;
+
+  document.getElementById('detailModalTitle').textContent = u.full_name || u.email || 'Kullanıcı';
+  document.getElementById('detailModalBody').innerHTML = `
+    <div style="font-size:12px;color:var(--muted);display:grid;gap:6px">
+      <div><strong style="color:var(--text)">E-posta:</strong> ${u.email || '—'}</div>
+      <div><strong style="color:var(--text)">Rol:</strong> <span class="badge ${u.role === 'coordinator' || u.role === 'admin' ? 'badge-purple' : 'badge-blue'}">${u.role}</span></div>
+      <div><strong style="color:var(--text)">Okul:</strong> ${u.schools?.name || '—'}</div>
+      <div><strong style="color:var(--text)">Son Giriş:</strong> ${u.last_login_at ? new Date(u.last_login_at).toLocaleString('tr-TR') : 'Hiç giriş yapmadı'}</div>
+      <div><strong style="color:var(--text)">Hesap Oluşturma:</strong> ${u.created_at ? new Date(u.created_at).toLocaleDateString('tr-TR') : '—'}</div>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted)">Rol değiştirme / hesap silme gibi işlemler Supabase Dashboard → Authentication üzerinden yapılmalı (bu panelden kalıcı hesap işlemleri yapılmıyor).</div>
+    ${u.school_id ? `<button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="closeDetailModal(); viewSchool('${u.school_id}')">🏫 Okulu Görüntüle</button>` : ''}`;
+
+  document.getElementById('detailModal').classList.add('show');
 }
 
 // ─────────────────────────────────────────
