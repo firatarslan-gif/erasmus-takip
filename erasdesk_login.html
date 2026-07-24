@@ -226,6 +226,21 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON);
   const hash = window.location.hash;
   if (!hash) return;
   const params = new URLSearchParams(hash.replace('#', ''));
+
+  const error = params.get('error');
+  if (error) {
+    const desc = params.get('error_description');
+    let msg = 'Bağlantının süresi dolmuş veya geçersiz. Lütfen yöneticinizden yeni bir davet/sıfırlama bağlantısı isteyin.';
+    if (error === 'access_denied' && params.get('error_code') === 'otp_expired') {
+      msg = 'Bu bağlantının süresi dolmuş. Lütfen yöneticinizden yeni bir davet bağlantısı isteyin.';
+    } else if (desc) {
+      msg = decodeURIComponent(desc.replace(/\+/g, ' '));
+    }
+    showError(document.getElementById('login-error'), msg);
+    history.replaceState(null, '', window.location.pathname);
+    return;
+  }
+
   const type = params.get('type');
   if (type === 'invite' || type === 'recovery') {
     // Supabase token'ı otomatik işleyecek, PASSWORD_RECOVERY eventi gelecek
