@@ -322,12 +322,13 @@ input:focus, select:focus { border-color: var(--blue); }
 
       <!-- ── BELGE İNCELEME ── -->
       <div id="panel-documents" class="panel">
-        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
           <button class="btn btn-outline btn-sm" onclick="setDocFilter('ai_checked')" id="dfBtn-ai_checked" style="border-color:var(--purple);color:var(--purple)">🤖 AI Kontrol Edildi</button>
           <button class="btn btn-outline btn-sm" onclick="setDocFilter('uploaded')" id="dfBtn-uploaded">📤 Yüklendi</button>
           <button class="btn btn-outline btn-sm" onclick="setDocFilter('approved')" id="dfBtn-approved">✅ Onaylandı</button>
           <button class="btn btn-outline btn-sm" onclick="setDocFilter('rejected')" id="dfBtn-rejected">❌ Reddedildi</button>
           <button class="btn btn-outline btn-sm" onclick="setDocFilter('')" id="dfBtn-">Tümü</button>
+          <input class="search-box" id="docSearch" placeholder="🔍 Okul veya belge türü ara…" oninput="renderDocuments()" style="margin-left:auto">
         </div>
         <div id="docsContainer">
           <div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Yükleniyor…</div></div>
@@ -648,8 +649,41 @@ function filterSchools() {
 function viewSchool(schoolId) {
   const school = allSchools.find(s => s.id === schoolId);
   if (!school) return;
-  // TODO: okul detay modal veya sayfaya geç
-  showToast(`📋 ${school.name} — Detay yakında gelecek`);
+
+  const schoolMobs = allMobilities.filter(m => m.school_id === schoolId);
+  const registered = allUsers.some(u => u.school_id === schoolId && u.role === 'school');
+
+  document.getElementById('detailModalTitle').textContent = school.name;
+
+  const infoHtml = `
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;display:grid;gap:4px">
+      <div><strong style="color:var(--text)">OID:</strong> ${school.oid || '—'}</div>
+      <div><strong style="color:var(--text)">İlçe:</strong> ${school.city || '—'}</div>
+      <div><strong style="color:var(--text)">Adres:</strong> ${school.address || '—'}</div>
+      <div><strong style="color:var(--text)">E-posta:</strong> ${school.email || '—'}</div>
+      <div><strong style="color:var(--text)">Telefon:</strong> ${school.phone || '—'}</div>
+      <div><strong style="color:var(--text)">Müdür:</strong> ${school.principal_name || '—'}</div>
+      <div><strong style="color:var(--text)">Portal Erişimi:</strong> <span class="badge ${registered ? 'badge-green' : 'badge-gray'}">${registered ? '✓ Kayıtlı' : 'Davet Yok'}</span></div>
+    </div>`;
+
+  const mobsHtml = schoolMobs.length ? schoolMobs.map(m => {
+    const cs = m.mobility_checklist_summary;
+    const pct = cs && cs.total_count > 0 ? Math.round(cs.done_count / cs.total_count * 100) : 0;
+    const stBadge = { planned: 'badge-blue', active: 'badge-orange', completed: 'badge-green', cancelled: 'badge-red' }[m.status] || 'badge-gray';
+    const stLabel = { planned: 'Planlandı', active: 'Devam', completed: 'Tamamlandı', cancelled: 'İptal' }[m.status] || m.status;
+    return `<div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <span class="badge badge-blue" style="flex-shrink:0">${ACT_LABEL_GLOBAL[m.activity_type] || m.activity_type}</span>
+      <span style="font-size:11px;color:var(--muted);flex:1">${m.destination_country || '?'}</span>
+      <span class="badge ${stBadge}">${stLabel}</span>
+      <span class="prog-pct" style="min-width:32px">${pct}%</span>
+      <button class="btn btn-outline btn-sm" onclick="closeDetailModal(); viewMobilityDetail('${m.id}')">👥</button>
+    </div>`;
+  }).join('') : `<div style="color:var(--muted);font-size:12px;padding:8px 0">Henüz hareketlilik yok.</div>`;
+
+  document.getElementById('detailModalBody').innerHTML = infoHtml +
+    `<div class="card-title" style="margin-top:4px">Hareketlilikler (${schoolMobs.length})</div>` + mobsHtml;
+
+  document.getElementById('detailModal').classList.add('show');
 }
 
 // ─────────────────────────────────────────
@@ -766,7 +800,15 @@ function setDocFilter(status) {
 }
 
 function renderDocuments() {
-  const filtered = docFilter ? allDocuments.filter(d => d.status === docFilter) : allDocuments;
+  const q = (document.getElementById('docSearch')?.value || '').toLowerCase();
+  let filtered = docFilter ? allDocuments.filter(d => d.status === docFilter) : allDocuments;
+  if (q) {
+    filtered = filtered.filter(d => {
+      const schoolName = (d.mobilities?.schools?.name || '').toLowerCase();
+      const docLabel   = docTypeLabel(d.doc_type).toLowerCase();
+      return schoolName.includes(q) || docLabel.includes(q);
+    });
+  }
   const container = document.getElementById('docsContainer');
 
   if (!filtered.length) {
