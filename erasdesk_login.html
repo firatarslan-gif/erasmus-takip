@@ -171,6 +171,23 @@ input.error { border-color: #dc2626; }
     <button class="btn" id="login-btn" onclick="doLogin()">Giriş Yap</button>
   </div>
 
+  <!-- Şifre Belirleme (davet / recovery) -->
+  <div class="reset-form" id="setpw-form">
+    <h2>Şifrenizi Belirleyin</h2>
+    <p style="font-size:12px;color:#64748b;margin-bottom:16px">Hesabınız için yeni bir şifre oluşturun.</p>
+    <div class="error-msg"   id="setpw-error"></div>
+    <div class="success-msg" id="setpw-success"></div>
+    <div class="form-group">
+      <label>Yeni Şifre</label>
+      <input type="password" id="setpw-pass" placeholder="En az 6 karakter">
+    </div>
+    <div class="form-group">
+      <label>Şifre Tekrar</label>
+      <input type="password" id="setpw-pass2" placeholder="Aynı şifreyi tekrar girin">
+    </div>
+    <button class="btn" id="setpw-btn" onclick="doSetPassword()">Şifremi Belirle ve Giriş Yap</button>
+  </div>
+
   <!-- Şifre Sıfırlama -->
   <div class="reset-form" id="reset-form">
     <button class="back-btn" onclick="showLogin()">← Giriş ekranına dön</button>
@@ -204,17 +221,35 @@ const SUPABASE_ANON = 'sb_publishable_HhrToT0X6VV99lQXtubZGw_1z0ctaxG';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Zaten giriş yapılmışsa portala yönlendir
-db.auth.getSession().then(({ data: { session } }) => {
-  if (session) redirectToPortal(session.user);
-});
+// ── Davet / Şifre sıfırlama token kontrolü ──
+(function checkHashToken() {
+  const hash = window.location.hash;
+  if (!hash) return;
+  const params = new URLSearchParams(hash.replace('#', ''));
+  const type = params.get('type');
+  if (type === 'invite' || type === 'recovery') {
+    // Supabase token'ı otomatik işleyecek, PASSWORD_RECOVERY eventi gelecek
+    showSetPassword();
+  }
+})();
 
 // Auth durum değişikliğini dinle
 db.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    redirectToPortal(session.user);
+  if (event === 'PASSWORD_RECOVERY') {
+    showSetPassword();
+  } else if (event === 'SIGNED_IN' && session) {
+    if (!document.getElementById('setpw-form') || document.getElementById('setpw-form').style.display === 'none') {
+      redirectToPortal(session.user);
+    }
   }
 });
+
+// Zaten giriş yapılmışsa portala yönlendir (token yoksa)
+if (!window.location.hash) {
+  db.auth.getSession().then(({ data: { session } }) => {
+    if (session) redirectToPortal(session.user);
+  });
+}
 
 async function redirectToPortal(user) {
   // Kullanıcı rolüne göre yönlendir
@@ -286,6 +321,42 @@ async function doReset() {
   } else {
     sucEl.textContent = 'Bağlantı gönderildi! E-posta kutunuzu kontrol edin.';
     sucEl.classList.add('show');
+  }
+}
+
+function showSetPassword() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('reset-form').style.display = 'none';
+  document.getElementById('setpw-form').style.display = 'block';
+}
+
+async function doSetPassword() {
+  const pass  = document.getElementById('setpw-pass').value;
+  const pass2 = document.getElementById('setpw-pass2').value;
+  const errEl = document.getElementById('setpw-error');
+  const sucEl = document.getElementById('setpw-success');
+  const btn   = document.getElementById('setpw-btn');
+
+  errEl.classList.remove('show');
+  sucEl.classList.remove('show');
+
+  if (pass.length < 6) { showError(errEl, 'Şifre en az 6 karakter olmalıdır.'); return; }
+  if (pass !== pass2)  { showError(errEl, 'Şifreler eşleşmiyor.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Kaydediliyor…';
+
+  const { data, error } = await db.auth.updateUser({ password: pass });
+
+  btn.disabled = false;
+  btn.innerHTML = 'Şifremi Belirle ve Giriş Yap';
+
+  if (error) {
+    showError(errEl, 'Hata: ' + error.message);
+  } else {
+    sucEl.textContent = 'Şifreniz belirlendi! Yönlendiriliyorsunuz…';
+    sucEl.classList.add('show');
+    setTimeout(() => redirectToPortal(data.user), 1500);
   }
 }
 
