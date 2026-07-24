@@ -415,6 +415,17 @@ input:focus, select:focus { border-color: var(--blue); }
   </div>
 </div>
 
+<!-- DETAY MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal" style="max-height:80vh;overflow-y:auto">
+    <div class="modal-title" id="detailModalTitle">Hareketlilik Detayı</div>
+    <div id="detailModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDetailModal()">Kapat</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -685,12 +696,63 @@ function renderMobilities() {
           <span class="prog-pct">${pct}%</span>
         </div>
       </td>
-      <td><button class="btn btn-outline btn-sm" onclick="showToast('Detay yakında…')">Detay</button></td>
+      <td><button class="btn btn-outline btn-sm" onclick="viewMobilityDetail('${m.id}')">Detay</button></td>
     </tr>`;
   }).join('') : `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Hareketlilik bulunamadı.</td></tr>`;
 }
 
 function filterMobilities() { renderMobilities(); }
+
+// ─────────────────────────────────────────
+// HAREKETLİLİK DETAY (Katılımcılar)
+// ─────────────────────────────────────────
+function roleLabel(r) {
+  return { student:'Öğrenci', teacher:'Öğretmen', accompanying:'Refakatçi', expert:'Uzman', staff:'Personel' }[r] || r;
+}
+
+async function viewMobilityDetail(mobId) {
+  const m = allMobilities.find(x => x.id === mobId);
+  if (!m) return;
+
+  const { data: parts } = await db.from('participants').select('*').eq('mobility_id', mobId).order('created_at');
+
+  document.getElementById('detailModalTitle').textContent =
+    `${m.schools?.name || '?'} — ${ACT_LABEL_GLOBAL[m.activity_type] || m.activity_type}`;
+
+  const el = document.getElementById('detailModalBody');
+  if (!parts || !parts.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Henüz katılımcı eklenmedi.</div></div>`;
+  } else {
+    el.innerHTML = parts.map(p => {
+      const lp = p.lang_plan || {};
+      const lpDone = !!(lp.current_level && lp.target_level);
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong style="font-size:12px">${p.full_name}</strong>
+            <span style="font-size:11px;color:var(--muted)"> · ${roleLabel(p.role)}${p.tc_no ? ' · TC: ' + p.tc_no : ''}</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">
+          🗣️ Dil Gelişim Planı: ${lpDone ? `<span style="color:var(--green);font-weight:700">${lp.current_level} → ${lp.target_level}</span>` : '<span style="color:var(--orange)">Doldurulmadı</span>'}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.remove('show');
+}
+
+const ACT_LABEL_GLOBAL = {
+  'SM-JOB-SHDW': 'İş Başı Öğrenme', 'SM-TTA': 'Öğretim Görevi',
+  'SM-COUR-TRAIN': 'Kurs ve Eğitim', 'LM-GRP-PUPIL': 'Grup Öğrenci',
+  'LM-SCH-SHORT': 'Kısa Dönem', 'LM-SCH-LONG': 'Uzun Dönem',
+  'LM-BOTH-PUPIL': 'Kısa+Uzun Dönem',
+};
 
 // ─────────────────────────────────────────
 // DOCUMENTS PANEL
