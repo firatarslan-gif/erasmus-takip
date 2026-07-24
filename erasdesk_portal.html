@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ErasDesk — Okul Portalı</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #f8fafc;
+  --white:    #ffffff;
+  --border:   #e2e8f0;
+  --text:     #1e293b;
+  --muted:    #64748b;
+  --light:    #f1f5f9;
+  --blue:     #2563eb;
+  --green:    #059669;
+  --orange:   #d97706;
+  --red:      #dc2626;
+  --purple:   #7c3aed;
+  --sidebar:  #1e293b;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── SİDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--sidebar); color: white;
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100;
+}
+.sb-logo { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sb-logo-title { font-size: 16px; font-weight: 800; }
+.sb-logo-sub   { font-size: 10px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.sb-school { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sb-school-name { font-size: 12px; font-weight: 700; line-height: 1.4; }
+.sb-school-oid  { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.sb-nav { flex: 1; padding: 12px 0; }
+.sb-section { font-size: 9px; font-weight: 700; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .8px; padding: 12px 18px 4px; }
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px; cursor: pointer; font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,.7); border-left: 3px solid transparent;
+  transition: all .15s;
+}
+.sb-item:hover   { background: rgba(255,255,255,.07); color: white; }
+.sb-item.active  { background: rgba(37,99,235,.3); color: white; border-left-color: var(--blue); font-weight: 700; }
+.sb-item .icon   { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.sb-badge {
+  margin-left: auto; background: var(--red); color: white;
+  font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 10px;
+}
+.sb-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.1); }
+.sb-logout { font-size: 11px; color: rgba(255,255,255,.4); cursor: pointer; }
+.sb-logout:hover { color: white; }
+
+/* ── ANA İÇERİK ── */
+.main { margin-left: 220px; flex: 1; min-width: 0; }
+.topbar {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 14px 28px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 16px; font-weight: 800; flex: 1; }
+.topbar-notif { position: relative; cursor: pointer; }
+.notif-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; border: 2px solid white; }
+
+.content { padding: 24px 28px; }
+
+/* ── KARTLAR ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.stat-label { font-size: 11px; color: var(--muted); font-weight: 600; }
+.stat-value { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+.stat-sub   { font-size: 10px; color: var(--muted); }
+.stat-icon  { font-size: 22px; margin-bottom: 8px; }
+
+/* ── HAREKETLİLİK LİSTESİ ── */
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.section-title  { font-size: 14px; font-weight: 800; }
+.section-badge  { background: var(--light); color: var(--muted); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+.section-action { margin-left: auto; }
+
+.mob-card {
+  background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+  margin-bottom: 10px; cursor: pointer; transition: box-shadow .15s, border-color .15s;
+}
+.mob-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); border-color: #c7d2fe; }
+.mob-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.mob-type { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 5px; }
+.mob-type.SM-TTA         { background: #eff6ff; color: #1d4ed8; }
+.mob-type.SM-JOB-SHDW   { background: #fdf4ff; color: #7c3aed; }
+.mob-type.SM-COUR-TRAIN  { background: #fff7ed; color: #c2410c; }
+.mob-type.LM-SHORT-PUPIL { background: #f0fdf4; color: #166534; }
+.mob-type.LM-LONG-PUPILS { background: #ecfdf5; color: #065f46; }
+.mob-type.LM-GRP-PUPIL   { background: #f0f9ff; color: #0369a1; }
+.mob-type.OA-INV-EXP     { background: #fef3c7; color: #92400e; }
+.mob-type.PREP-VISIT      { background: #fce7f3; color: #9d174d; }
+.mob-name { font-size: 13px; font-weight: 700; }
+.mob-dates { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+/* Progress bar */
+.progress-wrap { margin-top: 4px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.progress-bar { height: 6px; background: var(--light); border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width .3s; }
+.progress-fill.low    { background: var(--red); }
+.progress-fill.mid    { background: var(--orange); }
+.progress-fill.high   { background: var(--green); }
+
+.mob-footer { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.mob-stat { font-size: 10px; background: var(--light); color: var(--muted); padding: 3px 8px; border-radius: 5px; font-weight: 600; }
+.mob-stat.warn { background: #fef9c3; color: #92400e; }
+.mob-stat.ok   { background: #ecfdf5; color: #065f46; }
+.mob-stat.err  { background: #fef2f2; color: #991b1b; }
+
+/* ── CHECKLİST PANEL ── */
+.panel { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.panel-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: #f8fafc; }
+.panel-title { font-size: 13px; font-weight: 800; }
+.phase-tabs { display: flex; gap: 0; padding: 12px 18px; border-bottom: 1px solid var(--border); }
+.phase-tab {
+  padding: 6px 14px; font-size: 11px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid var(--border); background: white; color: var(--muted);
+  border-radius: 6px; margin-right: 6px;
+}
+.phase-tab.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+.cl-list { padding: 12px 18px; }
+.cl-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f8fafc; }
+.cl-item:last-child { border-bottom: none; }
+
+.cl-checkbox {
+  width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--border);
+  flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.cl-checkbox.done     { background: var(--green); border-color: var(--green); }
+.cl-checkbox.blocked  { background: #fef2f2; border-color: #fca5a5; cursor: not-allowed; }
+.cl-checkbox.done::after { content: '✓'; color: white; font-size: 11px; font-weight: 800; }
+
+.cl-body { flex: 1; }
+.cl-text { font-size: 12px; color: #374151; line-height: 1.4; }
+.cl-text.done { text-decoration: line-through; color: var(--muted); }
+.cl-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.cl-type { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
+.cl-type.info     { background: var(--light); color: var(--muted); }
+.cl-type.document { background: #fef9c3; color: #92400e; }
+.cl-type.form     { background: #fdf4ff; color: var(--purple); }
+.cl-block-msg { font-size: 10px; color: var(--red); }
+.cl-link { font-size: 10px; color: var(--blue); cursor: pointer; text-decoration: underline; }
+
+/* ── MODAL ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+.overlay.show { display: flex; }
+.modal { background: white; border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+.modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.modal-title { font-size: 15px; font-weight: 800; flex: 1; }
+.modal-close { font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 22px; }
+.modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* Upload */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 10px; padding: 28px;
+  text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--blue); background: #eff6ff; }
+.upload-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-text { font-size: 13px; font-weight: 600; color: var(--muted); }
+.upload-sub  { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+input[type="file"] { display: none; }
+
+/* Form inputs */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.form-input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 13px; outline: none; }
+.form-input:focus { border-color: var(--blue); }
+
+/* Buttons */
+.btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; }
+.btn-primary { background: var(--blue); color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-ghost   { background: var(--light); color: var(--muted); }
+.btn-ghost:hover { color: var(--text); }
+.btn-danger  { background: #fef2f2; color: var(--red); border: 1px solid #fca5a5; }
+
+/* AI validation badge */
+.ai-result { border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 11px; }
+.ai-result.ok   { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+.ai-result.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.ai-result.err  { background: #fef2f2; border: 1px solid #fca5a5; color: #dc2626; }
+
+/* Loading */
+.loading { text-align: center; padding: 40px; color: var(--muted); }
+.spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY: Belge yükleme -->
+<div class="overlay" id="upload-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="upload-modal-title">Belge Yükle</div>
+      <div class="modal-close" onclick="closeUpload()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleDrop(event)">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">Dosyayı buraya sürükleyin veya tıklayın</div>
+        <div class="upload-sub">PDF, JPG, PNG — max 10 MB</div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+
+      <div id="selected-file" style="display:none;margin-top:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px">
+        <div id="file-info"></div>
+        <div id="ai-result-area"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUpload()">İptal</button>
+      <button class="btn btn-primary" id="upload-confirm-btn" onclick="confirmUpload()" disabled>⬆️ Yükle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANA LAYOUT -->
+<div class="layout">
+
+  <!-- SİDEBAR -->
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-title">🎓 ErasDesk</div>
+      <div class="sb-logo-sub">Erasmus Akreditasyon 2026</div>
+    </div>
+    <div class="sb-school">
+      <div class="sb-school-name" id="sb-school-name">Yükleniyor…</div>
+      <div class="sb-school-oid"  id="sb-school-oid"></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Genel</div>
+      <div class="sb-item active" onclick="showTab('dashboard')"><span class="icon">🏠</span>Ana Sayfa</div>
+      <div class="sb-item" onclick="showTab('checklist')"><span class="icon">✅</span>Kontrol Listesi <span class="sb-badge" id="badge-cl">—</span></div>
+      <div class="sb-item" onclick="showTab('documents')"><span class="icon">📁</span>Belgeler <span class="sb-badge" id="badge-doc">—</span></div>
+      <div class="sb-section">Hareketlilikler</div>
+      <div id="mob-sidebar"></div>
+      <div class="sb-section">Diğer</div>
+      <div class="sb-item" onclick="showTab('notes')"><span class="icon">💬</span>Mesajlar</div>
+      <div class="sb-item" onclick="showTab('profile')"><span class="icon">⚙️</span>Okul Bilgileri</div>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-logout" onclick="doLogout()">← Çıkış Yap</div>
+    </div>
+  </nav>
+
+  <!-- ANA İÇERİK -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Ana Sayfa</div>
+      <div class="topbar-notif" onclick="showTab('notifications')">
+        🔔 <div class="notif-dot" id="notif-dot" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="tab-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🗓️</div>
+            <div class="stat-label">Hareketlilik</div>
+            <div class="stat-value" id="stat-mob">—</div>
+            <div class="stat-sub">Bu dönem</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-label">Katılımcı</div>
+            <div class="stat-value" id="stat-pax">—</div>
+            <div class="stat-sub">Toplam</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-label">Checklist</div>
+            <div class="stat-value" id="stat-cl">—</div>
+            <div class="stat-sub">% tamamlandı (ortalama)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📎</div>
+            <div class="stat-label">Eksik Belge</div>
+            <div class="stat-value" id="stat-missing" style="color:var(--red)">—</div>
+            <div class="stat-sub">Yüklenmesi gereken</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">Hareketliliklerim</div>
+          <div class="section-badge" id="mob-count-badge">0 hareketlilik</div>
+        </div>
+        <div id="mobility-list">
+          <div class="loading"><div class="spinner"></div><p style="margin-top:10px">Yükleniyor…</p></div>
+        </div>
+      </div>
+
+      <!-- ── CHECKLİST ── -->
+      <div id="tab-checklist" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Kontrol Listesi</div>
+          <select id="cl-mob-select" onchange="loadChecklist()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+        </div>
+
+        <div id="checklist-panel" style="display:none">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title" id="cl-panel-title">Kontrol Listesi</div>
+              <div style="margin-left:auto;font-size:12px;color:var(--muted)"><span id="cl-done-count">0</span> / <span id="cl-total-count">0</span> tamamlandı</div>
+            </div>
+            <div class="phase-tabs">
+              <div class="phase-tab active" onclick="switchPhase('oncesi',this)">📋 Öncesi</div>
+              <div class="phase-tab" onclick="switchPhase('sirasi',this)">✈️ Sırası</div>
+              <div class="phase-tab" onclick="switchPhase('sonrasi',this)">📤 Sonrası</div>
+            </div>
+            <div class="cl-list" id="cl-items"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BELGELER ── -->
+      <div id="tab-documents" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Belgelerim</div>
+          <select id="doc-mob-select" onchange="loadDocuments()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+        </div>
+        <div id="document-list">
+          <div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>
+        </div>
+      </div>
+
+      <!-- ── NOTLAR ── -->
+      <div id="tab-notes" style="display:none">
+        <div class="section-header"><div class="section-title">Koordinatörle Mesajlar</div></div>
+        <div id="notes-list" style="max-width:680px">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- ── PROFİL ── -->
+      <div id="tab-profile" style="display:none">
+        <div class="section-header"><div class="section-title">Okul Bilgileri</div></div>
+        <div class="panel" style="max-width:560px">
+          <div class="panel-head"><div class="panel-title">Okul Bilgileri</div></div>
+          <div class="modal-body" id="profile-content">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+// ─────────────────────────────────────────────
+// Supabase Bağlantısı
+// ─────────────────────────────────────────────
+const SUPABASE_URL  = 'https://qmgfqwvbmgmteshopqgc.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_HhrToT0X6VV99lQXtubZGw_1z0ctaxG';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── Durum ──
+let currentUser   = null;
+let currentSchool = null;
+let mobilities    = [];
+let checklistData = {};    // definition_id → progress
+let currentMobId  = null;
+let currentPhase  = 'oncesi';
+let pendingUpload = { file: null, docType: null, mobId: null, partId: null };
+
+// ─────────────────────────────────────────────
+// BAŞLANGIÇ
+// ─────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) { window.location.href = 'erasdesk_login.html'; return; }
+
+  currentUser = session.user;
+
+  const { data: userData } = await db.from('users')
+    .select('*, school:schools(*)')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (!userData) { await db.auth.signOut(); window.location.href = 'erasdesk_login.html'; return; }
+  if (userData.role === 'coordinator' || userData.role === 'admin') {
+    window.location.href = 'erasdesk_koordinator.html'; return;
+  }
+
+  currentSchool = userData.school;
+  document.getElementById('sb-school-name').textContent = currentSchool.name;
+  document.getElementById('sb-school-oid').textContent  = currentSchool.oid;
+
+  await loadMobilities();
+  await loadDashboard();
+}
+
+// ─────────────────────────────────────────────
+// HAREKETLİLİKLERİ YÜKLE
+// ─────────────────────────────────────────────
+async function loadMobilities() {
+  const { data } = await db.from('mobilities')
+    .select('*, participants(count)')
+    .eq('school_id', currentSchool.id)
+    .neq('status','cancelled')
+    .order('start_date', { ascending: true });
+
+  mobilities = data || [];
+
+  // Sidebar
+  const sbMob = document.getElementById('mob-sidebar');
+  const clSel = document.getElementById('cl-mob-select');
+  const docSel = document.getElementById('doc-mob-select');
+
+  sbMob.innerHTML = '';
+  clSel.innerHTML  = '<option value="">— Hareketlilik Seçin —</option>';
+  docSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
+
+  mobilities.forEach(m => {
+    const label = actLabel(m.activity_type) + ' — ' + (m.destination_country || '?');
+    sbMob.innerHTML += `<div class="sb-item" onclick="focusMobility('${m.id}')"><span class="icon">${actIcon(m.activity_type)}</span>${label}</div>`;
+    clSel.innerHTML  += `<option value="${m.id}">${label}</option>`;
+    docSel.innerHTML += `<option value="${m.id}">${label}</option>`;
+  });
+}
+
+// ─────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────
+async function loadDashboard() {
+  document.getElementById('stat-mob').textContent = mobilities.length;
+
+  const paxTotal = mobilities.reduce((s, m) => s + (m.num_participants || 0), 0);
+  document.getElementById('stat-pax').textContent = paxTotal;
+
+  document.getElementById('mob-count-badge').textContent = mobilities.length + ' hareketlilik';
+
+  renderMobilityCards();
+  await updateDashboardStats();
+}
+
+function renderMobilityCards() {
+  const el = document.getElementById('mobility-list');
+  if (!mobilities.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">Henüz hareketlilik tanımlanmamış.<br>Koordinatörünüzle iletişime geçin.</div>';
+    return;
+  }
+
+  el.innerHTML = mobilities.map(m => {
+    const pct   = m._pct || 0;
+    const fillCl = pct < 30 ? 'low' : pct < 70 ? 'mid' : 'high';
+    const dates  = m.start_date ? fmtDate(m.start_date) + ' – ' + fmtDate(m.end_date) : 'Tarih belirlenmedi';
+
+    return `
+    <div class="mob-card" onclick="focusMobility('${m.id}')">
+      <div class="mob-header">
+        <span class="mob-type ${m.activity_type}">${actLabel(m.activity_type)}</span>
+        <span class="mob-name">${m.destination_org || m.destination_country || 'Hedef belirlenmedi'}</span>
+        <span class="mob-dates">${dates}</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Checklist ilerleme</span>
+          <span><b>${pct}%</b></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${fillCl}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="mob-footer">
+        <span class="mob-stat">${actIcon(m.activity_type)} ${actLabel(m.activity_type)}</span>
+        <span class="mob-stat">${m.num_participants || 0} katılımcı</span>
+        ${m._missing_docs > 0 ? `<span class="mob-stat err">⚠ ${m._missing_docs} eksik belge</span>` : '<span class="mob-stat ok">✓ Belgeler tamam</span>'}
+        ${m.status === 'completed' ? '<span class="mob-stat ok">✓ Tamamlandı</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateDashboardStats() {
+  // Checklist summary
+  const mobIds = mobilities.map(m => m.id);
+  if (!mobIds.length) return;
+
+  const { data: clData } = await db.from('mobility_checklist_summary')
+    .select('*')
+    .in('mobility_id', mobIds);
+
+  if (clData && clData.length) {
+    const avg = Math.round(clData.reduce((s, r) => s + (r.pct_done || 0), 0) / clData.length);
+    document.getElementById('stat-cl').textContent = avg + '%';
+    clData.forEach(r => {
+      const m = mobilities.find(x => x.id === r.mobility_id);
+      if (m) m._pct = r.pct_done || 0;
+    });
+    renderMobilityCards();
+
+    const pending = clData.reduce((s, r) => s + (r.total_items - r.done_items), 0);
+    document.getElementById('badge-cl').textContent = pending > 0 ? pending : '✓';
+  }
+
+  // Missing docs
+  const { data: missDocs } = await db.from('missing_documents')
+    .select('*')
+    .in('mobility_id', mobIds);
+
+  if (missDocs) {
+    document.getElementById('stat-missing').textContent = missDocs.length;
+    document.getElementById('badge-doc').textContent = missDocs.length > 0 ? missDocs.length : '✓';
+    const byMob = {};
+    missDocs.forEach(d => { byMob[d.mobility_id] = (byMob[d.mobility_id] || 0) + 1; });
+    mobilities.forEach(m => { m._missing_docs = byMob[m.id] || 0; });
+    renderMobilityCards();
+  }
+}
+
+// ─────────────────────────────────────────────
+// CHECKLİST
+// ─────────────────────────────────────────────
+async function loadChecklist() {
+  const mobId = document.getElementById('cl-mob-select').value;
+  if (!mobId) { document.getElementById('checklist-panel').style.display = 'none'; return; }
+
+  currentMobId = mobId;
+  const mob = mobilities.find(m => m.id === mobId);
+
+  document.getElementById('cl-panel-title').textContent =
+    actLabel(mob.activity_type) + ' — ' + (mob.destination_country || '');
+
+  document.getElementById('checklist-panel').style.display = 'block';
+
+  // Checklist tanımlarını ve ilerlemeyi çek
+  const [{ data: defs }, { data: prog }] = await Promise.all([
+    db.from('checklist_definitions').select('*').eq('is_active', true).order('sort_order'),
+    db.from('checklist_progress').select('*').eq('mobility_id', mobId)
+  ]);
+
+  checklistData = {};
+  (prog || []).forEach(p => { checklistData[p.definition_id] = p; });
+
+  window._clDefs = defs || [];
+  window._clMobType = mob.activity_type;
+
+  renderPhase(currentPhase);
+}
+
+function switchPhase(phase, el) {
+  currentPhase = phase;
+  document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderPhase(phase);
+}
+
+function renderPhase(phase) {
+  const defs = (window._clDefs || []).filter(d => {
+    if (d.phase !== phase) return false;
+    if (d.activity_types && !d.activity_types.includes(window._clMobType)) return false;
+    return true;
+  });
+
+  const done  = defs.filter(d => checklistData[d.id]?.status === 'done').length;
+  const total = defs.length;
+  document.getElementById('cl-done-count').textContent  = done;
+  document.getElementById('cl-total-count').textContent = total;
+
+  const el = document.getElementById('cl-items');
+  if (!defs.length) { el.innerHTML = '<div style="padding:20px;color:var(--muted);text-align:center">Bu fazda madde yok.</div>'; return; }
+
+  el.innerHTML = defs.map(d => {
+    const prog   = checklistData[d.id];
+    const isDone = prog?.status === 'done';
+
+    // Engelleme kontrolü
+    let isBlocked = false;
+    let blockMsg  = '';
+    if (!isDone && d.check_type === 'document' && d.required_doc_type) {
+      // İleride gerçek belge kontrolü buraya gelecek
+      // Şimdilik UI tasarımı için placeholder
+    }
+
+    const cbClass   = isDone ? 'done' : isBlocked ? 'blocked' : '';
+    const textClass = isDone ? 'done' : '';
+    const typeLabel = { info: 'Bilgi', document: 'Belge', form: 'Form' }[d.check_type];
+
+    return `
+    <div class="cl-item" id="cl-${d.id}">
+      <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}')">
+        ${isDone ? '' : ''}
+      </div>
+      <div class="cl-body">
+        <div class="cl-text ${textClass}">${d.title}</div>
+        <div class="cl-meta">
+          <span class="cl-type ${d.check_type}">${typeLabel}</span>
+          ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
+          ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ Belge Yükle</span>` : ''}
+          ${isDone && prog?.completed_at ? `<span style="font-size:10px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
+        </div>
+        ${isBlocked ? `<div class="cl-block-msg">⚠ ${blockMsg}</div>` : ''}
+      </div>
+      ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function toggleChecklist(defId, checkType, reqDoc) {
+  const prog = checklistData[defId];
+  if (prog?.status === 'done') return; // geri alma ayrı
+
+  // Belge gerektiriyorsa önce yükle
+  if (checkType === 'document' && reqDoc) {
+    openUpload(reqDoc, currentMobId, null, defId);
+    return;
+  }
+
+  // Form gerektiriyorsa (ileride form açılacak)
+  if (checkType === 'form') {
+    alert('Form özelliği yakında eklenecek!');
+    return;
+  }
+
+  // Bilgi onayı — direkt kaydet
+  await saveChecklistProgress(defId, 'done');
+}
+
+async function revokeChecklist(defId) {
+  if (!confirm('Bu maddenin onayını kaldırmak istediğinize emin misiniz?')) return;
+  await saveChecklistProgress(defId, 'pending');
+}
+
+async function saveChecklistProgress(defId, status) {
+  const { error } = await db.from('checklist_progress')
+    .upsert({
+      mobility_id:   currentMobId,
+      definition_id: defId,
+      status:        status,
+      completed_by:  status === 'done' ? currentUser.id : null,
+      completed_at:  status === 'done' ? new Date().toISOString() : null,
+      revoked_by:    status === 'pending' ? currentUser.id : null,
+      revoked_at:    status === 'pending' ? new Date().toISOString() : null
+    }, { onConflict: 'mobility_id,definition_id' });
+
+  if (!error) {
+    if (status === 'done') {
+      checklistData[defId] = { status: 'done', completed_at: new Date().toISOString() };
+    } else {
+      delete checklistData[defId];
+    }
+    renderPhase(currentPhase);
+    updateDashboardStats();
+  }
+}
+
+// ─────────────────────────────────────────────
+// BELGE YÜKLEME
+// ─────────────────────────────────────────────
+let _afterUploadDefId = null;
+
+function openUpload(docType, mobId, partId, afterDefId = null) {
+  pendingUpload = { file: null, docType, mobId, partId };
+  _afterUploadDefId = afterDefId;
+  document.getElementById('upload-modal-title').textContent = docTypeLabel(docType) + ' Yükle';
+  document.getElementById('selected-file').style.display = 'none';
+  document.getElementById('upload-confirm-btn').disabled = true;
+  document.getElementById('upload-overlay').classList.add('show');
+}
+
+function closeUpload() {
+  document.getElementById('upload-overlay').classList.remove('show');
+  document.getElementById('file-input').value = '';
+  pendingUpload = { file: null, docType: null, mobId: null, partId: null };
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+async function processFile(file) {
+  if (file.size > 10 * 1024 * 1024) { alert('Dosya 10 MB\'ı geçemez.'); return; }
+
+  pendingUpload.file = file;
+
+  const infoEl = document.getElementById('file-info');
+  infoEl.innerHTML = `📄 <strong>${file.name}</strong> (${(file.size/1024/1024).toFixed(2)} MB)`;
+  document.getElementById('selected-file').style.display = 'block';
+  document.getElementById('ai-result-area').innerHTML = '<div style="color:var(--muted);font-size:11px;margin-top:8px">🤖 AI doğrulama çalışıyor…</div>';
+  document.getElementById('upload-confirm-btn').disabled = true;
+
+  // AI doğrulama (ileride gerçek Claude API ile)
+  await runAIValidation(file, pendingUpload.docType);
+
+  document.getElementById('upload-confirm-btn').disabled = false;
+}
+
+async function runAIValidation(file, docType) {
+  // TODO: Supabase Edge Function üzerinden Claude API'ye gönder
+  // Şimdilik simüle ediyoruz
+  await new Promise(r => setTimeout(r, 1200));
+
+  const aiEl = document.getElementById('ai-result-area');
+
+  const simResults = {
+    sigorta:       { cls: 'warn', msg: '🤖 AI: İsim eşleşiyor. Kaza sigortası açıkça belirtilmemiş — koordinatör kontrol edecek.' },
+    bilet:         { cls: 'ok',   msg: '🤖 AI: İsim ve tarih doğrulandı. ✓' },
+    boarding_pass: { cls: 'ok',   msg: '🤖 AI: İsim ve uçuş tarihi doğrulandı. ✓' },
+    konaklama:     { cls: 'warn', msg: '🤖 AI: Tarihler uyuşuyor. Katılımcı adı belgede bulunamadı (grup rezervasyonu olabilir).' },
+    kurs_proforma: { cls: 'warn', msg: '🤖 AI: Tutar doğrulandı. Tarihler hareketlilikten farklı — koordinatör onaylayacak.' }
+  };
+
+  const result = simResults[docType] || { cls: 'ok', msg: '🤖 AI: Belge alındı. İçerik koordinatör tarafından incelenecek.' };
+  aiEl.innerHTML = `<div class="ai-result ${result.cls}" style="margin-top:8px">${result.msg}</div>`;
+}
+
+async function confirmUpload() {
+  const { file, docType, mobId, partId } = pendingUpload;
+  if (!file) return;
+
+  const btn = document.getElementById('upload-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Yükleniyor…';
+
+  try {
+    // 1. Dosyayı Supabase Storage'a yükle
+    const ext     = file.name.split('.').pop();
+    const fileName = `${currentSchool.oid}_${docType}_${Date.now()}.${ext}`;
+    const path     = `${currentSchool.id}/${mobId || 'school'}/${fileName}`;
+
+    const { data: storageData, error: storageErr } = await db.storage
+      .from('KAYP')
+      .upload(path, file, { contentType: file.type, upsert: false });
+
+    if (storageErr) throw storageErr;
+
+    const { data: { publicUrl } } = db.storage.from('KAYP').getPublicUrl(path);
+
+    // 2. documents tablosuna kaydet
+    const aiResultEl = document.getElementById('ai-result-area').querySelector('.ai-result');
+    const aiNote = aiResultEl ? aiResultEl.textContent : '';
+
+    const { error: dbErr } = await db.from('documents').upsert({
+      school_id:      currentSchool.id,
+      mobility_id:    mobId || null,
+      participant_id: partId || null,
+      doc_type:       docType,
+      doc_level:      mobId ? 'mobility' : 'school',
+      status:         'uploaded',
+      file_url:       publicUrl,
+      file_name:      fileName,
+      file_size_bytes: file.size,
+      file_mime:      file.type,
+      ai_validation:  { note: aiNote, checked_at: new Date().toISOString() }
+    });
+
+    if (dbErr) throw dbErr;
+
+    // 3. Belge gerektiren checklist maddesini otomatik AÇMA — okul tıklamalı
+    closeUpload();
+    alert('✓ Belge başarıyla yüklendi! Koordinatör inceleyecek ve onaylayacak.');
+
+    // Listeyi güncelle
+    await updateDashboardStats();
+    if (currentMobId) renderPhase(currentPhase);
+
+  } catch (err) {
+    alert('Yükleme hatası: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = '⬆️ Yükle';
+  }
+}
+
+// ─────────────────────────────────────────────
+// YARDIMCI: Belgeler Tabı
+// ─────────────────────────────────────────────
+async function loadDocuments() {
+  const mobId = document.getElementById('doc-mob-select').value;
+  if (!mobId) return;
+
+  const { data: docs } = await db.from('documents')
+    .select('*')
+    .eq('mobility_id', mobId)
+    .neq('status', 'archived')
+    .order('doc_type');
+
+  const el = document.getElementById('document-list');
+
+  if (!docs || !docs.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Bu hareketlilik için henüz belge yok.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+  <div class="panel">
+  ${docs.map(d => `
+    <div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)">
+      <div style="font-size:22px">📄</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700">${docTypeLabel(d.doc_type)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${d.file_name || '—'} · v${d.version}</div>
+      </div>
+      <div style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;${statusStyle(d.status)}">${statusLabel(d.status)}</div>
+      ${d.file_url ? `<a href="${d.file_url}" target="_blank" style="font-size:11px;color:var(--blue)">👁 Görüntüle</a>` : ''}
+      ${d.status !== 'approved' ? `<span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="openUpload('${d.doc_type}','${mobId}',null)">🔄 Yeniden Yükle</span>` : ''}
+    </div>
+  `).join('')}
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+// NAVİGASYON
+// ─────────────────────────────────────────────
+const tabTitles = {
+  dashboard: 'Ana Sayfa',
+  checklist: 'Kontrol Listesi',
+  documents: 'Belgelerim',
+  notes:     'Mesajlar',
+  profile:   'Okul Bilgileri'
+};
+
+function showTab(name) {
+  ['dashboard','checklist','documents','notes','profile'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
+  });
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('topbar-title').textContent = tabTitles[name] || name;
+
+  if (name === 'notes') loadNotes();
+  if (name === 'profile') loadProfile();
+}
+
+function focusMobility(mobId) {
+  currentMobId = mobId;
+  document.getElementById('cl-mob-select').value  = mobId;
+  document.getElementById('doc-mob-select').value = mobId;
+  showTab('checklist');
+  loadChecklist();
+}
+
+// ─────────────────────────────────────────────
+// NOTLAR
+// ─────────────────────────────────────────────
+async function loadNotes() {
+  const { data } = await db.from('notes')
+    .select('*, author:users(full_name,role)')
+    .eq('school_id', currentSchool.id)
+    .eq('is_internal', false)
+    .order('created_at', { ascending: false });
+
+  const el = document.getElementById('notes-list');
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Henüz mesaj yok.</div>';
+    return;
+  }
+  el.innerHTML = data.map(n => `
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:700;color:${n.author?.role === 'school' ? '#1d4ed8' : '#166534'}">
+          ${n.author?.role === 'school' ? '🏫 ' + (n.author?.full_name || 'Okul') : '👩‍💼 Koordinatör'}
+        </span>
+        <span style="font-size:10px;color:var(--muted)">${fmtDate(n.created_at)}</span>
+      </div>
+      <div style="font-size:12px;color:#374151;line-height:1.6">${n.content}</div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────────
+// PROFİL
+// ─────────────────────────────────────────────
+async function loadProfile() {
+  const s = currentSchool;
+  document.getElementById('profile-content').innerHTML = `
+    <div style="display:grid;gap:10px;font-size:12px">
+      <div><strong>Okul Adı:</strong> ${s.name}</div>
+      <div><strong>OID:</strong> ${s.oid}</div>
+      <div><strong>Şehir:</strong> ${s.city || '—'}</div>
+      <div><strong>E-posta:</strong> ${s.email || '—'}</div>
+      <div><strong>Telefon:</strong> ${s.phone || '—'}</div>
+      <div><strong>Müdür:</strong> ${s.principal_name || '—'}</div>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--muted)">Bilgi güncellemesi için koordinatörünüzle iletişime geçin.</div>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// ÇIKIŞ
+// ─────────────────────────────────────────────
+async function doLogout() {
+  await db.auth.signOut();
+  window.location.href = 'erasdesk_login.html';
+}
+
+// ─────────────────────────────────────────────
+// YARDIMCI FONKSİYONLAR
+// ─────────────────────────────────────────────
+function actLabel(t) {
+  return {
+    'SM-TTA':         'Öğretim Görevi',
+    'SM-JOB-SHDW':   'İşbaşı',
+    'SM-COUR-TRAIN':  'Kurs',
+    'LM-SHORT-PUPIL': 'Kısa Öğrenci',
+    'LM-LONG-PUPILS': 'Uzun Öğrenci',
+    'LM-GRP-PUPIL':   'Grup Öğrenci',
+    'OA-INV-EXP':     'Uzman Davet',
+    'PREP-VISIT':     'Hazırlık Ziyareti'
+  }[t] || t;
+}
+
+function actIcon(t) {
+  return {
+    'SM-TTA':         '👩‍🏫',
+    'SM-JOB-SHDW':   '🔍',
+    'SM-COUR-TRAIN':  '📚',
+    'LM-SHORT-PUPIL': '🧑‍🎒',
+    'LM-LONG-PUPILS': '🎓',
+    'LM-GRP-PUPIL':   '👫',
+    'OA-INV-EXP':     '🧑‍🔬',
+    'PREP-VISIT':     '✈️'
+  }[t] || '📋';
+}
+
+function docTypeLabel(t) {
+  return {
+    hibe_soz:               'Hibe Anlaşması (Taslak)',
+    hibe_soz_imzali:        'Hibe Anlaşması (İmzalı)',
+    ogrenme_soz:            'Öğrenme Anlaşması (Taslak)',
+    ogrenme_soz_imzali:     'Öğrenme Anlaşması (İmzalı)',
+    faaliyet_programi:      'Faaliyet Programı',
+    faaliyet_programi_imzali: 'Faaliyet Programı (İmzalı)',
+    kvkk:                   'KVKK Belgesi',
+    sertifika:              'Katılım Sertifikası',
+    europass:               'Europass Belgesi',
+    europass_imzali:        'Europass (İmzalı)',
+    boarding_pass:          'Boarding Pass',
+    sigorta:                'Sigorta Poliçesi',
+    bilet:                  'Seyahat Bileti',
+    konaklama:              'Konaklama Rezervasyonu',
+    kurs_proforma:          'Kurs Proforma Faturası',
+    kurs_fatura:            'Kurs Faturası',
+    beyan:                  'Tamamlandı Beyanı',
+    valilik_oluru:          'Valilik Oluru (Onaylı)',
+    ortaklik_soz:           'Ortaklık Sözleşmesi',
+    katilimci_secim_tutanagi: 'Katılımcı Seçim Tutanağı',
+    gorev_yeri_belgesi:     'Görev Yeri / Öğrenci Belgesi',
+    resim_video:            'Fotoğraf / Video'
+  }[t] || t;
+}
+
+function statusLabel(s) {
+  return { pending:'Bekleniyor', generated:'Oluşturuldu', uploaded:'Yüklendi', ai_checked:'AI İnceledi', approved:'Onaylandı', rejected:'Reddedildi', archived:'Arşiv' }[s] || s;
+}
+function statusStyle(s) {
+  return {
+    pending:    'background:#f1f5f9;color:#64748b',
+    generated:  'background:#eff6ff;color:#1d4ed8',
+    uploaded:   'background:#fef9c3;color:#92400e',
+    ai_checked: 'background:#fdf4ff;color:#7c3aed',
+    approved:   'background:#ecfdf5;color:#065f46',
+    rejected:   'background:#fef2f2;color:#991b1b'
+  }[s] || '';
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+// ─────────────────────────────────────────────
+// BAŞLAT
+// ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
