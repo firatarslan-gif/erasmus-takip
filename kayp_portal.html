@@ -130,8 +130,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .phase-tab.active { background: var(--blue); border-color: var(--blue); color: white; }
 
 .cl-list { padding: 12px 18px; }
-.cl-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f8fafc; }
+.cl-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-bottom: 1px solid #f8fafc; border-radius: 8px; }
 .cl-item:last-child { border-bottom: none; }
+.cl-item.done { background: rgba(5,150,105,.07); }
 
 .cl-checkbox {
   width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--border);
@@ -144,7 +145,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 .cl-body { flex: 1; }
 .cl-text { font-size: 12px; color: #374151; line-height: 1.4; }
-.cl-text.done { text-decoration: line-through; color: var(--muted); }
+.cl-text.done { color: var(--green); font-weight: 700; }
 .cl-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
 .cl-type { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
 .cl-type.info     { background: var(--light); color: var(--muted); }
@@ -566,9 +567,12 @@ async function loadChecklist() {
   checklistData = {};
   (prog || []).forEach(p => { checklistData[p.definition_id] = p; });
 
-  // Belge tipi başına en güncel yüklemeyi tut
+  // Belge tipi başına tüm (arşivlenmemiş) yüklemeleri listele — birden fazla belge olabilir
   window._clDocs = {};
-  (docs || []).forEach(d => { if (!window._clDocs[d.doc_type]) window._clDocs[d.doc_type] = d; });
+  (docs || []).forEach(d => {
+    if (!window._clDocs[d.doc_type]) window._clDocs[d.doc_type] = [];
+    window._clDocs[d.doc_type].push(d);
+  });
 
   window._clDefs = defs || [];
   window._clMobType = mob.activity_type;
@@ -601,14 +605,25 @@ function renderPhase(phase) {
   el.innerHTML = defs.map(d => {
     const prog   = checklistData[d.id];
     const isDone = prog?.status === 'done';
-    const doc    = d.check_type === 'document' ? window._clDocs?.[d.required_doc_type] : null;
+    const docs   = (d.check_type === 'document' ? window._clDocs?.[d.required_doc_type] : null) || [];
 
     const cbClass   = isDone ? 'done' : '';
     const textClass = isDone ? 'done' : '';
     const typeLabel = { info: 'Bilgi', document: 'Belge', form: 'Form' }[d.check_type];
 
+    const docsList = docs.length ? `
+      <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+        ${docs.map(doc => `
+          <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+            <span>📄 ${doc.file_name}</span>
+            <span style="cursor:pointer;color:var(--blue)" onclick="viewOwnDocument('${doc.file_path}')">Görüntüle</span>
+            <span>· ${statusLabel(doc.status)}</span>
+            ${doc.status !== 'approved' ? `<span style="cursor:pointer;color:#dc2626" onclick="deleteOwnDocument('${doc.id}','${d.id}','${d.required_doc_type}')">🗑 Sil</span>` : ''}
+          </div>`).join('')}
+      </div>` : '';
+
     return `
-    <div class="cl-item" id="cl-${d.id}">
+    <div class="cl-item ${isDone ? 'done' : ''}" id="cl-${d.id}">
       <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}')">
         ${isDone ? '' : ''}
       </div>
@@ -617,10 +632,10 @@ function renderPhase(phase) {
         <div class="cl-meta">
           <span class="cl-type ${d.check_type}">${typeLabel}</span>
           ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
-          ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${doc ? 'Yeniden Yükle' : 'Belge Yükle'}</span>` : ''}
+          ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${docs.length ? 'Başka Belge Ekle' : 'Belge Yükle'}</span>` : ''}
           ${isDone && prog?.completed_at ? `<span style="font-size:10px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
         </div>
-        ${doc ? `<div style="font-size:10px;color:var(--muted);margin-top:4px">📄 ${doc.file_name} · <span style="cursor:pointer;color:var(--blue)" onclick="viewOwnDocument('${doc.file_path}')">Görüntüle</span> · ${statusLabel(doc.status)}</div>` : ''}
+        ${docsList}
       </div>
       ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
     </div>`;
@@ -633,8 +648,8 @@ async function toggleChecklist(defId, checkType, reqDoc) {
 
   // Belge gerektiriyorsa: zaten yüklenmişse tamamlandı işaretle, yoksa önce yükle
   if (checkType === 'document' && reqDoc) {
-    const doc = window._clDocs?.[reqDoc];
-    if (!doc) {
+    const docs = window._clDocs?.[reqDoc] || [];
+    if (!docs.length) {
       openUpload(reqDoc, currentMobId, null, defId);
       return;
     }
@@ -747,6 +762,14 @@ async function runAIValidation(file, docType) {
   aiEl.innerHTML = `<div class="ai-result ${result.cls}" style="margin-top:8px">${result.msg}</div>`;
 }
 
+function sanitizeForFilename(str) {
+  const map = { ç:'c',ğ:'g',ı:'i',ö:'o',ş:'s',ü:'u',Ç:'C',Ğ:'G',İ:'I',Ö:'O',Ş:'S',Ü:'U' };
+  return (str || '')
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, ch => map[ch])
+    .replace(/[^a-zA-Z0-9]+/g, '')
+    .slice(0, 25);
+}
+
 async function confirmUpload() {
   const { file, docType, mobId, partId } = pendingUpload;
   if (!file) return;
@@ -757,9 +780,10 @@ async function confirmUpload() {
 
   try {
     // 1. Dosyayı Supabase Storage'a yükle
-    const ext     = file.name.split('.').pop();
-    const fileName = `${currentSchool.oid}_${docType}_${Date.now()}.${ext}`;
-    const path     = `${currentSchool.id}/${mobId || 'school'}/${fileName}`;
+    const ext       = file.name.split('.').pop();
+    const shortName = sanitizeForFilename(currentSchool.name);
+    const fileName  = `${currentSchool.oid}_${shortName}_${docType}_${Date.now()}.${ext}`;
+    const path      = `${currentSchool.id}/${mobId || 'school'}/${fileName}`;
 
     const { data: storageData, error: storageErr } = await db.storage
       .from('KAYP')
@@ -802,6 +826,29 @@ async function confirmUpload() {
   }
 }
 
+async function deleteOwnDocument(docId, defId, docType) {
+  if (!confirm('Bu belgeyi silmek istediğinize emin misiniz?')) return;
+
+  const { error } = await db.from('documents')
+    .update({ status: 'archived' })
+    .eq('id', docId)
+    .eq('school_id', currentSchool.id);
+
+  if (error) { alert('Silme hatası: ' + error.message); return; }
+
+  if (defId) {
+    // Silinen belge, "tamamlandı" işaretli bir maddenin tek kanıtıysa, maddeyi geri al
+    const remaining = (window._clDocs?.[docType] || []).filter(d => d.id !== docId);
+    const prog = checklistData[defId];
+    if (prog?.status === 'done' && !remaining.length) {
+      await saveChecklistProgress(defId, 'pending');
+    }
+    await loadChecklist();
+  } else {
+    await loadDocuments();
+  }
+}
+
 async function viewOwnDocument(path) {
   const { data } = await db.storage.from('KAYP').createSignedUrl(path, 300);
   if (data?.signedUrl) window.open(data.signedUrl, '_blank');
@@ -840,6 +887,7 @@ async function loadDocuments() {
       <div style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;${statusStyle(d.status)}">${statusLabel(d.status)}</div>
       ${d.file_path ? `<span style="font-size:11px;color:var(--blue);cursor:pointer" onclick="viewOwnDocument('${d.file_path}')">👁 Görüntüle</span>` : ''}
       ${d.status !== 'approved' ? `<span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="openUpload('${d.doc_type}','${mobId}',null)">🔄 Yeniden Yükle</span>` : ''}
+      ${d.status !== 'approved' ? `<span style="font-size:11px;color:#dc2626;cursor:pointer" onclick="deleteOwnDocument('${d.id}',null,'${d.doc_type}')">🗑 Sil</span>` : ''}
     </div>
   `).join('')}
   </div>`;
