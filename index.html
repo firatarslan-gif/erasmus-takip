@@ -4351,8 +4351,23 @@ function _t25FetchFromGAS(callback) {
         try{
           var _lsA=JSON.parse(localStorage.getItem('t25_admin')||'{}');
           var _lsD=JSON.parse(localStorage.getItem('t25_docs')||'{}');
-          Object.keys(_lsA).forEach(function(mid){if(!_gasAdmin[mid])_gasAdmin[mid]={};Object.assign(_gasAdmin[mid],_lsA[mid]);});
-          Object.keys(_lsD).forEach(function(mid){if(!_gasDocs[mid]) _gasDocs[mid]={};Object.assign(_gasDocs[mid], _lsD[mid]);});
+          // GAS kazanır; localStorage'da olup GAS'ta olmayan → in-memory'e ekle (background sync gönderecek)
+          Object.keys(_lsA).forEach(function(mid){
+            Object.keys(_lsA[mid]||{}).forEach(function(key){
+              if(_lsA[mid][key]&&!(_gasAdmin[mid]&&_gasAdmin[mid][key])){
+                if(!_gasAdmin[mid])_gasAdmin[mid]={};
+                _gasAdmin[mid][key]=_lsA[mid][key];
+              }
+            });
+          });
+          Object.keys(_lsD).forEach(function(mid){
+            Object.keys(_lsD[mid]||{}).forEach(function(key){
+              if(_lsD[mid][key]&&!(_gasDocs[mid]&&_gasDocs[mid][key])){
+                if(!_gasDocs[mid])_gasDocs[mid]={};
+                _gasDocs[mid][key]=_lsD[mid][key];
+              }
+            });
+          });
         }catch(e){}
         window._t25AdminTasks=_gasAdmin;
         window._t25DocLinks  =_gasDocs;
@@ -4429,7 +4444,7 @@ function _t25RequestUpdate() {
               else if(approvals&&typeof approvals==='object'){window._t25ApprovalMap=approvals;}
               var _gA2=(adminTasks&&typeof adminTasks==='object'&&!adminTasks.error&&!adminTasks.schools)?adminTasks:{};
               var _gD2=(docLinks&&typeof docLinks==='object'&&!docLinks.error&&!docLinks.schools)?docLinks:{};
-              try{var _a2=JSON.parse(localStorage.getItem('t25_admin')||'{}');var _d2=JSON.parse(localStorage.getItem('t25_docs')||'{}');Object.keys(_a2).forEach(function(m){if(!_gA2[m])_gA2[m]={};Object.assign(_gA2[m],_a2[m]);});Object.keys(_d2).forEach(function(m){if(!_gD2[m])_gD2[m]={};Object.assign(_gD2[m],_d2[m]);});}catch(e){}
+              try{var _a2=JSON.parse(localStorage.getItem('t25_admin')||'{}');var _d2=JSON.parse(localStorage.getItem('t25_docs')||'{}');Object.keys(_a2).forEach(function(m){Object.keys(_a2[m]||{}).forEach(function(k){if(_a2[m][k]&&!(_gA2[m]&&_gA2[m][k])){if(!_gA2[m])_gA2[m]={};_gA2[m][k]=_a2[m][k];}});});Object.keys(_d2).forEach(function(m){Object.keys(_d2[m]||{}).forEach(function(k){if(_d2[m][k]&&!(_gD2[m]&&_gD2[m][k])){if(!_gD2[m])_gD2[m]={};_gD2[m][k]=_d2[m][k];}});});}catch(e){}
               window._t25AdminTasks=_gA2;
               window._t25DocLinks=_gD2;
             }).catch(function(){}).finally(function(){
@@ -10228,6 +10243,70 @@ function renderIletisim25() {
   }
   _iletisimFilter();
 }
+
+// ─────────────────────────────────────────────────────────────
+// Cross-Device Sync: localStorage → GAS
+// 3 tetikleyici: sayfa yükü, her 3 dk, sayfa kapanmadan
+// ─────────────────────────────────────────────────────────────
+function _buildSyncQueue() {
+  var q = [];
+  // 2024 Takip
+  try {
+    var _ls24 = JSON.parse(localStorage.getItem('t24_status') || '{}');
+    var _gas24 = window._t24Data || {};
+    Object.keys(_ls24).forEach(function(mid) {
+      ['beyan','onay'].forEach(function(field) {
+        if (_ls24[mid][field] && !(_gas24[mid] && _gas24[mid][field])) {
+          q.push(GAS_URL + '?action=saveTakip24&key=' + encodeURIComponent(mid) + '&field=' + field + '&val=1');
+        }
+      });
+    });
+  } catch(e) {}
+  // 2025 Admin görevleri
+  try {
+    var _lsA = JSON.parse(localStorage.getItem('t25_admin') || '{}');
+    var _gasA = window._t25AdminTasks || {};
+    Object.keys(_lsA).forEach(function(mid) {
+      Object.keys(_lsA[mid] || {}).forEach(function(key) {
+        if (_lsA[mid][key] && !(_gasA[mid] && _gasA[mid][key])) {
+          q.push(GAS_URL + '?action=saveAdminTask&mobId=' + encodeURIComponent(mid) + '&key=' + encodeURIComponent(key) + '&val=1');
+        }
+      });
+    });
+  } catch(e) {}
+  // 2025 Destekleyici belgeler
+  try {
+    var _lsD = JSON.parse(localStorage.getItem('t25_docs') || '{}');
+    var _gasD = window._t25DocLinks || {};
+    Object.keys(_lsD).forEach(function(mid) {
+      Object.keys(_lsD[mid] || {}).forEach(function(key) {
+        if (_lsD[mid][key] && !(_gasD[mid] && _gasD[mid][key])) {
+          q.push(GAS_URL + '?action=saveDocLink&mobId=' + encodeURIComponent(mid) + '&key=' + encodeURIComponent(key) + '&link=1');
+        }
+      });
+    });
+  } catch(e) {}
+  return q;
+}
+
+// Periyodik sync: sıralı gönder (Google Sheets concurrent yazma sorununu önler)
+window._doSyncToGAS = async function() {
+  var q = _buildSyncQueue();
+  for (var i = 0; i < q.length; i++) {
+    try { await fetch(q[i]); } catch(e) {}
+  }
+};
+
+// Her 3 dakikada bir otomatik sync
+setInterval(function() { window._doSyncToGAS(); }, 3 * 60 * 1000);
+
+// Sayfa kapanmadan önce: keepalive ile parallel gönder (sıralı beklemeye vakit yok)
+window.addEventListener('beforeunload', function() {
+  var q = _buildSyncQueue();
+  q.forEach(function(url) {
+    try { fetch(url, { keepalive: true }); } catch(e) {}
+  });
+});
 
 </script>
 
