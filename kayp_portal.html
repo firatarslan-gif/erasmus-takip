@@ -446,6 +446,45 @@ input[type="file"] { display: none; }
   </div>
 </div>
 
+<!-- OVERLAY: Yaygınlaştırma / Sonuçların Kullanımı kaydı -->
+<div class="overlay" id="actlog-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Kayıt Ekle</div>
+      <div class="modal-close" onclick="closeActLogForm()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Tür</label>
+        <select class="form-input" id="al-type">
+          <option value="yayginlastirma">📣 Yaygınlaştırma Faaliyeti</option>
+          <option value="sonuclarin_kullanimi">🎯 Sonuçların Kullanımı Faaliyeti</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Başlık</label>
+        <input class="form-input" id="al-title" placeholder="Örn: Okul panosunda sergi açıldı">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Açıklama</label>
+        <textarea class="form-input" id="al-description" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Link (varsa)</label>
+        <input class="form-input" id="al-link" placeholder="https://…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fotoğraf (opsiyonel)</label>
+        <input type="file" id="al-file-input" accept=".pdf,.jpg,.jpeg,.png" style="display:block">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeActLogForm()">İptal</button>
+      <button class="btn btn-primary" id="actlog-save-btn" onclick="saveActivityLogEntry()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
 <!-- ANA LAYOUT -->
 <div class="layout">
 
@@ -465,6 +504,7 @@ input[type="file"] { display: none; }
       <div class="sb-item" onclick="showTab('checklist')"><span class="icon">✅</span>Kontrol Listesi <span class="sb-badge" id="badge-cl">—</span></div>
       <div class="sb-item" onclick="showTab('documents')"><span class="icon">📁</span>Belgeler <span class="sb-badge" id="badge-doc">—</span></div>
       <div class="sb-item" onclick="showTab('participants')"><span class="icon">👥</span>Katılımcılar</div>
+      <div class="sb-item" onclick="showTab('activitylog')"><span class="icon">📣</span>Yaygınlaştırma</div>
       <div class="sb-section">Hareketlilikler</div>
       <div id="mob-sidebar"></div>
       <div class="sb-section">Diğer</div>
@@ -577,6 +617,19 @@ input[type="file"] { display: none; }
         </div>
       </div>
 
+      <!-- ── YAYGINLAŞTIRMA & SONUÇLARIN KULLANIMI ── -->
+      <div id="tab-activitylog" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Yaygınlaştırma & Sonuçların Kullanımı</div>
+          <select id="al-mob-select" onchange="loadActivityLog()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+        </div>
+        <div id="activitylog-content">
+          <div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>
+        </div>
+      </div>
+
       <!-- ── NOTLAR ── -->
       <div id="tab-notes" style="display:none">
         <div class="section-header"><div class="section-title">Koordinatörle Mesajlar</div></div>
@@ -662,11 +715,13 @@ async function loadMobilities() {
   const clSel = document.getElementById('cl-mob-select');
   const docSel = document.getElementById('doc-mob-select');
   const partSel = document.getElementById('part-mob-select');
+  const alSel = document.getElementById('al-mob-select');
 
   sbMob.innerHTML = '';
   clSel.innerHTML  = '<option value="">— Hareketlilik Seçin —</option>';
   docSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
   partSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
+  alSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
 
   mobilities.forEach(m => {
     const label = actLabel(m.activity_type) + ' — ' + (m.destination_country || '?');
@@ -674,6 +729,7 @@ async function loadMobilities() {
     clSel.innerHTML  += `<option value="${m.id}">${label}</option>`;
     docSel.innerHTML += `<option value="${m.id}">${label}</option>`;
     partSel.innerHTML += `<option value="${m.id}">${label}</option>`;
+    alSel.innerHTML += `<option value="${m.id}">${label}</option>`;
   });
 }
 
@@ -780,16 +836,18 @@ async function loadChecklist() {
 
   document.getElementById('checklist-panel').style.display = 'block';
 
-  // Checklist tanımlarını, ilerlemeyi, belgeleri, katılımcıları ve hareketlilik bilgilerini çek
-  const [{ data: defs }, { data: prog }, { data: docs }, { data: parts }, { data: mobInfo }] = await Promise.all([
+  // Checklist tanımlarını, ilerlemeyi, belgeleri, katılımcıları, hareketlilik bilgilerini ve yaygınlaştırma kayıtlarını çek
+  const [{ data: defs }, { data: prog }, { data: docs }, { data: parts }, { data: mobInfo }, { data: actLog }] = await Promise.all([
     db.from('checklist_definitions').select('*').eq('is_active', true).order('sort_order'),
     db.from('checklist_progress').select('*').eq('mobility_id', mobId),
     db.from('documents').select('*').eq('mobility_id', mobId).neq('status', 'archived').order('created_at', { ascending: false }),
     db.from('participants').select('*').eq('mobility_id', mobId).order('created_at'),
-    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle()
+    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle(),
+    db.from('activity_log').select('*').eq('mobility_id', mobId)
   ]);
 
   window._clMobInfo = mobInfo || null;
+  window._clActivityLog = actLog || [];
 
   checklistData = {};
   (prog || []).forEach(p => { checklistData[p.definition_id] = p; });
@@ -872,6 +930,17 @@ function renderPhase(phase) {
         <span class="cl-link" onclick="openMobInfo('${currentMobId}')">${mobInfoComplete(window._clMobInfo) ? 'Düzenle' : 'Doldur'}</span>
       </div>` : '';
 
+    // Yaygınlaştırma / Sonuçların Kullanımı / Plan — doldurma durumu
+    const actLogBlock = (d.check_type === 'form' && d.required_form_type === 'results_use_plan') ? `
+      <div style="margin-top:6px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+        ${resultsUsePlanFilled() ? '<span style="color:var(--green);font-weight:700">✅ Plan yazıldı</span>' : '<span style="color:var(--orange);font-weight:700">Plan yazılmadı</span>'}
+        <span class="cl-link" onclick="showTab('activitylog')">${resultsUsePlanFilled() ? 'Düzenle' : 'Yaz'}</span>
+      </div>` : (d.check_type === 'form' && (d.required_form_type === 'yayginlastirma' || d.required_form_type === 'sonuclarin_kullanimi')) ? `
+      <div style="margin-top:6px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+        ${activityLogHasType(d.required_form_type) ? `<span style="color:var(--green);font-weight:700">✅ ${(window._clActivityLog||[]).filter(e=>e.type===d.required_form_type).length} kayıt var</span>` : '<span style="color:var(--orange);font-weight:700">Kayıt yok</span>'}
+        <span class="cl-link" onclick="showTab('activitylog')">Kayıt Ekle</span>
+      </div>` : '';
+
     return `
     <div class="cl-item ${isDone ? 'done' : ''}" id="cl-${d.id}">
       <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}','${d.required_form_type || ''}')">
@@ -890,6 +959,7 @@ function renderPhase(phase) {
         ${docsList}
         ${langPlanList}
         ${mobInfoBlock}
+        ${actLogBlock}
       </div>
       ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
     </div>`;
@@ -919,6 +989,10 @@ async function toggleChecklist(defId, checkType, reqDoc, reqForm) {
     } else if (reqForm === 'mobility_info') {
       if (!mobInfoComplete(window._clMobInfo)) { alert('Hareketlilik Bilgileri Tablosu doldurulmadan bu madde tamamlanamaz.'); return; }
       // dolu — devam edip aşağıda "done" olarak kaydedilir
+    } else if (reqForm === 'results_use_plan') {
+      if (!resultsUsePlanFilled()) { alert('Önce Yaygınlaştırma sekmesinden Sonuçların Kullanımı Planı yazın.'); return; }
+    } else if (reqForm === 'yayginlastirma' || reqForm === 'sonuclarin_kullanimi') {
+      if (!activityLogHasType(reqForm)) { alert('Önce Yaygınlaştırma sekmesinden en az bir kayıt ekleyin.'); return; }
     } else {
       alert('Form özelliği yakında eklenecek!');
       return;
@@ -1164,12 +1238,13 @@ const tabTitles = {
   checklist: 'Kontrol Listesi',
   documents: 'Belgelerim',
   participants: 'Katılımcılar',
+  activitylog: 'Yaygınlaştırma & Sonuçların Kullanımı',
   notes:     'Mesajlar',
   profile:   'Okul Bilgileri'
 };
 
 function showTab(name) {
-  ['dashboard','checklist','documents','participants','notes','profile'].forEach(t => {
+  ['dashboard','checklist','documents','participants','activitylog','notes','profile'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
   });
   document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
@@ -1546,6 +1621,144 @@ async function saveMobInfo() {
 
 function mobInfoComplete(info) {
   return !!(info && info.host_contact_name && info.activity_summary);
+}
+
+// ─────────────────────────────────────────────
+// YAYGINLAŞTIRMA & SONUÇLARIN KULLANIMI
+// ─────────────────────────────────────────────
+let activityLogEntries = [];
+let currentALMobId = null;
+
+const AL_TYPE_LABEL = { yayginlastirma: '📣 Yaygınlaştırma', sonuclarin_kullanimi: '🎯 Sonuçların Kullanımı' };
+
+async function loadActivityLog() {
+  const mobId = document.getElementById('al-mob-select').value;
+  const el = document.getElementById('activitylog-content');
+  if (!mobId) { el.innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>'; return; }
+
+  currentALMobId = mobId;
+
+  const [{ data: entries }, { data: info }] = await Promise.all([
+    db.from('activity_log').select('*').eq('mobility_id', mobId).order('created_at', { ascending: false }),
+    db.from('mobility_info').select('results_use_plan').eq('mobility_id', mobId).maybeSingle()
+  ]);
+
+  activityLogEntries = entries || [];
+  renderActivityLog(info?.results_use_plan || '');
+}
+
+function renderActivityLog(plan) {
+  const el = document.getElementById('activitylog-content');
+
+  const cards = activityLogEntries.length ? activityLogEntries.map(e => `
+    <div class="panel" style="padding:14px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <span class="cl-type ${e.type === 'yayginlastirma' ? 'document' : 'form'}" style="margin-bottom:4px;display:inline-block">${AL_TYPE_LABEL[e.type]}</span>
+          <div style="font-size:13px;font-weight:700;margin-top:2px">${e.title}</div>
+        </div>
+        <span class="cl-link" style="color:#dc2626;flex-shrink:0" onclick="deleteActivityLogEntry('${e.id}')">🗑 Sil</span>
+      </div>
+      ${e.description ? `<div style="font-size:12px;color:#374151;margin-top:6px">${e.description}</div>` : ''}
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;display:flex;gap:10px;align-items:center">
+        <span>${fmtDate(e.created_at)}</span>
+        ${e.link_url ? `<a href="${e.link_url}" target="_blank" class="cl-link">🔗 Link</a>` : ''}
+        ${e.file_path ? `<span class="cl-link" onclick="viewOwnDocument('${e.file_path}')">📷 Fotoğraf</span>` : ''}
+      </div>
+    </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--muted)">Henüz kayıt yok.</div>';
+
+  el.innerHTML = `
+    <div class="panel" style="padding:16px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Sonuçların Kullanımı Planı</div>
+      <textarea class="form-input" id="al-plan-text" rows="3" placeholder="Hareketlilik sonuçlarının nasıl kullanılacağına dair planınızı yazın…">${plan}</textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="saveResultsUsePlan()">💾 Planı Kaydet</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase">Kayıtlar (${activityLogEntries.length})</div>
+      <button class="btn btn-primary btn-sm" onclick="openActLogForm()">+ Kayıt Ekle</button>
+    </div>
+    ${cards}`;
+}
+
+async function saveResultsUsePlan() {
+  const plan = document.getElementById('al-plan-text').value.trim();
+  const { error } = await db.from('mobility_info').upsert({
+    mobility_id: currentALMobId, school_id: currentSchool.id, results_use_plan: plan
+  }, { onConflict: 'mobility_id' });
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+  alert('✓ Plan kaydedildi.');
+  if (currentMobId === currentALMobId) await loadChecklist();
+}
+
+function openActLogForm() {
+  document.getElementById('al-type').value = 'yayginlastirma';
+  document.getElementById('al-title').value = '';
+  document.getElementById('al-description').value = '';
+  document.getElementById('al-link').value = '';
+  document.getElementById('al-file-input').value = '';
+  document.getElementById('actlog-overlay').classList.add('show');
+}
+
+function closeActLogForm() {
+  document.getElementById('actlog-overlay').classList.remove('show');
+}
+
+async function saveActivityLogEntry() {
+  const title = document.getElementById('al-title').value.trim();
+  if (!title) { alert('Başlık gereklidir.'); return; }
+
+  const btn = document.getElementById('actlog-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Kaydediliyor…';
+
+  try {
+    let filePath = null;
+    const file = document.getElementById('al-file-input').files[0];
+    if (file) {
+      const ext = file.name.split('.').pop();
+      const path = `${currentSchool.id}/${currentALMobId}/yayginlastirma_${Date.now()}.${ext}`;
+      const { error: upErr } = await db.storage.from('KAYP').upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) throw upErr;
+      filePath = path;
+    }
+
+    const { error } = await db.from('activity_log').insert({
+      mobility_id: currentALMobId,
+      school_id:   currentSchool.id,
+      type:        document.getElementById('al-type').value,
+      title,
+      description: document.getElementById('al-description').value.trim() || null,
+      link_url:    document.getElementById('al-link').value.trim() || null,
+      file_path:   filePath,
+      created_by:  currentUser.id
+    });
+    if (error) throw error;
+
+    closeActLogForm();
+    await loadActivityLog();
+    if (currentMobId === currentALMobId) await loadChecklist();
+  } catch (err) {
+    alert('Kaydetme hatası: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Kaydet';
+  }
+}
+
+async function deleteActivityLogEntry(id) {
+  if (!confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
+  const { error } = await db.from('activity_log').delete().eq('id', id).eq('school_id', currentSchool.id);
+  if (error) { alert('Silme hatası: ' + error.message); return; }
+  await loadActivityLog();
+  if (currentMobId === currentALMobId) await loadChecklist();
+}
+
+function activityLogHasType(type) {
+  return (window._clActivityLog || []).some(e => e.type === type);
+}
+
+function resultsUsePlanFilled() {
+  return !!(window._clMobInfo && window._clMobInfo.results_use_plan && window._clMobInfo.results_use_plan.trim());
 }
 
 // ─────────────────────────────────────────────
