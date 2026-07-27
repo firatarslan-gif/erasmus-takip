@@ -202,6 +202,19 @@ input[type="file"] { display: none; }
 .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .6s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Belgeyi Doldur — önizleme + yazdırma */
+.dg-preview { font-size: 15px; line-height: 1.7; color: #1e293b; border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-top: 14px; background: #fff; }
+.dg-preview h2 { font-size: 16px; text-align: center; margin-bottom: 12px; }
+.dg-preview table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+.dg-preview table th, .dg-preview table td { border: 1px solid #94a3b8; padding: 5px 8px; text-align: left; }
+.dg-member-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+.dg-member-row input { flex: 1; min-width: 0; }
+@media print {
+  body * { visibility: hidden; }
+  #docgen-preview, #docgen-preview * { visibility: visible; }
+  #docgen-preview { position: absolute; left: 0; top: 0; width: 100%; border: none; padding: 0; }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar { display: none; }
@@ -485,6 +498,24 @@ input[type="file"] { display: none; }
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeActLogForm()">İptal</button>
       <button class="btn btn-primary" id="actlog-save-btn" onclick="saveActivityLogEntry()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Belgeyi Doldur (yazdırılabilir önizleme) -->
+<div class="overlay" id="docgen-overlay">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-head">
+      <div class="modal-title" id="docgen-title">Belgeyi Doldur</div>
+      <div class="modal-close" onclick="closeDocGen()">×</div>
+    </div>
+    <div class="modal-body">
+      <div id="docgen-form"></div>
+      <div id="docgen-preview" class="dg-preview"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDocGen()">Kapat</button>
+      <button class="btn btn-primary" onclick="printDocGen()">🖨️ Yazdır / PDF Kaydet</button>
     </div>
   </div>
 </div>
@@ -959,6 +990,7 @@ function renderPhase(phase) {
           ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
           ${(d.template_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📎 ${t.label}</a>`).join('')}
           ${(d.example_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📄 ${t.label}</a>`).join('')}
+          ${(() => { const dgType = docGenTypeFor(d); return dgType ? `<span class="cl-link" onclick="openDocGen('${dgType}')">📝 Belgeyi Doldur</span>` : ''; })()}
           ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${docs.length ? 'Başka Belge Ekle' : 'Belge Yükle'}</span>` : ''}
           ${isDone && prog?.completed_at ? `<span style="font-size: 12px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
         </div>
@@ -1919,6 +1951,260 @@ function docTypeLabel(t) {
     gorev_yeri_belgesi:     'Görev Yeri / Öğrenci Belgesi',
     resim_video:            'Fotoğraf / Video'
   }[t] || t;
+}
+
+// ─────────────────────────────────────────────
+// BELGEYİ DOLDUR (in-app doldur → yazdır/PDF → imzala → yükle)
+// ─────────────────────────────────────────────
+const ERASMUS_PROJECT_NO = '2025-1-TR01-KA121-SCH-000340391';
+
+const DOC_GEN_TITLES = {
+  hyk_tutanagi:             'Hareketlilik Yürütme Kurulu Oluşturma Tutanağı',
+  ksk_tutanagi:             'Katılımcı Seçim Kurulu Oluşturma Tutanağı',
+  secim_kriter_tutanagi:    'Katılımcı Seçim Yöntemi ve Değerlendirme Kriterleri Tutanağı',
+  faaliyet_programi_imzali: 'Davet Mektubu',
+  kvkk:                     'Açık Rıza / KVKK Onay Formu',
+  beyan:                    'Tamamlandı Beyanı',
+  sertifika_taslak:         'Sertifika Taslağı',
+  odak_grup:                'Odak Grup Görüşme Formu'
+};
+
+function docGenTypeFor(d) {
+  if (d.required_doc_type && DOC_GEN_TITLES[d.required_doc_type]) return d.required_doc_type;
+  if (d.phase === 'oncesi' && d.sort_order === 33) return 'sertifika_taslak';
+  if (d.phase === 'sonrasi' && d.sort_order === 10) return 'odak_grup';
+  return null;
+}
+
+let docGenCurrent = null;
+
+function currentMobility() { return mobilities.find(m => m.id === currentMobId) || {}; }
+function dgEsc(s) { return (s === null || s === undefined) ? '' : String(s); }
+function dgDate(iso) { return iso ? iso.split('-').reverse().join('/') : '…/…/20..'; }
+
+function dgMemberRowsHtml(members) {
+  const rows = (members && members.length) ? members : [{}];
+  return rows.map(m => `
+    <div class="dg-member-row">
+      <input class="form-input dg-m-name" placeholder="Adı Soyadı" value="${dgEsc(m.name)}">
+      <input class="form-input dg-m-role" placeholder="Branşı/Görevi" value="${dgEsc(m.role)}">
+      <input class="form-input dg-m-phone" placeholder="Telefon" value="${dgEsc(m.phone)}">
+      <input class="form-input dg-m-email" placeholder="E-posta" value="${dgEsc(m.email)}">
+      <span class="cl-link" onclick="this.parentElement.remove();renderDocGenPreview()">✕</span>
+    </div>`).join('');
+}
+function dgAddMemberRow() {
+  document.getElementById('dg-members').insertAdjacentHTML('beforeend', dgMemberRowsHtml([{}]));
+}
+function dgReadMembers() {
+  const el = document.getElementById('dg-members');
+  if (!el) return [];
+  return [...el.children].map(r => ({
+    name:  r.querySelector('.dg-m-name').value.trim(),
+    role:  r.querySelector('.dg-m-role').value.trim(),
+    phone: r.querySelector('.dg-m-phone').value.trim(),
+    email: r.querySelector('.dg-m-email').value.trim()
+  })).filter(m => m.name);
+}
+
+function openDocGen(reqDocType) {
+  docGenCurrent = reqDocType;
+  document.getElementById('docgen-title').textContent = '📝 ' + (DOC_GEN_TITLES[reqDocType] || 'Belgeyi Doldur');
+  renderDocGenFormFields();
+  renderDocGenPreview();
+  document.getElementById('docgen-overlay').classList.add('show');
+}
+function closeDocGen() {
+  document.getElementById('docgen-overlay').classList.remove('show');
+  docGenCurrent = null;
+}
+async function printDocGen() {
+  if (docGenCurrent === 'hyk_tutanagi' || docGenCurrent === 'ksk_tutanagi') {
+    const key = docGenCurrent === 'hyk_tutanagi' ? 'hyk_members' : 'ksk_members';
+    const members = dgReadMembers();
+    await db.from('schools').update({ [key]: members }).eq('id', currentSchool.id);
+    currentSchool[key] = members;
+  }
+  window.print();
+}
+function dgField(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+function renderDocGenFormFields() {
+  const el = document.getElementById('docgen-form');
+  const today = new Date().toISOString().slice(0,10);
+  const t = docGenCurrent;
+  if (t === 'hyk_tutanagi' || t === 'ksk_tutanagi') {
+    const key = t === 'hyk_tutanagi' ? 'hyk_members' : 'ksk_members';
+    el.innerHTML = `
+      <div class="form-group"><label class="form-label">Tutanak Tarihi</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>
+      <div class="form-group"><label class="form-label">Kurul Üyeleri</label>
+        <div id="dg-members">${dgMemberRowsHtml(currentSchool[key])}</div>
+        <button class="btn btn-ghost" type="button" onclick="dgAddMemberRow();renderDocGenPreview()" style="margin-top:6px">+ Üye Ekle</button>
+      </div>`;
+  } else if (t === 'secim_kriter_tutanagi') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Kurul Toplantı Tarihi</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'faaliyet_programi_imzali') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Tarih</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'kvkk') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Katılımcı Adı Soyadı</label><input class="form-input" id="dg-participant" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'beyan') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Tarih</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'sertifika_taslak') {
+    el.innerHTML = `
+      <div class="form-group"><label class="form-label">Katılımcı Adı Soyadı</label><input class="form-input" id="dg-participant" oninput="renderDocGenPreview()"></div>
+      <div class="form-group"><label class="form-label">Öğrenme Kazanımları (her satıra bir tane)</label><textarea class="form-input" id="dg-kazanimlar" rows="3" oninput="renderDocGenPreview()"></textarea></div>`;
+  } else if (t === 'odak_grup') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Görüşme Tarihi</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+function renderDocGenPreview() {
+  const s = currentSchool || {};
+  const m = currentMobility();
+  const t = docGenCurrent;
+  const date = dgDate(dgField('dg-date'));
+  const preview = document.getElementById('docgen-preview');
+  let html = '';
+
+  if (t === 'hyk_tutanagi') {
+    const members = dgReadMembers();
+    html = `
+      <h2>HAREKETLİLİK YÜRÜTME KURULU OLUŞTURMA TUTANAĞI</h2>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Milli Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği (${ERASMUS_PROJECT_NO}) kapsamında gerçekleştirilecek hareketlilik faaliyetlerinin yürütülmesi amacıyla aşağıda üyelerinin isimleri yer alan Hareketlilik Yürütme Kurulu, ${date} tarihinde oluşturulmuştur. Bu kurul, katılımcı seçimi faaliyetlerin kalite kriterleri çerçevesinde yürütülmesi, raporlanması ve yaygınlaştırılmasından Kocaeli İl Milli Eğitim Müdürlüğü Uluslararasılaşma Yönetim Kurulu'na karşı sorumludur.</p>
+      <table><tr><th>No</th><th>Adı ve Soyadı</th><th>Branşı/Görevi</th><th>Telefon</th><th>E-Posta</th><th>İmza</th></tr>
+      ${members.map((mem,i)=>`<tr><td>${i+1}</td><td>${dgEsc(mem.name)}</td><td>${dgEsc(mem.role)}</td><td>${dgEsc(mem.phone)}</td><td>${dgEsc(mem.email)}</td><td></td></tr>`).join('')}
+      </table>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>Okul Müdürü</p>`;
+
+  } else if (t === 'ksk_tutanagi') {
+    const members = dgReadMembers();
+    html = `
+      <h2>KATILIMCI SEÇİM KURULU OLUŞTURMA TUTANAĞI</h2>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Milli Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği (${ERASMUS_PROJECT_NO}) kapsamında gerçekleştirilecek hareketlilik faaliyetlerine katılacak katılımcıların seçimi amacıyla aşağıda üyelerinin isimleri yer alan kişiler Katılımcı Seçim Kurulu olarak ${date} tarihinde oluşturulmuştur. Bu kurul katılımcıları; şeffaf, adil, tarafsız, tutarlı ve kapsayıcı bir yöntemle seçecek ve Kocaeli İl Milli Eğitim Müdürlüğü Uluslararasılaşma Yönetim Kurulu'na karşı sorumlu olacaktır.</p>
+      <table><tr><th>No</th><th>Adı ve Soyadı</th><th>Branşı/Görevi</th><th>Telefon</th><th>E-Posta</th><th>İmza</th></tr>
+      ${members.map((mem,i)=>`<tr><td>${i+1}</td><td>${dgEsc(mem.name)}</td><td>${dgEsc(mem.role)}</td><td>${dgEsc(mem.phone)}</td><td>${dgEsc(mem.email)}</td><td></td></tr>`).join('')}
+      </table>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>Kurum Müdürü</p>`;
+
+  } else if (t === 'secim_kriter_tutanagi') {
+    html = `
+      <h2>OKUL EĞİTİMİ AKREDİTASYONU<br>ÖĞRENCİ VE REFAKATÇİLER İÇİN KATILIMCI SEÇİM YÖNTEMİ VE DEĞERLENDİRME KRİTERLERİ TUTANAĞI</h2>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Milli Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği (${ERASMUS_PROJECT_NO}) çerçevesinde yürütülecek hareketlilik faaliyetleri ile ilgili olarak, Hareketlilik Yürütme Kurulu ${date} tarihinde toplanmıştır.</p>
+      <p><b>Toplantının amacı:</b> Hareketliliklere katılmak isteyen öğrenciler için başvuru, değerlendirme kriterleri ve seçim sürecinin belirlenmesidir.</p>
+      <p><b>Alınan Kararlar:</b></p>
+      <ul>
+        <li>Başvurular TurnaPortal (turnaportal.ua.gov.tr) üzerinde açılacak ilan aracılığıyla alınacaktır. Başvuru Kılavuzuna uygun olarak yapılmayan başvurular değerlendirmeye alınmayacaktır.</li>
+        <li>TurnaPortal başvurusu öncesi Katılımcı Seçim Kurulu tarafından, katılımcı adaylarına 4 dil becerisini ölçecek şekilde CEFR'a uygun bir yabancı dil sınavı uygulanacaktır. En az B1 düzeyindeki adaylar TurnaPortal'a yönlendirilecektir.</li>
+        <li>Katılımcı adaylarına Katılımcı Seçim Kurulu tarafından mülakat yapılacak, sonuçlar kayıt altına alınacaktır.</li>
+        <li>Katılımcıların hareketlilik tarihinde okulun kayıtlı öğrencisi olmaları zorunludur.</li>
+        <li>Değerlendirme ve seçim süreci Okul Katılımcı Seçim Kurulu tarafından yürütülecek, sonuçlar Okul Hareketlilik Yürütme Kurulu tarafından ilan edilecektir.</li>
+        <li>Bu tutanak aynı zamanda duyuru dokümanı olarak kullanılacaktır.</li>
+      </ul>
+      <p><b>DEĞERLENDİRME KRİTERLERİ</b></p>
+      <ul>
+        <li>Akademik Başarı: Son Akademik Yıl Not Ortalaması (0–15 puan)</li>
+        <li>Yabancı Dil Yeterlilik Sınavı (CEFR, en az B1 düzeyi): (0–25 puan)</li>
+        <li>Mülakat (iletişim, temsil, problem çözme, kültürlerarası uyum, kariyer planı vb.): (0–25 puan)</li>
+        <li>Motivasyon: "Bu hareketlilik faaliyetine neden katılmak istiyorsunuz?" (0–15 puan)</li>
+        <li>Geçmiş Deneyimler: eTwinning, TÜBİTAK, proje çalışmaları, sosyal sorumluluk, uluslararası etkinlikler (0–10 puan)</li>
+        <li>Kazanımların Aktarımı: deneyimi okula/arkadaşlara aktarma planı (0–10 puan)</li>
+        <li>Daha önce Erasmus+ hareketliliğine katılmamış olmak: (Hayır → +5 puan, Evet → 0 puan)</li>
+      </ul>
+      <p><b>ÖNCELİKLENDİRME KRİTERLERİ:</b> Daha az fırsata sahip bireyler eşit puanlı durumlarda önceliklidir; katılımcı seçiminde cinsiyet dengesi gözetilir.</p>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>Okul Müdürü / Hareketlilik Yürütme Kurulu Başkanı</p>`;
+
+  } else if (t === 'faaliyet_programi_imzali') {
+    html = `
+      <h2>LETTER OF INVITATION</h2>
+      <table>
+        <tr><td>Full Legal Name of the host organisation</td><td></td></tr>
+        <tr><td>OID</td><td></td></tr>
+        <tr><td>Legal Representative</td><td></td></tr>
+        <tr><td>Contact Person</td><td></td></tr>
+        <tr><td>Telephone</td><td></td></tr>
+        <tr><td>E-mail</td><td></td></tr>
+        <tr><td>Legal Address</td><td></td></tr>
+      </table>
+      <p>With this letter, we hereby confirm that the following participant(s) are formally invited to take part in the mobility activity described below within the framework of the Erasmus+ Programme, Key Action 1: Learning Mobility of Individuals.</p>
+      <p>Sending partner: ${dgEsc(s.name)}, TURKEY<br>
+      Project No: ${ERASMUS_PROJECT_NO}<br>
+      Project Name: Mobilities for Erasmus Accreditation in the field of School Education<br>
+      Mobility Type: ${dgEsc(actLabel(m.activity_type))}<br>
+      Dates: ${dgEsc(m.start_date)} – ${dgEsc(m.end_date)}</p>
+      <table><tr><th>No</th><th>Name</th><th>Surname</th></tr><tr><td>1</td><td></td><td></td></tr></table>
+      <p>Yours sincerely,<br>Place ………………….. Date ${date}</p>
+      <p>……………………………………………<br>Name and signature of the person working in the host organisation and stamp</p>`;
+
+  } else if (t === 'kvkk') {
+    const participant = dgField('dg-participant');
+    html = `
+      <h2>AÇIK RIZA BEYAN FORMU</h2>
+      <p>SES/GÖRÜNTÜ/METİN KAYITLARINA İLİŞKİN AÇIK RIZA BEYAN FORMU</p>
+      <p>İş bu belgeyi okuduğumu ve bu belgeyi imzalayarak; tarafıma ait olan her türlü fotoğrafın Kocaeli Milli Eğitim Müdürlüğü Erasmus Akreditasyon Faaliyetleri kapsamında ve aynı zamanda Türkiye Ulusal Ajansı ve Mesleki Yeterlilik Kurumu tarafından saklanabileceğini, diğer çalışmalarla birleştirilebileceğini, Kocaeli Milli Eğitim Müdürlüğü ve Türkiye Ulusal Ajansı ile Avrupa Komisyonu'nun iletişim mecralarında kullanılabileceğini kabul, beyan ve taahhüt ediyorum. İlgili içeriğe ilişkin tüm hakların Kocaeli Milli Eğitim Müdürlüğü ve Türkiye Ulusal Ajansı'na ait olduğunu kabul ediyorum, herhangi bir maddi hak talep etmeyeceğimi taahhüt ediyorum.</p>
+      <p>Rızam VARDIR ☐ &nbsp;&nbsp;&nbsp; Rızam YOKTUR ☐</p>
+      <table>
+        <tr><td>Katıldığı Program</td><td>ERASMUS AKREDİTASYONU — Okul Eğitimi</td></tr>
+        <tr><td>Hareketlilik Türü</td><td>${dgEsc(actLabel(m.activity_type))}</td></tr>
+        <tr><td>İsim / Soyisim</td><td>${dgEsc(participant)}</td></tr>
+        <tr><td>Telefon</td><td></td></tr>
+        <tr><td>E-posta</td><td></td></tr>
+        <tr><td>İmza</td><td></td></tr>
+      </table>
+      <h2 style="margin-top:20px">KİŞİSEL VERİLERİN İŞLENMESİ VE GÜVENLİĞİ ONAY FORMU</h2>
+      <p>Bu dokümanı onaylayarak 6698 Sayılı Kişisel Verilerin Korunması Kanunu'nun ("Kanun") 5. Maddesi kapsamında Kocaeli İl Milli Eğitim Müdürlüğü'ne iletmiş olduğunuz kişisel verilerinizin, hizmetlerimiz hakkında bilgi vermek, istatistiki bilgi toplamak ve ilgili işlemlerin yapılması amacıyla kurumumuz tarafından işlenmesine açıkça rıza göstermektesiniz. Kanuni haklarınız kapsamında; dilediğiniz zaman Veri Sorumlusu kurumumuza başvurarak kişisel verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, düzeltme/silme isteme ve zararın tazminini talep etme hakkınız mevcuttur.</p>
+      <p>Kocaeli İl Milli Eğitim Müdürlüğü tarafından açıklanan 6698 sayılı Kişisel Verilerin Korunması Kanunu'na ilişkin aydınlatma metninin tamamını okudum, anladım ve kişisel verilerimin yukarıda belirtilen amaçlar çerçevesinde işlenmesine açık rızam ile onay veriyorum.</p>
+      <p style="margin-top:20px">${date}</p><p>${dgEsc(participant)}</p><p>İmza</p>`;
+
+  } else if (t === 'beyan') {
+    html = `
+      <p>Kocaeli Millî Eğitim Müdürlüğüne,</p>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Millî Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği ${ERASMUS_PROJECT_NO} kapsamında gerçekleştirdiğimiz ${dgEsc(actLabel(m.activity_type))} Hareketliliği kapsamında Kocaeli Milli Eğitim Müdürlüğü 2025 Hareketlilik Uygulama Rehberi'nde açıklandığı şekilde "Hareketlilik Öncesi, Hareketlilik Sırası ve Hareketlilik Sonrası" süreçlerini kapsayan tüm iş ve işlemlerin Erasmus Kalite Standartları çerçevesinde gerçekleştirildiğini; Hareketlilik Faaliyetleri Tablosu'nun Kontrol Listesi'nde belirtilen tüm belgelerin belirtildiği şekilde teslim edildiğini, aynı tablonun "Faaliyetler" bölümünün eksiksiz olarak tamamlandığını; söz konusu iş ve işlemlerin tamamlanmaması, eksik ve/veya hatalı olması durumunda Ortaklık ve Hibe Sözleşmelerinde belirtilen maddeler uyarınca tahsis edilen hibede kesinti uygulanabileceğini kabul ve beyan ederim.</p>
+      <table><tr><th>No</th><th>Adı ve Soyadı</th><th>Branşı / Görevi</th><th>İmza</th></tr>
+      <tr><td>1</td><td></td><td></td><td></td></tr><tr><td>2</td><td></td><td></td><td></td></tr></table>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>${dgEsc(s.name)}<br>Okul Müdürü</p>`;
+
+  } else if (t === 'sertifika_taslak') {
+    const participant = dgField('dg-participant');
+    const kazanimlar = dgField('dg-kazanimlar').split('\n').filter(x=>x.trim());
+    html = `
+      <h2>Certificate of Attendance<br>Erasmus+ Accreditation — Mobility in School Education<br>${ERASMUS_PROJECT_NO}</h2>
+      <p>This is to certify that <b>${dgEsc(participant) || '…………………'}</b> participated in and successfully completed a ${dgEsc(actLabel(m.activity_type))} activity at ${dgEsc(m.destination_org)}, in ${dgEsc(m.destination_city)}, ${dgEsc(m.destination_country)} in accordance with the Learning Agreement signed between the participant, the sending organisation, and the host organisation prior to the mobility period.</p>
+      <p>During the mobility the participant:</p>
+      <ul>${kazanimlar.length ? kazanimlar.map(k=>`<li>${dgEsc(k)}</li>`).join('') : '<li>…………………</li>'}</ul>
+      <p>From ${dgEsc(m.start_date)} until ${dgEsc(m.end_date)}</p>
+      <p style="margin-top:20px">…………………… &nbsp;&nbsp;&nbsp;&nbsp; Ev sahibi kurum yetkilisi ad soyad<br>imza &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imza</p>`;
+
+  } else if (t === 'odak_grup') {
+    html = `
+      <h2>KOCAELİ MİLLİ EĞİTİM MÜDÜRLÜĞÜ ERASMUS AKREDİTASYONU<br>HAREKETLİLİK SONRASI ODAK GRUP GÖRÜŞMESİ FORMU</h2>
+      <table>
+        <tr><td>Kurumun Adı</td><td>${dgEsc(s.name)}</td></tr>
+        <tr><td>Hareketliliğin Türü</td><td>${dgEsc(actLabel(m.activity_type))}</td></tr>
+        <tr><td>Ortaklık Sözleşme Numarası</td><td>${ERASMUS_PROJECT_NO}</td></tr>
+        <tr><td>Hareketlilik Tarihleri</td><td>${dgEsc(m.start_date)} – ${dgEsc(m.end_date)}</td></tr>
+        <tr><td>Ev Sahibi Ülke</td><td>${dgEsc(m.destination_country)}</td></tr>
+        <tr><td>Hareketlilik Öncesinde Belirlenen Öğrenme Kazanımları</td><td></td></tr>
+      </table>
+      <table>
+        <tr><td>Görüşmeyi Yapan HYK Üyeleri (Adı Soyadı ve Unvanı)</td><td></td></tr>
+        <tr><td>Hareketliliğe Katılan Kişi/Kişiler (Adı Soyadı ve Unvanı)</td><td></td></tr>
+        <tr><td>Görüşmenin Yapıldığı Tarih</td><td>${date}</td></tr>
+        <tr><td>Yer (Çevrimiçi/Yüz Yüze)</td><td></td></tr>
+      </table>
+      <p><b>Sorular:</b></p>
+      <ul>
+        <li>Hareketlilik sürecinde edindiğiniz en önemli kazanımlar nelerdi?</li>
+        <li>Belirlenen kazanımlara ne ölçüde ulaştınız?</li>
+        <li>Ev sahibi kurumda öğrendiğiniz uygulamaları kendi çalışma ortamınıza nasıl taşıyabilirsiniz?</li>
+        <li>Bu hareketlilik programının kişisel becerileriniz veya mesleki gelişiminiz üzerindeki etkisini nasıl değerlendirirsiniz?</li>
+        <li>Kazandığınız beceriler kuruma nasıl katkı sağlayabilir?</li>
+        <li>Eklemek istediğiniz bir öneri veya yorum var mı?</li>
+      </ul>`;
+  }
+
+  preview.innerHTML = html;
 }
 
 function statusLabel(s) {
