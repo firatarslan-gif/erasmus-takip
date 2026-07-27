@@ -288,6 +288,30 @@ input[type="file"] { display: none; }
         <label class="form-label">Banka Adı / Şube</label>
         <input class="form-input" id="part-bank" placeholder="Banka adı / şube">
       </div>
+      <div class="form-group">
+        <label class="form-label">Cinsiyet</label>
+        <select class="form-input" id="part-gender">
+          <option value="">— Seçin —</option>
+          <option value="K">Kadın</option>
+          <option value="E">Erkek</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Resmi Adresi</label>
+        <input class="form-input" id="part-address" placeholder="İkamet adresi">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pasaport Türü</label>
+        <input class="form-input" id="part-passport-type" placeholder="Bordo / Yeşil / Gri vb.">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pasaport No</label>
+        <input class="form-input" id="part-passport-no">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pasaport Son Geçerlilik Tarihi</label>
+        <input class="form-input" id="part-passport-expiry" type="date">
+      </div>
       <div id="guardian-fields" style="display:none;background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:12px;margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#9d174d;margin-bottom:8px">👨‍👩‍👦 18 Yaş Altı — Yasal Vasi Bilgileri</div>
         <div class="form-group">
@@ -361,6 +385,63 @@ input[type="file"] { display: none; }
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeLangPlan()">İptal</button>
       <button class="btn btn-primary" id="langplan-save-btn" onclick="saveLangPlan()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Hareketlilik Bilgileri Tablosu -->
+<div class="overlay" id="mobinfo-overlay">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-head">
+      <div class="modal-title">Hareketlilik Bilgileri Tablosu</div>
+      <div class="modal-close" onclick="closeMobInfo()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mi-mobility-id">
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px">🏫 Ev Sahibi Kurum</h3>
+      <div class="form-group"><label class="form-label">Kurum OID</label><input class="form-input" id="mi-host-oid"></div>
+      <div class="form-group"><label class="form-label">Kuruluş Türü</label><input class="form-input" id="mi-host-type" placeholder="Okul, Dil Okulu, Şirket vb."></div>
+      <div class="form-group"><label class="form-label">Yasal Temsilci Adı</label><input class="form-input" id="mi-host-legal-rep"></div>
+      <div class="form-group"><label class="form-label">İrtibat Kişisi Adı</label><input class="form-input" id="mi-host-contact-name"></div>
+      <div class="form-group"><label class="form-label">İrtibat Kişisi E-posta</label><input class="form-input" id="mi-host-contact-email" type="email"></div>
+      <div class="form-group"><label class="form-label">Kurum Web Sitesi</label><input class="form-input" id="mi-host-website"></div>
+      <div class="form-group"><label class="form-label">Kurum Adresi</label><input class="form-input" id="mi-host-address"></div>
+      <div class="form-group"><label class="form-label">Posta Kodu</label><input class="form-input" id="mi-host-postal-code"></div>
+      <div class="form-group"><label class="form-label">Kurum Telefonu</label><input class="form-input" id="mi-host-phone"></div>
+      <div class="form-group"><label class="form-label">Ev Sahibi Kurum Nasıl Bulundu? Nasıl İletişime Geçildi?</label><textarea class="form-input" id="mi-host-found-how" rows="2"></textarea></div>
+      <div class="form-group"><label class="form-label">Km Cinsinden Gerçek Mesafe <a href="https://erasmus-plus.ec.europa.eu/resources-and-tools/distance-calculator" target="_blank" class="cl-link">(hesapla)</a></label><input class="form-input" id="mi-distance-km" type="number"></div>
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">✈️ Seyahat Detayları</h3>
+      <div class="form-group"><label class="form-label">Seyahat Rotası</label><input class="form-input" id="mi-travel-route"></div>
+      <div class="form-group"><label class="form-label">Uçuş No(ları)</label><input class="form-input" id="mi-flight-numbers"></div>
+      <div class="form-group"><label class="form-label">Seyahat Araçları</label><input class="form-input" id="mi-travel-vehicles" placeholder="Uçak, otobüs, tren vb."></div>
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🏨 Konaklama Detayları</h3>
+      <div class="form-group"><label class="form-label">Konaklama Türü</label><input class="form-input" id="mi-accommodation-type" placeholder="Ev, Otel, Hostel vb."></div>
+      <div class="form-group"><label class="form-label">Konaklama Adresi</label><input class="form-input" id="mi-accommodation-address"></div>
+      <div class="form-group"><label class="form-label">Konaklama Süresi</label><input class="form-input" id="mi-accommodation-duration"></div>
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🎯 Erasmus Plan Hedefleri <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
+      <div id="mi-plan-goals" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:12px"></div>
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🧠 Temel Yeterlilikler <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
+      <div id="mi-key-competences" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:12px"></div>
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">👥 Katılımcı Seçim Kurulu Üyeleri</h3>
+      <div id="mi-committee-list" style="margin-bottom:8px"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addCommitteeRow()" style="margin-bottom:14px">+ Üye Ekle</button>
+
+      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">📝 Hareketlilik Faaliyeti Özeti</h3>
+      <div class="form-group">
+        <label class="form-label">Lütfen Hareketlilik Faaliyetinizi Kısaca Özetleyiniz (Yapılandırılmış kurslarda kurs adı/linkini de ekleyin)</label>
+        <textarea class="form-input" id="mi-activity-summary" rows="3"></textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Kurs Linki (varsa)</label><input class="form-input" id="mi-course-link"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMobInfo()">İptal</button>
+      <button class="btn btn-primary" id="mobinfo-save-btn" onclick="saveMobInfo()">💾 Kaydet</button>
     </div>
   </div>
 </div>
@@ -699,13 +780,16 @@ async function loadChecklist() {
 
   document.getElementById('checklist-panel').style.display = 'block';
 
-  // Checklist tanımlarını, ilerlemeyi, belgeleri ve katılımcıları çek
-  const [{ data: defs }, { data: prog }, { data: docs }, { data: parts }] = await Promise.all([
+  // Checklist tanımlarını, ilerlemeyi, belgeleri, katılımcıları ve hareketlilik bilgilerini çek
+  const [{ data: defs }, { data: prog }, { data: docs }, { data: parts }, { data: mobInfo }] = await Promise.all([
     db.from('checklist_definitions').select('*').eq('is_active', true).order('sort_order'),
     db.from('checklist_progress').select('*').eq('mobility_id', mobId),
     db.from('documents').select('*').eq('mobility_id', mobId).neq('status', 'archived').order('created_at', { ascending: false }),
-    db.from('participants').select('*').eq('mobility_id', mobId).order('created_at')
+    db.from('participants').select('*').eq('mobility_id', mobId).order('created_at'),
+    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle()
   ]);
+
+  window._clMobInfo = mobInfo || null;
 
   checklistData = {};
   (prog || []).forEach(p => { checklistData[p.definition_id] = p; });
@@ -781,6 +865,13 @@ function renderPhase(phase) {
           }).join('')}
       </div>` : '';
 
+    // Hareketlilik Bilgileri Tablosu — doldurma durumu
+    const mobInfoBlock = (d.check_type === 'form' && d.required_form_type === 'mobility_info') ? `
+      <div style="margin-top:6px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+        ${mobInfoComplete(window._clMobInfo) ? '<span style="color:var(--green);font-weight:700">✅ Dolduruldu</span>' : '<span style="color:var(--orange);font-weight:700">Doldurulmadı</span>'}
+        <span class="cl-link" onclick="openMobInfo('${currentMobId}')">${mobInfoComplete(window._clMobInfo) ? 'Düzenle' : 'Doldur'}</span>
+      </div>` : '';
+
     return `
     <div class="cl-item ${isDone ? 'done' : ''}" id="cl-${d.id}">
       <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}','${d.required_form_type || ''}')">
@@ -798,6 +889,7 @@ function renderPhase(phase) {
         </div>
         ${docsList}
         ${langPlanList}
+        ${mobInfoBlock}
       </div>
       ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
     </div>`;
@@ -824,6 +916,9 @@ async function toggleChecklist(defId, checkType, reqDoc, reqForm) {
       if (!mobParticipants.length) { alert('Önce Katılımcılar sekmesinden katılımcı ekleyin.'); return; }
       if (!allLangPlansFilled()) { alert('Tüm katılımcıların Dil Gelişim Planı doldurulmadan bu madde tamamlanamaz.'); return; }
       // hepsi dolu — devam edip aşağıda "done" olarak kaydedilir
+    } else if (reqForm === 'mobility_info') {
+      if (!mobInfoComplete(window._clMobInfo)) { alert('Hareketlilik Bilgileri Tablosu doldurulmadan bu madde tamamlanamaz.'); return; }
+      // dolu — devam edip aşağıda "done" olarak kaydedilir
     } else {
       alert('Form özelliği yakında eklenecek!');
       return;
@@ -1179,6 +1274,11 @@ function openParticipantForm(partId = null) {
   document.getElementById('part-phone').value = p?.phone || '';
   document.getElementById('part-iban').value = p?.iban || '';
   document.getElementById('part-bank').value = p?.bank_name || '';
+  document.getElementById('part-gender').value = p?.gender || '';
+  document.getElementById('part-address').value = p?.home_address || '';
+  document.getElementById('part-passport-type').value = p?.passport_type || '';
+  document.getElementById('part-passport-no').value = p?.passport_no || '';
+  document.getElementById('part-passport-expiry').value = p?.passport_expiry || '';
   document.getElementById('part-guardian-name').value = p?.guardian_name || '';
   document.getElementById('part-guardian-tc').value = p?.guardian_tc || '';
   document.getElementById('part-guardian-phone').value = p?.guardian_phone || '';
@@ -1212,6 +1312,11 @@ async function saveParticipant() {
     phone:          document.getElementById('part-phone').value.trim() || null,
     iban:           document.getElementById('part-iban').value.trim() || null,
     bank_name:      document.getElementById('part-bank').value.trim() || null,
+    gender:         document.getElementById('part-gender').value || null,
+    home_address:   document.getElementById('part-address').value.trim() || null,
+    passport_type:  document.getElementById('part-passport-type').value.trim() || null,
+    passport_no:    document.getElementById('part-passport-no').value.trim() || null,
+    passport_expiry: document.getElementById('part-passport-expiry').value || null,
     guardian_name:  document.getElementById('part-guardian-name').value.trim() || null,
     guardian_tc:    document.getElementById('part-guardian-tc').value.trim() || null,
     guardian_phone: document.getElementById('part-guardian-phone').value.trim() || null
@@ -1293,6 +1398,154 @@ function allLangPlansFilled(mobId) {
   // Bu fonksiyon checklist tarafından çağrılıyor; mobParticipants son yüklenen hareketlilik ise kullan
   if (!mobParticipants.length) return false;
   return mobParticipants.every(p => p.lang_plan && p.lang_plan.current_level && p.lang_plan.target_level);
+}
+
+// ─────────────────────────────────────────────
+// HAREKETLİLİK BİLGİLERİ TABLOSU
+// ─────────────────────────────────────────────
+const ERASMUS_PLAN_GOALS = [
+  'Yenilikçi ve alternatif öğretim modellerini öğretmenlerin sınıf içi ve sınıf dışı uygulamalarında yaygınlaştırılarak, öğrencilerin 21. yüzyıl becerilerini ve akademik başarılarını artırmak.',
+  'Yenilikçi eğitim teknolojilerinin etkili kullanımını yaygınlaştırmak için öğretmen ve yöneticilerin dijital becerileri geliştirmek',
+  'Öğretmen ve Yöneticilerin Kapsayıcı Eğitim Yeterliliklerini Artırarak Okullarda Kapsayıcı Öğrenme Ortamları Oluşturmak',
+  'Okullarda İyi Oluş Halini Destekleyen Yenilikçi Eğitim ve Yönetim Uygulamalarını Yaygınlaştırmak',
+  'Öğrencilerin 21. Yüzyıl Becerilerini ve Anahtar Yeterliliklerini Geliştirmek',
+  'Sürdürülebilirlik ve çevresel farkındalık için öğretmen, yönetici ve öğrencilerin yeşil becerilerini geliştirmek'
+];
+
+const KEY_COMPETENCES = [
+  'Active citizenship - Aktif vatandaşlık',
+  'Cultural awareness and expression - Kültürel farkındalık ve ifade',
+  'Digital and technology-based competences - Dijital ve teknoloji tabanlı yetenekler',
+  'Entrepreneurship - Girişimcilik',
+  'Interpersonal skills, and the ability to adopt new competences - Kişilerarası beceriler ve yeni yeteneklere uyum kabiliyeti',
+  'Literacy - Okuryazarlık',
+  'Multilingualism - Çok dillilik',
+  'Numerical, scientific and engineering skills - Sayısal, bilimsel ve mühendislik becerileri'
+];
+
+let currentMobInfo = null;
+let committeeMembers = [];
+
+function renderCheckboxList(containerId, options, selected) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = options.map((opt, i) => `
+    <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+      <input type="checkbox" data-idx="${i}" ${selected.includes(opt) ? 'checked' : ''} style="margin-top:2px">
+      <span>${opt}</span>
+    </label>`).join('');
+}
+
+function getCheckedValues(containerId, options) {
+  const el = document.getElementById(containerId);
+  const checked = [];
+  el.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    if (cb.checked) checked.push(options[parseInt(cb.dataset.idx)]);
+  });
+  return checked;
+}
+
+function renderCommitteeList() {
+  const el = document.getElementById('mi-committee-list');
+  el.innerHTML = committeeMembers.map((m, i) => `
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input class="form-input" placeholder="TC Kimlik No" value="${m.tc || ''}" oninput="committeeMembers[${i}].tc=this.value" style="flex:1">
+      <input class="form-input" placeholder="Adı Soyadı" value="${m.name || ''}" oninput="committeeMembers[${i}].name=this.value" style="flex:2">
+      <button class="btn btn-ghost btn-sm" onclick="removeCommitteeRow(${i})">🗑</button>
+    </div>`).join('');
+}
+
+function addCommitteeRow() {
+  committeeMembers.push({ tc: '', name: '' });
+  renderCommitteeList();
+}
+
+function removeCommitteeRow(i) {
+  committeeMembers.splice(i, 1);
+  renderCommitteeList();
+}
+
+async function openMobInfo(mobId) {
+  document.getElementById('mi-mobility-id').value = mobId;
+
+  const { data } = await db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle();
+  currentMobInfo = data || {};
+
+  document.getElementById('mi-host-oid').value = currentMobInfo.host_oid || '';
+  document.getElementById('mi-host-type').value = currentMobInfo.host_type || '';
+  document.getElementById('mi-host-legal-rep').value = currentMobInfo.host_legal_rep || '';
+  document.getElementById('mi-host-contact-name').value = currentMobInfo.host_contact_name || '';
+  document.getElementById('mi-host-contact-email').value = currentMobInfo.host_contact_email || '';
+  document.getElementById('mi-host-website').value = currentMobInfo.host_website || '';
+  document.getElementById('mi-host-address').value = currentMobInfo.host_address || '';
+  document.getElementById('mi-host-postal-code').value = currentMobInfo.host_postal_code || '';
+  document.getElementById('mi-host-phone').value = currentMobInfo.host_phone || '';
+  document.getElementById('mi-host-found-how').value = currentMobInfo.host_found_how || '';
+  document.getElementById('mi-distance-km').value = currentMobInfo.distance_km || '';
+  document.getElementById('mi-travel-route').value = currentMobInfo.travel_route || '';
+  document.getElementById('mi-flight-numbers').value = currentMobInfo.flight_numbers || '';
+  document.getElementById('mi-travel-vehicles').value = currentMobInfo.travel_vehicles || '';
+  document.getElementById('mi-accommodation-type').value = currentMobInfo.accommodation_type || '';
+  document.getElementById('mi-accommodation-address').value = currentMobInfo.accommodation_address || '';
+  document.getElementById('mi-accommodation-duration').value = currentMobInfo.accommodation_duration || '';
+  document.getElementById('mi-activity-summary').value = currentMobInfo.activity_summary || '';
+  document.getElementById('mi-course-link').value = currentMobInfo.course_link || '';
+
+  renderCheckboxList('mi-plan-goals', ERASMUS_PLAN_GOALS, currentMobInfo.erasmus_plan_goals || []);
+  renderCheckboxList('mi-key-competences', KEY_COMPETENCES, currentMobInfo.key_competences || []);
+
+  committeeMembers = (currentMobInfo.selection_committee || []).map(m => ({ ...m }));
+  renderCommitteeList();
+
+  document.getElementById('mobinfo-overlay').classList.add('show');
+}
+
+function closeMobInfo() {
+  document.getElementById('mobinfo-overlay').classList.remove('show');
+}
+
+async function saveMobInfo() {
+  const mobId = document.getElementById('mi-mobility-id').value;
+  const btn = document.getElementById('mobinfo-save-btn');
+  btn.disabled = true;
+
+  const payload = {
+    mobility_id: mobId,
+    school_id: currentSchool.id,
+    host_oid: document.getElementById('mi-host-oid').value.trim() || null,
+    host_type: document.getElementById('mi-host-type').value.trim() || null,
+    host_legal_rep: document.getElementById('mi-host-legal-rep').value.trim() || null,
+    host_contact_name: document.getElementById('mi-host-contact-name').value.trim() || null,
+    host_contact_email: document.getElementById('mi-host-contact-email').value.trim() || null,
+    host_website: document.getElementById('mi-host-website').value.trim() || null,
+    host_address: document.getElementById('mi-host-address').value.trim() || null,
+    host_postal_code: document.getElementById('mi-host-postal-code').value.trim() || null,
+    host_phone: document.getElementById('mi-host-phone').value.trim() || null,
+    host_found_how: document.getElementById('mi-host-found-how').value.trim() || null,
+    distance_km: document.getElementById('mi-distance-km').value ? parseFloat(document.getElementById('mi-distance-km').value) : null,
+    travel_route: document.getElementById('mi-travel-route').value.trim() || null,
+    flight_numbers: document.getElementById('mi-flight-numbers').value.trim() || null,
+    travel_vehicles: document.getElementById('mi-travel-vehicles').value.trim() || null,
+    accommodation_type: document.getElementById('mi-accommodation-type').value.trim() || null,
+    accommodation_address: document.getElementById('mi-accommodation-address').value.trim() || null,
+    accommodation_duration: document.getElementById('mi-accommodation-duration').value.trim() || null,
+    erasmus_plan_goals: getCheckedValues('mi-plan-goals', ERASMUS_PLAN_GOALS),
+    key_competences: getCheckedValues('mi-key-competences', KEY_COMPETENCES),
+    selection_committee: committeeMembers.filter(m => m.tc || m.name),
+    activity_summary: document.getElementById('mi-activity-summary').value.trim() || null,
+    course_link: document.getElementById('mi-course-link').value.trim() || null
+  };
+
+  const { error } = await db.from('mobility_info').upsert(payload, { onConflict: 'mobility_id' });
+
+  btn.disabled = false;
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+
+  closeMobInfo();
+  if (currentMobId === mobId) await loadChecklist();
+}
+
+function mobInfoComplete(info) {
+  return !!(info && info.host_contact_name && info.activity_summary);
 }
 
 // ─────────────────────────────────────────────
