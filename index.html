@@ -9862,10 +9862,10 @@ function renderTakip24() {
     root.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">⏳ Yükleniyor...</div>';
     fetch(GAS_URL + '?action=getTakip24&_t=' + Date.now())
       .then(function(r) { return r.json(); })
-      .then(async function(d) {
+      .then(function(d) {
         _t24Data  = d.status || {};
         // localStorage sync: GAS kazanır, ama localStorage'da olup GAS'ta olmayan
-        // kayıtları sıralı olarak GAS'a gönder (paralel yazma Google Sheets'i bozuyor)
+        // kayıtları arka planda sıralı gönder (önce render, sonra sync)
         try {
           var _lsS = JSON.parse(localStorage.getItem('t24_status') || '{}');
           var _syncQueue = [];
@@ -9880,12 +9880,16 @@ function renderTakip24() {
               }
             });
           });
-          // Sıralı gönder — concurrent yazma Google Sheets'te çakışıyor
-          for (var _si = 0; _si < _syncQueue.length; _si++) {
-            var _sq = _syncQueue[_si];
-            try {
-              await fetch(GAS_URL + '?action=saveTakip24&key=' + encodeURIComponent(_sq.mid) + '&field=' + _sq.field + '&val=1');
-            } catch(e) {}
+          // Render'ı bloke etme — sync arka planda çalışsın
+          if (_syncQueue.length > 0) {
+            (async function() {
+              for (var _si = 0; _si < _syncQueue.length; _si++) {
+                var _sq = _syncQueue[_si];
+                try {
+                  await fetch(GAS_URL + '?action=saveTakip24&key=' + encodeURIComponent(_sq.mid) + '&field=' + _sq.field + '&val=1');
+                } catch(e) {}
+              }
+            })();
           }
         } catch(e) {}
         var notes = d.notes  || [];
