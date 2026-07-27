@@ -9862,26 +9862,31 @@ function renderTakip24() {
     root.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">⏳ Yükleniyor...</div>';
     fetch(GAS_URL + '?action=getTakip24&_t=' + Date.now())
       .then(function(r) { return r.json(); })
-      .then(function(d) {
+      .then(async function(d) {
         _t24Data  = d.status || {};
         // localStorage sync: GAS kazanır, ama localStorage'da olup GAS'ta olmayan
-        // kayıtları GAS'a göndererek cross-device tutarlılık sağla
+        // kayıtları sıralı olarak GAS'a gönder (paralel yazma Google Sheets'i bozuyor)
         try {
           var _lsS = JSON.parse(localStorage.getItem('t24_status') || '{}');
+          var _syncQueue = [];
           Object.keys(_lsS).forEach(function(mid) {
-            var encMid = encodeURIComponent(mid);
             ['beyan','onay'].forEach(function(field) {
               var lsVal = !!(_lsS[mid] && _lsS[mid][field]);
               var gasVal = !!(_t24Data[mid] && _t24Data[mid][field]);
               if (lsVal && !gasVal) {
-                // Bu tarayıcıda işaretlenmiş ama GAS'ta yok → GAS'a sync et
                 if (!_t24Data[mid]) _t24Data[mid] = {};
                 _t24Data[mid][field] = true;
-                fetch(GAS_URL + '?action=saveTakip24&key=' + encMid + '&field=' + field + '&val=1').catch(function(){});
+                _syncQueue.push({mid: mid, field: field});
               }
-              // GAS'ta varsa GAS kazanır (localStorage false ise bile)
             });
           });
+          // Sıralı gönder — concurrent yazma Google Sheets'te çakışıyor
+          for (var _si = 0; _si < _syncQueue.length; _si++) {
+            var _sq = _syncQueue[_si];
+            try {
+              await fetch(GAS_URL + '?action=saveTakip24&key=' + encodeURIComponent(_sq.mid) + '&field=' + _sq.field + '&val=1');
+            } catch(e) {}
+          }
         } catch(e) {}
         var notes = d.notes  || [];
         _t24Notes = {};
