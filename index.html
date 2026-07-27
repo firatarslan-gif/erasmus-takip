@@ -9864,12 +9864,23 @@ function renderTakip24() {
       .then(function(r) { return r.json(); })
       .then(function(d) {
         _t24Data  = d.status || {};
-        // localStorage'dan merge et — GAS başarısız olsa bile yerel değişiklikler korunur
+        // localStorage sync: GAS kazanır, ama localStorage'da olup GAS'ta olmayan
+        // kayıtları GAS'a göndererek cross-device tutarlılık sağla
         try {
           var _lsS = JSON.parse(localStorage.getItem('t24_status') || '{}');
           Object.keys(_lsS).forEach(function(mid) {
-            if (!_t24Data[mid]) _t24Data[mid] = {};
-            Object.assign(_t24Data[mid], _lsS[mid]);
+            var encMid = encodeURIComponent(mid);
+            ['beyan','onay'].forEach(function(field) {
+              var lsVal = !!(_lsS[mid] && _lsS[mid][field]);
+              var gasVal = !!(_t24Data[mid] && _t24Data[mid][field]);
+              if (lsVal && !gasVal) {
+                // Bu tarayıcıda işaretlenmiş ama GAS'ta yok → GAS'a sync et
+                if (!_t24Data[mid]) _t24Data[mid] = {};
+                _t24Data[mid][field] = true;
+                fetch(GAS_URL + '?action=saveTakip24&key=' + encMid + '&field=' + field + '&val=1').catch(function(){});
+              }
+              // GAS'ta varsa GAS kazanır (localStorage false ise bile)
+            });
           });
         } catch(e) {}
         var notes = d.notes  || [];
