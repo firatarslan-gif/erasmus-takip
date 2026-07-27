@@ -958,6 +958,7 @@ function renderPhase(phase) {
           ${d.category === 'olcme_degerlendirme' ? `<span class="cl-category">📊 Ölçme ve Değerlendirme</span>` : ''}
           ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
           ${(d.template_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📎 ${t.label}</a>`).join('')}
+          ${(d.example_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📄 ${t.label}</a>`).join('')}
           ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${docs.length ? 'Başka Belge Ekle' : 'Belge Yükle'}</span>` : ''}
           ${isDone && prog?.completed_at ? `<span style="font-size: 12px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
         </div>
