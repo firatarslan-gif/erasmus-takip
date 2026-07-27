@@ -749,16 +749,16 @@ async function viewMobilityDetail(mobId) {
   const m = allMobilities.find(x => x.id === mobId);
   if (!m) return;
 
-  const { data: parts } = await db.from('participants').select('*').eq('mobility_id', mobId).order('created_at');
+  const [{ data: parts }, { data: info }] = await Promise.all([
+    db.from('participants').select('*').eq('mobility_id', mobId).order('created_at'),
+    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle()
+  ]);
 
   document.getElementById('detailModalTitle').textContent =
     `${m.schools?.name || '?'} — ${ACT_LABEL_GLOBAL[m.activity_type] || m.activity_type}`;
 
-  const el = document.getElementById('detailModalBody');
-  if (!parts || !parts.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Henüz katılımcı eklenmedi.</div></div>`;
-  } else {
-    el.innerHTML = parts.map(p => {
+  const partsHtml = (!parts || !parts.length) ? `<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Henüz katılımcı eklenmedi.</div></div>` :
+    parts.map(p => {
       const lp = p.lang_plan || {};
       const lpDone = !!(lp.current_level && lp.target_level);
       return `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
@@ -773,7 +773,22 @@ async function viewMobilityDetail(mobId) {
         </div>
       </div>`;
     }).join('');
-  }
+
+  const infoHtml = !info ? `<div style="font-size:11px;color:var(--orange);padding:8px 0">⚠ Hareketlilik Bilgileri Tablosu henüz doldurulmadı.</div>` : `
+    <div style="font-size:11px;color:var(--muted);display:grid;gap:4px;padding:8px 0">
+      <div><strong style="color:var(--text)">Ev Sahibi Kurum:</strong> ${info.host_type || '—'} ${info.host_oid ? '(' + info.host_oid + ')' : ''}</div>
+      <div><strong style="color:var(--text)">İrtibat:</strong> ${info.host_contact_name || '—'} ${info.host_contact_email ? '· ' + info.host_contact_email : ''}</div>
+      <div><strong style="color:var(--text)">Seyahat:</strong> ${info.travel_route || '—'} ${info.flight_numbers ? '· Uçuş: ' + info.flight_numbers : ''}</div>
+      <div><strong style="color:var(--text)">Konaklama:</strong> ${info.accommodation_type || '—'} ${info.accommodation_address ? '· ' + info.accommodation_address : ''}</div>
+      <div><strong style="color:var(--text)">Plan Hedefleri:</strong> ${(info.erasmus_plan_goals || []).length} seçildi</div>
+      <div><strong style="color:var(--text)">Temel Yeterlilikler:</strong> ${(info.key_competences || []).length} seçildi</div>
+      <div><strong style="color:var(--text)">Seçim Kurulu:</strong> ${(info.selection_committee || []).length} üye</div>
+      ${info.activity_summary ? `<div style="margin-top:4px"><strong style="color:var(--text)">Özet:</strong> ${info.activity_summary}</div>` : ''}
+    </div>`;
+
+  document.getElementById('detailModalBody').innerHTML =
+    `<div class="card-title">📋 Hareketlilik Bilgileri</div>${infoHtml}` +
+    `<div class="card-title" style="margin-top:10px">👥 Katılımcılar</div>${partsHtml}`;
 
   document.getElementById('detailModal').classList.add('show');
 }
