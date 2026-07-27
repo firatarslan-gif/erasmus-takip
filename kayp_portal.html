@@ -21,7 +21,7 @@
   --purple:   #7c3aed;
   --sidebar:  #1e293b;
 }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
 
 /* ── LAYOUT ── */
 .layout { display: flex; min-height: 100vh; }
@@ -34,28 +34,28 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100;
 }
 .sb-logo { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.1); }
-.sb-logo-title { font-size: 16px; font-weight: 800; }
-.sb-logo-sub   { font-size: 10px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.sb-logo-title { font-size: 18px; font-weight: 800; }
+.sb-logo-sub   { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
 .sb-school { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.1); }
-.sb-school-name { font-size: 12px; font-weight: 700; line-height: 1.4; }
-.sb-school-oid  { font-size: 10px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.sb-school-name { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.sb-school-oid  { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 2px; }
 .sb-nav { flex: 1; padding: 12px 0; }
-.sb-section { font-size: 9px; font-weight: 700; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .8px; padding: 12px 18px 4px; }
+.sb-section { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .8px; padding: 12px 18px 4px; }
 .sb-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 18px; cursor: pointer; font-size: 12px; font-weight: 500;
+  padding: 9px 18px; cursor: pointer; font-size: 14px; font-weight: 500;
   color: rgba(255,255,255,.7); border-left: 3px solid transparent;
   transition: all .15s;
 }
 .sb-item:hover   { background: rgba(255,255,255,.07); color: white; }
 .sb-item.active  { background: rgba(37,99,235,.3); color: white; border-left-color: var(--blue); font-weight: 700; }
-.sb-item .icon   { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.sb-item .icon   { font-size: 17px; width: 18px; text-align: center; flex-shrink: 0; }
 .sb-badge {
   margin-left: auto; background: var(--red); color: white;
-  font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 10px;
+  font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px;
 }
 .sb-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.1); }
-.sb-logout { font-size: 11px; color: rgba(255,255,255,.4); cursor: pointer; }
+.sb-logout { font-size: 13px; color: rgba(255,255,255,.4); cursor: pointer; }
 .sb-logout:hover { color: white; }
 
 /* ── ANA İÇERİK ── */
@@ -64,7 +64,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   background: white; border-bottom: 1px solid var(--border);
   padding: 14px 28px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50;
 }
-.topbar-title { font-size: 16px; font-weight: 800; flex: 1; }
+.topbar-title { font-size: 18px; font-weight: 800; flex: 1; }
 .topbar-notif { position: relative; cursor: pointer; }
 .notif-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; border: 2px solid white; }
 
@@ -73,15 +73,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 /* ── KARTLAR ── */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
 .stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-.stat-label { font-size: 11px; color: var(--muted); font-weight: 600; }
+.stat-label { font-size: 13px; color: var(--muted); font-weight: 600; }
 .stat-value { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
-.stat-sub   { font-size: 10px; color: var(--muted); }
+.stat-sub   { font-size: 12px; color: var(--muted); }
 .stat-icon  { font-size: 22px; margin-bottom: 8px; }
 
 /* ── HAREKETLİLİK LİSTESİ ── */
 .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.section-title  { font-size: 14px; font-weight: 800; }
-.section-badge  { background: var(--light); color: var(--muted); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+.section-title  { font-size: 16px; font-weight: 800; }
+.section-badge  { background: var(--light); color: var(--muted); font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
 .section-action { margin-left: auto; }
 
 .mob-card {
@@ -90,7 +90,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 }
 .mob-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); border-color: #c7d2fe; }
 .mob-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.mob-type { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 5px; }
+.mob-type { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 5px; }
 .mob-type.SM-TTA         { background: #eff6ff; color: #1d4ed8; }
 .mob-type.SM-JOB-SHDW   { background: #fdf4ff; color: #7c3aed; }
 .mob-type.SM-COUR-TRAIN  { background: #fff7ed; color: #c2410c; }
@@ -99,12 +99,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .mob-type.LM-GRP-PUPIL   { background: #f0f9ff; color: #0369a1; }
 .mob-type.OA-INV-EXP     { background: #fef3c7; color: #92400e; }
 .mob-type.PREP-VISIT      { background: #fce7f3; color: #9d174d; }
-.mob-name { font-size: 13px; font-weight: 700; }
-.mob-dates { font-size: 11px; color: var(--muted); margin-left: auto; }
+.mob-name { font-size: 15px; font-weight: 700; }
+.mob-dates { font-size: 13px; color: var(--muted); margin-left: auto; }
 
 /* Progress bar */
 .progress-wrap { margin-top: 4px; }
-.progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
 .progress-bar { height: 6px; background: var(--light); border-radius: 10px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 10px; transition: width .3s; }
 .progress-fill.low    { background: var(--red); }
@@ -112,7 +112,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .progress-fill.high   { background: var(--green); }
 
 .mob-footer { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.mob-stat { font-size: 10px; background: var(--light); color: var(--muted); padding: 3px 8px; border-radius: 5px; font-weight: 600; }
+.mob-stat { font-size: 12px; background: var(--light); color: var(--muted); padding: 3px 8px; border-radius: 5px; font-weight: 600; }
 .mob-stat.warn { background: #fef9c3; color: #92400e; }
 .mob-stat.ok   { background: #ecfdf5; color: #065f46; }
 .mob-stat.err  { background: #fef2f2; color: #991b1b; }
@@ -120,10 +120,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 /* ── CHECKLİST PANEL ── */
 .panel { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .panel-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: #f8fafc; }
-.panel-title { font-size: 13px; font-weight: 800; }
+.panel-title { font-size: 15px; font-weight: 800; }
 .phase-tabs { display: flex; gap: 0; padding: 12px 18px; border-bottom: 1px solid var(--border); }
 .phase-tab {
-  padding: 6px 14px; font-size: 11px; font-weight: 700; cursor: pointer;
+  padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
   border: 1.5px solid var(--border); background: white; color: var(--muted);
   border-radius: 6px; margin-right: 6px;
 }
@@ -141,25 +141,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 }
 .cl-checkbox.done     { background: var(--green); border-color: var(--green); }
 .cl-checkbox.blocked  { background: #fef2f2; border-color: #fca5a5; cursor: not-allowed; }
-.cl-checkbox.done::after { content: '✓'; color: white; font-size: 11px; font-weight: 800; }
+.cl-checkbox.done::after { content: '✓'; color: white; font-size: 13px; font-weight: 800; }
 
 .cl-body { flex: 1; }
-.cl-text { font-size: 12px; color: #374151; line-height: 1.4; }
+.cl-text { font-size: 14px; color: #374151; line-height: 1.4; }
 .cl-text.done { color: var(--green); font-weight: 700; }
 .cl-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
-.cl-type { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
+.cl-type { font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
 .cl-type.info     { background: var(--light); color: var(--muted); }
 .cl-type.document { background: #fef9c3; color: #92400e; }
 .cl-type.form     { background: #fdf4ff; color: var(--purple); }
-.cl-block-msg { font-size: 10px; color: var(--red); }
-.cl-link { font-size: 10px; color: var(--blue); cursor: pointer; text-decoration: underline; }
+.cl-category      { font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 3px; background: #ecfeff; color: #0e7490; }
+.cl-block-msg { font-size: 12px; color: var(--red); }
+.cl-link { font-size: 12px; color: var(--blue); cursor: pointer; text-decoration: underline; }
 
 /* ── MODAL ── */
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
 .overlay.show { display: flex; }
 .modal { background: white; border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
 .modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-.modal-title { font-size: 15px; font-weight: 800; flex: 1; }
+.modal-title { font-size: 17px; font-weight: 800; flex: 1; }
 .modal-close { font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; }
 .modal-close:hover { color: var(--text); }
 .modal-body { padding: 22px; }
@@ -172,18 +173,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 }
 .upload-zone:hover, .upload-zone.drag { border-color: var(--blue); background: #eff6ff; }
 .upload-icon { font-size: 32px; margin-bottom: 8px; }
-.upload-text { font-size: 13px; font-weight: 600; color: var(--muted); }
-.upload-sub  { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+.upload-text { font-size: 15px; font-weight: 600; color: var(--muted); }
+.upload-sub  { font-size: 13px; color: #94a3b8; margin-top: 4px; }
 input[type="file"] { display: none; }
 
 /* Form inputs */
 .form-group { margin-bottom: 14px; }
-.form-label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
-.form-input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 13px; outline: none; }
+.form-label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.form-input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 15px; outline: none; }
 .form-input:focus { border-color: var(--blue); }
 
 /* Buttons */
-.btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; }
+.btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; }
 .btn-primary { background: var(--blue); color: white; }
 .btn-primary:hover { background: #1d4ed8; }
 .btn-ghost   { background: var(--light); color: var(--muted); }
@@ -191,7 +192,7 @@ input[type="file"] { display: none; }
 .btn-danger  { background: #fef2f2; color: var(--red); border: 1px solid #fca5a5; }
 
 /* AI validation badge */
-.ai-result { border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 11px; }
+.ai-result { border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
 .ai-result.ok   { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
 .ai-result.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
 .ai-result.err  { background: #fef2f2; border: 1px solid #fca5a5; color: #dc2626; }
@@ -229,7 +230,7 @@ input[type="file"] { display: none; }
       </div>
       <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
 
-      <div id="selected-file" style="display:none;margin-top:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px">
+      <div id="selected-file" style="display:none;margin-top:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size: 14px">
         <div id="file-info"></div>
         <div id="ai-result-area"></div>
       </div>
@@ -313,7 +314,7 @@ input[type="file"] { display: none; }
         <input class="form-input" id="part-passport-expiry" type="date">
       </div>
       <div id="guardian-fields" style="display:none;background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:12px;margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#9d174d;margin-bottom:8px">👨‍👩‍👦 18 Yaş Altı — Yasal Vasi Bilgileri</div>
+        <div style="font-size: 13px;font-weight:700;color:#9d174d;margin-bottom:8px">👨‍👩‍👦 18 Yaş Altı — Yasal Vasi Bilgileri</div>
         <div class="form-group">
           <label class="form-label">Veli Adı Soyadı</label>
           <input class="form-input" id="part-guardian-name" placeholder="Veli adı soyadı">
@@ -344,7 +345,7 @@ input[type="file"] { display: none; }
     </div>
     <div class="modal-body">
       <input type="hidden" id="lp-part-id">
-      <p style="font-size:11px;color:var(--muted);margin-bottom:14px">CEFR (Avrupa Dilleri Ortak Çerçeve Programı) seviyelerine göre doldurun.</p>
+      <p style="font-size: 13px;color:var(--muted);margin-bottom:14px">CEFR (Avrupa Dilleri Ortak Çerçeve Programı) seviyelerine göre doldurun.</p>
       <div class="form-group">
         <label class="form-label">Mevcut Seviye (CEFR)</label>
         <select class="form-input" id="lp-current">
@@ -399,7 +400,7 @@ input[type="file"] { display: none; }
     <div class="modal-body">
       <input type="hidden" id="mi-mobility-id">
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px">🏫 Ev Sahibi Kurum</h3>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px">🏫 Ev Sahibi Kurum</h3>
       <div class="form-group"><label class="form-label">Kurum OID</label><input class="form-input" id="mi-host-oid"></div>
       <div class="form-group"><label class="form-label">Kuruluş Türü</label><input class="form-input" id="mi-host-type" placeholder="Okul, Dil Okulu, Şirket vb."></div>
       <div class="form-group"><label class="form-label">Yasal Temsilci Adı</label><input class="form-input" id="mi-host-legal-rep"></div>
@@ -412,27 +413,30 @@ input[type="file"] { display: none; }
       <div class="form-group"><label class="form-label">Ev Sahibi Kurum Nasıl Bulundu? Nasıl İletişime Geçildi?</label><textarea class="form-input" id="mi-host-found-how" rows="2"></textarea></div>
       <div class="form-group"><label class="form-label">Km Cinsinden Gerçek Mesafe <a href="https://erasmus-plus.ec.europa.eu/resources-and-tools/distance-calculator" target="_blank" class="cl-link">(hesapla)</a></label><input class="form-input" id="mi-distance-km" type="number"></div>
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">✈️ Seyahat Detayları</h3>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">✈️ Seyahat Detayları</h3>
       <div class="form-group"><label class="form-label">Seyahat Rotası</label><input class="form-input" id="mi-travel-route"></div>
       <div class="form-group"><label class="form-label">Uçuş No(ları)</label><input class="form-input" id="mi-flight-numbers"></div>
       <div class="form-group"><label class="form-label">Seyahat Araçları</label><input class="form-input" id="mi-travel-vehicles" placeholder="Uçak, otobüs, tren vb."></div>
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🏨 Konaklama Detayları</h3>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🏨 Konaklama Detayları</h3>
       <div class="form-group"><label class="form-label">Konaklama Türü</label><input class="form-input" id="mi-accommodation-type" placeholder="Ev, Otel, Hostel vb."></div>
       <div class="form-group"><label class="form-label">Konaklama Adresi</label><input class="form-input" id="mi-accommodation-address"></div>
       <div class="form-group"><label class="form-label">Konaklama Süresi</label><input class="form-input" id="mi-accommodation-duration"></div>
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🎯 Erasmus Plan Hedefleri <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
-      <div id="mi-plan-goals" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:12px"></div>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🎯 Erasmus Plan Hedefleri <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
+      <div id="mi-plan-goals" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size: 14px"></div>
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🧠 Temel Yeterlilikler <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
-      <div id="mi-key-competences" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:12px"></div>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🧠 Temel Yeterlilikler <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
+      <div id="mi-key-competences" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size: 14px"></div>
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">👥 Katılımcı Seçim Kurulu Üyeleri</h3>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">✅ Hareketlilik Uygun Kriterleri <span style="font-weight:400;text-transform:none">(en fazla 3 seçenek)</span></h3>
+      <div id="mi-applicable-criteria" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size: 14px"></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">👥 Katılımcı Seçim Kurulu Üyeleri</h3>
       <div id="mi-committee-list" style="margin-bottom:8px"></div>
       <button class="btn btn-ghost btn-sm" onclick="addCommitteeRow()" style="margin-bottom:14px">+ Üye Ekle</button>
 
-      <h3 style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">📝 Hareketlilik Faaliyeti Özeti</h3>
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">📝 Hareketlilik Faaliyeti Özeti</h3>
       <div class="form-group">
         <label class="form-label">Lütfen Hareketlilik Faaliyetinizi Kısaca Özetleyiniz (Yapılandırılmış kurslarda kurs adı/linkini de ekleyin)</label>
         <textarea class="form-input" id="mi-activity-summary" rows="3"></textarea>
@@ -569,7 +573,7 @@ input[type="file"] { display: none; }
       <div id="tab-checklist" style="display:none">
         <div class="section-header">
           <div class="section-title">Kontrol Listesi</div>
-          <select id="cl-mob-select" onchange="loadChecklist()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+          <select id="cl-mob-select" onchange="loadChecklist()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
             <option value="">— Hareketlilik Seçin —</option>
           </select>
         </div>
@@ -578,7 +582,7 @@ input[type="file"] { display: none; }
           <div class="panel">
             <div class="panel-head">
               <div class="panel-title" id="cl-panel-title">Kontrol Listesi</div>
-              <div style="margin-left:auto;font-size:12px;color:var(--muted)"><span id="cl-done-count">0</span> / <span id="cl-total-count">0</span> tamamlandı</div>
+              <div style="margin-left:auto;font-size: 14px;color:var(--muted)"><span id="cl-done-count">0</span> / <span id="cl-total-count">0</span> tamamlandı</div>
             </div>
             <div class="phase-tabs">
               <div class="phase-tab active" onclick="switchPhase('oncesi',this)">📋 Öncesi</div>
@@ -594,7 +598,7 @@ input[type="file"] { display: none; }
       <div id="tab-documents" style="display:none">
         <div class="section-header">
           <div class="section-title">Belgelerim</div>
-          <select id="doc-mob-select" onchange="loadDocuments()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+          <select id="doc-mob-select" onchange="loadDocuments()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
             <option value="">— Hareketlilik Seçin —</option>
           </select>
         </div>
@@ -607,7 +611,7 @@ input[type="file"] { display: none; }
       <div id="tab-participants" style="display:none">
         <div class="section-header">
           <div class="section-title">Katılımcılar</div>
-          <select id="part-mob-select" onchange="loadParticipants()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+          <select id="part-mob-select" onchange="loadParticipants()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
             <option value="">— Hareketlilik Seçin —</option>
           </select>
           <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openParticipantForm()">+ Katılımcı Ekle</button>
@@ -621,7 +625,7 @@ input[type="file"] { display: none; }
       <div id="tab-activitylog" style="display:none">
         <div class="section-header">
           <div class="section-title">Yaygınlaştırma & Sonuçların Kullanımı</div>
-          <select id="al-mob-select" onchange="loadActivityLog()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px">
+          <select id="al-mob-select" onchange="loadActivityLog()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
             <option value="">— Hareketlilik Seçin —</option>
           </select>
         </div>
@@ -900,7 +904,7 @@ function renderPhase(phase) {
     const docsList = docs.length ? `
       <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
         ${docs.map(doc => `
-          <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+          <div style="font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
             <span>📄 ${doc.file_name}</span>
             <span style="cursor:pointer;color:var(--blue)" onclick="viewOwnDocument('${doc.file_path}')">Görüntüle</span>
             <span>· ${statusLabel(doc.status)}</span>
@@ -911,11 +915,11 @@ function renderPhase(phase) {
     // Dil Gelişim Planı — katılımcı bazlı doldurma durumu
     const langPlanList = (d.check_type === 'form' && d.required_form_type === 'lang_plan') ? `
       <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
-        ${!mobParticipants.length ? `<div style="font-size:10px;color:var(--orange)">⚠ Önce <span class="cl-link" onclick="showTab('participants')">Katılımcılar</span> sekmesinden katılımcı ekleyin.</div>` :
+        ${!mobParticipants.length ? `<div style="font-size: 12px;color:var(--orange)">⚠ Önce <span class="cl-link" onclick="showTab('participants')">Katılımcılar</span> sekmesinden katılımcı ekleyin.</div>` :
           mobParticipants.map(p => {
             const lp = p.lang_plan || {};
             const done = !!(lp.current_level && lp.target_level);
-            return `<div style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+            return `<div style="font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
               <span>${done ? '✅' : '⬜'} ${p.full_name}</span>
               ${done ? `<span style="color:var(--green)">${lp.current_level} → ${lp.target_level}</span>` : ''}
               <span class="cl-link" onclick="openLangPlan('${p.id}')">${done ? 'Düzenle' : 'Doldur'}</span>
@@ -925,18 +929,18 @@ function renderPhase(phase) {
 
     // Hareketlilik Bilgileri Tablosu — doldurma durumu
     const mobInfoBlock = (d.check_type === 'form' && d.required_form_type === 'mobility_info') ? `
-      <div style="margin-top:6px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+      <div style="margin-top:6px;font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
         ${mobInfoComplete(window._clMobInfo) ? '<span style="color:var(--green);font-weight:700">✅ Dolduruldu</span>' : '<span style="color:var(--orange);font-weight:700">Doldurulmadı</span>'}
         <span class="cl-link" onclick="openMobInfo('${currentMobId}')">${mobInfoComplete(window._clMobInfo) ? 'Düzenle' : 'Doldur'}</span>
       </div>` : '';
 
     // Yaygınlaştırma / Sonuçların Kullanımı / Plan — doldurma durumu
     const actLogBlock = (d.check_type === 'form' && d.required_form_type === 'results_use_plan') ? `
-      <div style="margin-top:6px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+      <div style="margin-top:6px;font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
         ${resultsUsePlanFilled() ? '<span style="color:var(--green);font-weight:700">✅ Plan yazıldı</span>' : '<span style="color:var(--orange);font-weight:700">Plan yazılmadı</span>'}
         <span class="cl-link" onclick="showTab('activitylog')">${resultsUsePlanFilled() ? 'Düzenle' : 'Yaz'}</span>
       </div>` : (d.check_type === 'form' && (d.required_form_type === 'yayginlastirma' || d.required_form_type === 'sonuclarin_kullanimi')) ? `
-      <div style="margin-top:6px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px">
+      <div style="margin-top:6px;font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
         ${activityLogHasType(d.required_form_type) ? `<span style="color:var(--green);font-weight:700">✅ ${(window._clActivityLog||[]).filter(e=>e.type===d.required_form_type).length} kayıt var</span>` : '<span style="color:var(--orange);font-weight:700">Kayıt yok</span>'}
         <span class="cl-link" onclick="showTab('activitylog')">Kayıt Ekle</span>
       </div>` : '';
@@ -948,20 +952,21 @@ function renderPhase(phase) {
       </div>
       <div class="cl-body">
         <div class="cl-text ${textClass}">${d.title}</div>
-        ${d.helper_text ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4">${d.helper_text}</div>` : ''}
+        ${d.helper_text ? `<div style="font-size: 12px;color:var(--muted);margin-top:2px;line-height:1.4">${d.helper_text}</div>` : ''}
         <div class="cl-meta">
           <span class="cl-type ${d.check_type}">${typeLabel}</span>
+          ${d.category === 'olcme_degerlendirme' ? `<span class="cl-category">📊 Ölçme ve Değerlendirme</span>` : ''}
           ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
           ${(d.template_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📎 ${t.label}</a>`).join('')}
           ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${docs.length ? 'Başka Belge Ekle' : 'Belge Yükle'}</span>` : ''}
-          ${isDone && prog?.completed_at ? `<span style="font-size:10px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
+          ${isDone && prog?.completed_at ? `<span style="font-size: 12px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
         </div>
         ${docsList}
         ${langPlanList}
         ${mobInfoBlock}
         ${actLogBlock}
       </div>
-      ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size:11px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
+      ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size: 13px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -1071,7 +1076,7 @@ async function processFile(file) {
   const infoEl = document.getElementById('file-info');
   infoEl.innerHTML = `📄 <strong>${file.name}</strong> (${(file.size/1024/1024).toFixed(2)} MB)`;
   document.getElementById('selected-file').style.display = 'block';
-  document.getElementById('ai-result-area').innerHTML = '<div style="color:var(--muted);font-size:11px;margin-top:8px">🤖 AI doğrulama çalışıyor…</div>';
+  document.getElementById('ai-result-area').innerHTML = '<div style="color:var(--muted);font-size: 13px;margin-top:8px">🤖 AI doğrulama çalışıyor…</div>';
   document.getElementById('upload-confirm-btn').disabled = true;
 
   // AI doğrulama (ileride gerçek Claude API ile)
@@ -1218,13 +1223,13 @@ async function loadDocuments() {
     <div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)">
       <div style="font-size:22px">📄</div>
       <div style="flex:1">
-        <div style="font-size:12px;font-weight:700">${docTypeLabel(d.doc_type)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">${d.file_name || '—'} · v${d.version}</div>
+        <div style="font-size: 14px;font-weight:700">${docTypeLabel(d.doc_type)}</div>
+        <div style="font-size: 12px;color:var(--muted);margin-top:2px">${d.file_name || '—'} · v${d.version}</div>
       </div>
-      <div style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;${statusStyle(d.status)}">${statusLabel(d.status)}</div>
-      ${d.file_path ? `<span style="font-size:11px;color:var(--blue);cursor:pointer" onclick="viewOwnDocument('${d.file_path}')">👁 Görüntüle</span>` : ''}
-      ${d.status !== 'approved' ? `<span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="openUpload('${d.doc_type}','${mobId}',null)">🔄 Yeniden Yükle</span>` : ''}
-      ${d.status !== 'approved' ? `<span style="font-size:11px;color:#dc2626;cursor:pointer" onclick="deleteOwnDocument('${d.id}',null,'${d.doc_type}')">🗑 Sil</span>` : ''}
+      <div style="font-size: 12px;font-weight:700;padding:3px 8px;border-radius:5px;${statusStyle(d.status)}">${statusLabel(d.status)}</div>
+      ${d.file_path ? `<span style="font-size: 13px;color:var(--blue);cursor:pointer" onclick="viewOwnDocument('${d.file_path}')">👁 Görüntüle</span>` : ''}
+      ${d.status !== 'approved' ? `<span style="font-size: 13px;color:var(--muted);cursor:pointer" onclick="openUpload('${d.doc_type}','${mobId}',null)">🔄 Yeniden Yükle</span>` : ''}
+      ${d.status !== 'approved' ? `<span style="font-size: 13px;color:#dc2626;cursor:pointer" onclick="deleteOwnDocument('${d.id}',null,'${d.doc_type}')">🗑 Sil</span>` : ''}
     </div>
   `).join('')}
   </div>`;
@@ -1314,17 +1319,17 @@ function renderParticipants() {
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:22px">${p.role === 'student' ? '🧑‍🎒' : p.role === 'teacher' ? '👩‍🏫' : '👤'}</div>
         <div style="flex:1">
-          <div style="font-size:13px;font-weight:700">${p.full_name}${age !== null ? ` <span style="font-weight:400;color:var(--muted);font-size:11px">(${age} yaş)</span>` : ''}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${roleLabel(p.role)} ${p.tc_no ? '· TC: ' + p.tc_no : ''}</div>
+          <div style="font-size: 15px;font-weight:700">${p.full_name}${age !== null ? ` <span style="font-weight:400;color:var(--muted);font-size: 13px">(${age} yaş)</span>` : ''}</div>
+          <div style="font-size: 13px;color:var(--muted);margin-top:2px">${roleLabel(p.role)} ${p.tc_no ? '· TC: ' + p.tc_no : ''}</div>
         </div>
         <span class="cl-link" onclick="openParticipantForm('${p.id}')">✏️ Düzenle</span>
         <span class="cl-link" style="color:#dc2626" onclick="deleteParticipant('${p.id}')">🗑 Sil</span>
       </div>
       <div style="margin-top:8px;display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:8px;padding:8px 12px">
-        <span style="font-size:11px;color:var(--muted)">🗣️ Dil Gelişim Planı:</span>
+        <span style="font-size: 13px;color:var(--muted)">🗣️ Dil Gelişim Planı:</span>
         ${lpDone
-          ? `<span style="font-size:11px;color:var(--green);font-weight:700">${cefrLabel(lp.current_level)} → ${cefrLabel(lp.target_level)} ✓</span>`
-          : `<span style="font-size:11px;color:var(--orange);font-weight:700">Doldurulmadı</span>`}
+          ? `<span style="font-size: 13px;color:var(--green);font-weight:700">${cefrLabel(lp.current_level)} → ${cefrLabel(lp.target_level)} ✓</span>`
+          : `<span style="font-size: 13px;color:var(--orange);font-weight:700">Doldurulmadı</span>`}
         <span class="cl-link" style="margin-left:auto" onclick="openLangPlan('${p.id}')">${lpDone ? 'Düzenle' : 'Doldur'}</span>
       </div>
     </div>`;
@@ -1498,16 +1503,58 @@ const KEY_COMPETENCES = [
   'Numerical, scientific and engineering skills - Sayısal, bilimsel ve mühendislik becerileri'
 ];
 
+const APPLICABLE_CRITERIA = [
+  'Early childhood education and care - Erken çocukluk eğitimi ve bakımı',
+  'Bridging intercultural, intergenerational and social divide - Kültürlerarası, kuşaklararası ve sosyal ayrımı köprüleme',
+  'Promoting gender equality - Cinsiyet eşitliğini teşvik etme',
+  "Enterprise, industry, SMEs and entrepreneurship - Girişimcilik, endüstri, KOBİ'ler ve girişimcilik",
+  'Preventing radicalisation - Radikalleşmeyi önleme',
+  'Human rights and rule of law - İnsan hakları ve hukukun üstünlüğü',
+  'Environment and climate change - Çevre ve iklim değişikliği',
+  'Preventing racism and discrimination - Irkçılığı ve ayrımcılığı önleme',
+  'Promoting LGBT+ equality - LGBT+ eşitliğini teşvik etme',
+  'Reception and integration of refugees and migrants - Mülteci ve göçmenlerin kabulü ve entegrasyonu',
+  'Recognition, transparency, certification - Tanıma, şeffaflık, sertifikasyon',
+  'Awareness about the European Union - Avrupa Birliği hakkında farkındalık',
+  'Democracy and inclusive democratic participation - Demokrasi ve kapsayıcı demokratik katılım',
+  'Creativity, arts and culture - Yaratıcılık, sanat ve kültür',
+  'Media literacy and tackling disinformation - Medya okuryazarlığı ve dezinformasyonla mücadele',
+  'Digital skills and competences - Dijital beceriler ve yetenekler',
+  'Information and communication technologies (ICT) - Bilgi ve iletişim teknolojileri (BİT)',
+  'Inclusion, promoting equality and non-discrimination - Dahil etme, eşitlik ve ayrımcılığı teşvik etme',
+  'Disabilities - Engelliler',
+  'Development of disadvantaged rural and urban areas - Dezavantajlı kırsal ve kentsel alanların gelişimi',
+  'Preventing early school leaving and failure in education - Erken okul terkini ve eğitim başarısızlığını önleme',
+  'Creating new, innovative or joint curricula or courses - Yeni, yenilikçi veya ortak müfredat veya kurslar oluşturma',
+  'Overcoming skills mismatch and addressing the needs of the labour market - Beceriler uyuşmazlığını aşma ve iş piyasası ihtiyaçlarına cevap verme',
+  'Initial and continuous training for teachers, trainers and other education staff - Öğretmenler, eğitmenler ve diğer eğitim personeli için temel ve sürekli eğitim',
+  'Science, technology, engineering and mathematics (STEM) - Bilim, teknoloji, mühendislik ve matematik (STEM)',
+  'Career guidance - Kariyer rehberliği',
+  'Green transport and mobility - Yeşil ulaşım ve hareketlilik',
+  'Inter-regional cooperation - Bölgesel işbirliği',
+  'Physical and mental health, well-being - Fiziksel ve zihinsel sağlık, iyi olma',
+  'Digital safety - Dijital güvenlik'
+];
+
 let currentMobInfo = null;
 let committeeMembers = [];
 
-function renderCheckboxList(containerId, options, selected) {
+function renderCheckboxList(containerId, options, selected, maxSelect) {
   const el = document.getElementById(containerId);
   el.innerHTML = options.map((opt, i) => `
     <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
-      <input type="checkbox" data-idx="${i}" ${selected.includes(opt) ? 'checked' : ''} style="margin-top:2px">
+      <input type="checkbox" data-idx="${i}" ${selected.includes(opt) ? 'checked' : ''} style="margin-top:2px"
+        ${maxSelect ? `onchange="enforceMaxSelect('${containerId}', ${maxSelect})"` : ''}>
       <span>${opt}</span>
     </label>`).join('');
+  if (maxSelect) enforceMaxSelect(containerId, maxSelect);
+}
+
+function enforceMaxSelect(containerId, maxSelect) {
+  const el = document.getElementById(containerId);
+  const boxes = el.querySelectorAll('input[type="checkbox"]');
+  const checkedCount = [...boxes].filter(cb => cb.checked).length;
+  boxes.forEach(cb => { cb.disabled = !cb.checked && checkedCount >= maxSelect; });
 }
 
 function getCheckedValues(containerId, options) {
@@ -1567,6 +1614,7 @@ async function openMobInfo(mobId) {
 
   renderCheckboxList('mi-plan-goals', ERASMUS_PLAN_GOALS, currentMobInfo.erasmus_plan_goals || []);
   renderCheckboxList('mi-key-competences', KEY_COMPETENCES, currentMobInfo.key_competences || []);
+  renderCheckboxList('mi-applicable-criteria', APPLICABLE_CRITERIA, currentMobInfo.applicable_criteria || [], 3);
 
   committeeMembers = (currentMobInfo.selection_committee || []).map(m => ({ ...m }));
   renderCommitteeList();
@@ -1605,6 +1653,7 @@ async function saveMobInfo() {
     accommodation_duration: document.getElementById('mi-accommodation-duration').value.trim() || null,
     erasmus_plan_goals: getCheckedValues('mi-plan-goals', ERASMUS_PLAN_GOALS),
     key_competences: getCheckedValues('mi-key-competences', KEY_COMPETENCES),
+    applicable_criteria: getCheckedValues('mi-applicable-criteria', APPLICABLE_CRITERIA),
     selection_committee: committeeMembers.filter(m => m.tc || m.name),
     activity_summary: document.getElementById('mi-activity-summary').value.trim() || null,
     course_link: document.getElementById('mi-course-link').value.trim() || null
@@ -1655,12 +1704,12 @@ function renderActivityLog(plan) {
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
         <div>
           <span class="cl-type ${e.type === 'yayginlastirma' ? 'document' : 'form'}" style="margin-bottom:4px;display:inline-block">${AL_TYPE_LABEL[e.type]}</span>
-          <div style="font-size:13px;font-weight:700;margin-top:2px">${e.title}</div>
+          <div style="font-size: 15px;font-weight:700;margin-top:2px">${e.title}</div>
         </div>
         <span class="cl-link" style="color:#dc2626;flex-shrink:0" onclick="deleteActivityLogEntry('${e.id}')">🗑 Sil</span>
       </div>
-      ${e.description ? `<div style="font-size:12px;color:#374151;margin-top:6px">${e.description}</div>` : ''}
-      <div style="font-size:11px;color:var(--muted);margin-top:8px;display:flex;gap:10px;align-items:center">
+      ${e.description ? `<div style="font-size: 14px;color:#374151;margin-top:6px">${e.description}</div>` : ''}
+      <div style="font-size: 13px;color:var(--muted);margin-top:8px;display:flex;gap:10px;align-items:center">
         <span>${fmtDate(e.created_at)}</span>
         ${e.link_url ? `<a href="${e.link_url}" target="_blank" class="cl-link">🔗 Link</a>` : ''}
         ${e.file_path ? `<span class="cl-link" onclick="viewOwnDocument('${e.file_path}')">📷 Fotoğraf</span>` : ''}
@@ -1669,12 +1718,12 @@ function renderActivityLog(plan) {
 
   el.innerHTML = `
     <div class="panel" style="padding:16px;margin-bottom:16px">
-      <div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Sonuçların Kullanımı Planı</div>
+      <div style="font-size: 14px;font-weight:700;margin-bottom:8px">📋 Sonuçların Kullanımı Planı</div>
       <textarea class="form-input" id="al-plan-text" rows="3" placeholder="Hareketlilik sonuçlarının nasıl kullanılacağına dair planınızı yazın…">${plan}</textarea>
       <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="saveResultsUsePlan()">💾 Planı Kaydet</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase">Kayıtlar (${activityLogEntries.length})</div>
+      <div style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase">Kayıtlar (${activityLogEntries.length})</div>
       <button class="btn btn-primary btn-sm" onclick="openActLogForm()">+ Kayıt Ekle</button>
     </div>
     ${cards}`;
@@ -1779,12 +1828,12 @@ async function loadNotes() {
   el.innerHTML = data.map(n => `
     <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;font-weight:700;color:${n.author?.role === 'school' ? '#1d4ed8' : '#166534'}">
+        <span style="font-size: 13px;font-weight:700;color:${n.author?.role === 'school' ? '#1d4ed8' : '#166534'}">
           ${n.author?.role === 'school' ? '🏫 ' + (n.author?.full_name || 'Okul') : '👩‍💼 Koordinatör'}
         </span>
-        <span style="font-size:10px;color:var(--muted)">${fmtDate(n.created_at)}</span>
+        <span style="font-size: 12px;color:var(--muted)">${fmtDate(n.created_at)}</span>
       </div>
-      <div style="font-size:12px;color:#374151;line-height:1.6">${n.content}</div>
+      <div style="font-size: 14px;color:#374151;line-height:1.6">${n.content}</div>
     </div>
   `).join('');
 }
@@ -1795,7 +1844,7 @@ async function loadNotes() {
 async function loadProfile() {
   const s = currentSchool;
   document.getElementById('profile-content').innerHTML = `
-    <div style="display:grid;gap:10px;font-size:12px">
+    <div style="display:grid;gap:10px;font-size: 14px">
       <div><strong>Okul Adı:</strong> ${s.name}</div>
       <div><strong>OID:</strong> ${s.oid}</div>
       <div><strong>Şehir:</strong> ${s.city || '—'}</div>
@@ -1803,7 +1852,7 @@ async function loadProfile() {
       <div><strong>Telefon:</strong> ${s.phone || '—'}</div>
       <div><strong>Müdür:</strong> ${s.principal_name || '—'}</div>
     </div>
-    <div style="margin-top:16px;font-size:11px;color:var(--muted)">Bilgi güncellemesi için koordinatörünüzle iletişime geçin.</div>
+    <div style="margin-top:16px;font-size: 13px;color:var(--muted)">Bilgi güncellemesi için koordinatörünüzle iletişime geçin.</div>
   `;
 }
 
