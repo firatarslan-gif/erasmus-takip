@@ -749,9 +749,10 @@ async function viewMobilityDetail(mobId) {
   const m = allMobilities.find(x => x.id === mobId);
   if (!m) return;
 
-  const [{ data: parts }, { data: info }] = await Promise.all([
+  const [{ data: parts }, { data: info }, { data: actLog }] = await Promise.all([
     db.from('participants').select('*').eq('mobility_id', mobId).order('created_at'),
-    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle()
+    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle(),
+    db.from('activity_log').select('*').eq('mobility_id', mobId).order('created_at', { ascending: false })
   ]);
 
   document.getElementById('detailModalTitle').textContent =
@@ -786,8 +787,18 @@ async function viewMobilityDetail(mobId) {
       ${info.activity_summary ? `<div style="margin-top:4px"><strong style="color:var(--text)">Özet:</strong> ${info.activity_summary}</div>` : ''}
     </div>`;
 
+  const yayCount = (actLog || []).filter(e => e.type === 'yayginlastirma').length;
+  const skCount  = (actLog || []).filter(e => e.type === 'sonuclarin_kullanimi').length;
+  const actLogHtml = `
+    <div style="font-size:11px;color:var(--muted);padding:8px 0">
+      📣 Yaygınlaştırma: <strong style="color:var(--text)">${yayCount}</strong> kayıt ·
+      🎯 Sonuçların Kullanımı: <strong style="color:var(--text)">${skCount}</strong> kayıt
+      ${info?.results_use_plan ? `<div style="margin-top:4px"><strong style="color:var(--text)">Plan:</strong> ${info.results_use_plan}</div>` : ''}
+    </div>`;
+
   document.getElementById('detailModalBody').innerHTML =
     `<div class="card-title">📋 Hareketlilik Bilgileri</div>${infoHtml}` +
+    `<div class="card-title" style="margin-top:10px">📣 Yaygınlaştırma & Sonuçlar</div>${actLogHtml}` +
     `<div class="card-title" style="margin-top:10px">👥 Katılımcılar</div>${partsHtml}`;
 
   document.getElementById('detailModal').classList.add('show');
