@@ -3354,7 +3354,7 @@ function renderReports(){
   var rMeta={
     '2021':{type:'Final Raporu (Onaylı)',deadline:'30/07/2023',awarded:168153,reported:169532,status:'closed',pages:47},
     '2022':{type:'Final Raporu (Onaylı)',deadline:'30/07/2024',awarded:234652,reported:234937,status:'closed',pages:56},
-    '2023':{type:'Final Raporu (Taslak)',deadline:'30/07/2025',awarded:283386,reported:285991,status:'closed',pages:57},
+    '2023':{type:'Final Raporu (Onaylı)',deadline:'30/07/2025',awarded:283386,reported:285991,status:'closed',pages:57},
     '2024':{type:'Final Raporu (UA Onayı Bekleniyor)',deadline:'30/07/2026',awarded:283944,reported:285460,status:'closed',pages:49},
     '2025':{type:'Devam Ediyor',deadline:'—',awarded:392775,reported:35751,status:'open',pages:null},
   };
@@ -5764,7 +5764,7 @@ const CONTRACT_BUDGET = {
   },
   '2025': {
     awarded:392775, reported:35751, naValidated:null, utilPct:9.1,
-    kurumsal:0, members:41, status:'open',
+    kurumsal:62900, kurumsalEstimated:true, members:41, status:'open',
     lines:{
       'Bireysel Destek':      {rep:35751},
       'Seyahat':              {rep:0},
@@ -5877,7 +5877,7 @@ function renderBudget(targetId){
           <div style="font-size:9px;color:var(--dim)">${over?'⚠ Bütçe aşımı · ':''}Raporlanan / Verilen</div>
         </div>
         <div style="font-family:monospace;font-size:13px;font-weight:600;color:var(--blue)">${cb.awarded.toLocaleString('tr')} €</div>
-        <div style="font-family:monospace;font-size:13px;color:var(--purple)">${cb.kurumsal.toLocaleString('tr')} €</div>
+        <div style="font-family:monospace;font-size:13px;color:var(--purple)">${cb.kurumsal.toLocaleString('tr')} €${cb.kurumsalEstimated?'<div style="font-size:9px;color:var(--dim);font-weight:400">(tahmini)</div>':''}</div>
         <div style="font-family:monospace;font-size:13px;color:var(--muted)">${mobAwarded.toLocaleString('tr')} €</div>
         <div style="font-family:monospace;font-size:13px;font-weight:700;color:${over?'var(--orange)':'var(--green)'}">${cb.reported.toLocaleString('tr')} €${cb.naValidated&&cb.naValidated!==cb.reported?`<div style="font-size:9px;color:var(--dim);font-weight:400">Onaylanan: ${cb.naValidated.toLocaleString('tr')} €</div>`:''}</div>
         <div style="font-family:monospace;font-size:13px;color:var(--muted);text-align:center">${cb.members}</div>
