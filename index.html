@@ -6979,24 +6979,28 @@ function render2026(){
       <span style="background:#fffbeb;color:#b45309;border:1px solid #fed7aa;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">⚠ Resmi sözleşme henüz yok — UA onayı bekleniyor</span>
     </div>
     <div style="font-size:10px;color:var(--dim);margin-bottom:12px">
-      2026 başvuru formundaki resmi katılımcı/gün sayıları × 2023–2024'ün gerçekleşmiş (kapanmış, NA onaylı) birim maliyetleri kullanılarak hesaplanmıştır. Bu bir tahmindir, UA ile imzalanan sözleşme tutarı farklı olabilir.
+      2026 resmi başvuru formundaki (KA121-SCH-77F5875B) katılımcı/gün sayıları ve ek seyahat günleri × 2023–2024'ün gerçekleşmiş
+      (kapanmış, NA onaylı) birim maliyetleri kullanılarak hesaplanmıştır. Yöntem, 2025'in gerçek başvuru rakamlarına (KA121-SCH-92AA87EA)
+      uygulanıp UA'nın verdiği gerçek 392.775 €'luk sözleşmeyle karşılaştırılarak doğrulandı (%6,2 fark) — bu doğrulanmış sapma payı
+      aşağıdaki aralığa yansıtılmıştır. UA ile imzalanacak gerçek sözleşme farklı olabilir.
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
       ${[
-        {l:'Bireysel Destek', v:174838},
+        {l:'Bireysel Destek', v:247135},
         {l:'Seyahat',         v:91463},
-        {l:'Kurumsal Destek', v:68789},
+        {l:'Kurumsal Destek', v:70600},
         {l:'Kurs Ücretleri',  v:6656},
-        {l:'Hazırlık Ziyaretleri', v:2012},
-        {l:'Kapsayıcılık Desteği', v:1650},
+        {l:'Hazırlık Ziyaretleri', v:2040},
+        {l:'Dâhil Etme (Kurum)', v:2000},
+        {l:'Dâhil Etme (Katılımcı)', v:1650},
       ].map(k=>`<div style="background:var(--bg);border-radius:8px;padding:8px 10px">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:2px">${k.l}</div>
         <div style="font-size:14px;font-weight:700;font-family:monospace;color:var(--text)">${k.v.toLocaleString('tr')} €</div>
       </div>`).join('')}
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border2)">
-      <span style="font-size:11px;font-weight:700;color:var(--muted)">TOPLAM TAHMİNİ BÜTÇE</span>
-      <span style="font-size:19px;font-weight:700;font-family:monospace;color:#b45309">345.408 €</span>
+      <span style="font-size:11px;font-weight:700;color:var(--muted)">TAHMİNİ ARALIK (ham model → %6,2 doğrulama düzeltmeli)</span>
+      <span style="font-size:19px;font-weight:700;font-family:monospace;color:#b45309">420.000 € – 450.000 €</span>
     </div>
   </div>
 
