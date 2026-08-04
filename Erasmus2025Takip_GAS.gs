@@ -377,7 +377,8 @@ function autoPushToGitHub() {
     return;
   }
 
-  var GH_TOKEN  = 'REDACTED_REMOVED_FROM_HISTORY';
+  var GH_TOKEN  = PropertiesService.getScriptProperties().getProperty('GH_TOKEN');
+  if (!GH_TOKEN) throw new Error('GH_TOKEN Script Properties\'de tanımlı değil. Project Settings > Script Properties\'e ekleyin.');
   var GH_REPO   = 'firatarslan-gif/erasmus-takip';
   var GH_FILE   = 'index.html';
   var GH_BRANCH = 'main';
@@ -662,7 +663,8 @@ function doGet(e) {
   } else if (action === 'pushToGitHub') {
     // Drive'daki HTML'yi GitHub Pages'a push et
     try {
-      var GH_TOKEN = 'REDACTED_REMOVED_FROM_HISTORY';
+      var GH_TOKEN = PropertiesService.getScriptProperties().getProperty('GH_TOKEN');
+      if (!GH_TOKEN) throw new Error('GH_TOKEN Script Properties\'de tanımlı değil. Project Settings > Script Properties\'e ekleyin.');
       var GH_REPO  = 'firatarslan-gif/erasmus-takip';
       var GH_FILE  = 'index.html';
       var GH_BRANCH = 'main';
