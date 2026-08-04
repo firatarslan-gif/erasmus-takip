@@ -6913,7 +6913,7 @@ function render2026(){
   const totalMobs = Object.values(mobCounts).reduce((a,b)=>a+b,0)+11;
   const totalPersons = Object.entries(mobCounts).reduce((sum,[code,cnt])=>{
     const d=MOB_DAYS[code]||{persons:0,accomp:0}; return sum+cnt*(d.persons+d.accomp);
-  },0) + 11*3;
+  },0) + 11;
   const ilceler = [...new Set(schools.map(s=>s.ilce))].sort();
   const mobTypes = [...new Set(schools.flatMap(s=>s.mobilities.map(m=>m.code)))];
 
@@ -6940,7 +6940,7 @@ function render2026(){
       <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px">Hareketlilik Türleri</div>
       ${Object.entries(mobCounts).sort((a,b)=>b[1]-a[1]).map(([code,cnt])=>{
         const d=MOB_DAYS[code]||{persons:0,accomp:0,act:0,travel:0};
-        const pax=cnt*(d.persons+d.accomp)+(code==='SM-JOB-SHDW'?11*3:0);
+        const pax=cnt*(d.persons+d.accomp)+(code==='SM-JOB-SHDW'?11:0);
         const col=MOB_COL_2026[code]||'var(--muted)';
         const pct=Math.round(cnt/(totalMobs-11)*100);
         return `<div style="margin-bottom:8px">
@@ -6954,7 +6954,7 @@ function render2026(){
         </div>`;
       }).join('')}
       <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border2);font-size:10px;color:var(--muted)">
-        + Kocaeli MEM: 11 İşbaşı Öğrenme (33 kişi, 3+2 gün)
+        + Kocaeli MEM: 11 İşbaşı Öğrenme (11 kişi, 3+2 gün)
       </div>
     </div>
     <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:var(--shadow-sm)">
@@ -6970,6 +6970,33 @@ function render2026(){
           <div style="width:30px;text-align:right;font-size:11px;font-family:monospace;color:var(--muted)">${cnt}</div>
         </div>`;
       }).join('')}
+    </div>
+  </div>
+
+  <div style="background:white;border:1px dashed #d97706;border-radius:10px;padding:14px;margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">💶 Tahmini Bütçe</div>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #fed7aa;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">⚠ Resmi sözleşme henüz yok — UA onayı bekleniyor</span>
+    </div>
+    <div style="font-size:10px;color:var(--dim);margin-bottom:12px">
+      2026 başvuru formundaki resmi katılımcı/gün sayıları × 2023–2024'ün gerçekleşmiş (kapanmış, NA onaylı) birim maliyetleri kullanılarak hesaplanmıştır. Bu bir tahmindir, UA ile imzalanan sözleşme tutarı farklı olabilir.
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+      ${[
+        {l:'Bireysel Destek', v:174838},
+        {l:'Seyahat',         v:91463},
+        {l:'Kurumsal Destek', v:68789},
+        {l:'Kurs Ücretleri',  v:6656},
+        {l:'Hazırlık Ziyaretleri', v:2012},
+        {l:'Kapsayıcılık Desteği', v:1650},
+      ].map(k=>`<div style="background:var(--bg);border-radius:8px;padding:8px 10px">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:2px">${k.l}</div>
+        <div style="font-size:14px;font-weight:700;font-family:monospace;color:var(--text)">${k.v.toLocaleString('tr')} €</div>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border2)">
+      <span style="font-size:11px;font-weight:700;color:var(--muted)">TOPLAM TAHMİNİ BÜTÇE</span>
+      <span style="font-size:19px;font-weight:700;font-family:monospace;color:#b45309">345.408 €</span>
     </div>
   </div>
 
