@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAYP — Okul Portalı</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #f8fafc;
+  --white:    #ffffff;
+  --border:   #e2e8f0;
+  --text:     #1e293b;
+  --muted:    #64748b;
+  --light:    #f1f5f9;
+  --blue:     #2563eb;
+  --green:    #059669;
+  --orange:   #d97706;
+  --red:      #dc2626;
+  --purple:   #7c3aed;
+  --sidebar:  #1e293b;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── SİDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--sidebar); color: white;
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100;
+}
+.sb-logo { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sb-logo-title { font-size: 18px; font-weight: 800; }
+.sb-logo-sub   { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.sb-school { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sb-school-name { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.sb-school-oid  { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.sb-nav { flex: 1; padding: 12px 0; }
+.sb-section { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .8px; padding: 12px 18px 4px; }
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px; cursor: pointer; font-size: 14px; font-weight: 500;
+  color: rgba(255,255,255,.7); border-left: 3px solid transparent;
+  transition: all .15s;
+}
+.sb-item:hover   { background: rgba(255,255,255,.07); color: white; }
+.sb-item.active  { background: rgba(37,99,235,.3); color: white; border-left-color: var(--blue); font-weight: 700; }
+.sb-item .icon   { font-size: 17px; width: 18px; text-align: center; flex-shrink: 0; }
+.sb-badge {
+  margin-left: auto; background: var(--red); color: white;
+  font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px;
+}
+.sb-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.1); }
+.sb-logout { font-size: 13px; color: rgba(255,255,255,.4); cursor: pointer; }
+.sb-logout:hover { color: white; }
+
+/* ── ANA İÇERİK ── */
+.main { margin-left: 220px; flex: 1; min-width: 0; }
+.topbar {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 14px 28px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 18px; font-weight: 800; flex: 1; }
+.topbar-notif { position: relative; cursor: pointer; }
+.notif-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; border: 2px solid white; }
+
+.content { padding: 24px 28px; }
+
+/* ── KARTLAR ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.stat-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.stat-value { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+.stat-sub   { font-size: 12px; color: var(--muted); }
+.stat-icon  { font-size: 22px; margin-bottom: 8px; }
+
+/* ── HAREKETLİLİK LİSTESİ ── */
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.section-title  { font-size: 16px; font-weight: 800; }
+.section-badge  { background: var(--light); color: var(--muted); font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+.section-action { margin-left: auto; }
+
+.mob-card {
+  background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+  margin-bottom: 10px; cursor: pointer; transition: box-shadow .15s, border-color .15s;
+}
+.mob-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); border-color: #c7d2fe; }
+.mob-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.mob-type { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 5px; }
+.mob-type.SM-TTA         { background: #eff6ff; color: #1d4ed8; }
+.mob-type.SM-JOB-SHDW   { background: #fdf4ff; color: #7c3aed; }
+.mob-type.SM-COUR-TRAIN  { background: #fff7ed; color: #c2410c; }
+.mob-type.LM-SHORT-PUPIL { background: #f0fdf4; color: #166534; }
+.mob-type.LM-LONG-PUPILS { background: #ecfdf5; color: #065f46; }
+.mob-type.LM-GRP-PUPIL   { background: #f0f9ff; color: #0369a1; }
+.mob-type.OA-INV-EXP     { background: #fef3c7; color: #92400e; }
+.mob-type.PREP-VISIT      { background: #fce7f3; color: #9d174d; }
+.mob-name { font-size: 15px; font-weight: 700; }
+.mob-dates { font-size: 13px; color: var(--muted); margin-left: auto; }
+
+/* Progress bar */
+.progress-wrap { margin-top: 4px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.progress-bar { height: 6px; background: var(--light); border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width .3s; }
+.progress-fill.low    { background: var(--red); }
+.progress-fill.mid    { background: var(--orange); }
+.progress-fill.high   { background: var(--green); }
+
+.mob-footer { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.mob-stat { font-size: 12px; background: var(--light); color: var(--muted); padding: 3px 8px; border-radius: 5px; font-weight: 600; }
+.mob-stat.warn { background: #fef9c3; color: #92400e; }
+.mob-stat.ok   { background: #ecfdf5; color: #065f46; }
+.mob-stat.err  { background: #fef2f2; color: #991b1b; }
+
+/* ── CHECKLİST PANEL ── */
+.panel { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.panel-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: #f8fafc; }
+.panel-title { font-size: 15px; font-weight: 800; }
+.phase-tabs { display: flex; gap: 0; padding: 12px 18px; border-bottom: 1px solid var(--border); }
+.phase-tab {
+  padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid var(--border); background: white; color: var(--muted);
+  border-radius: 6px; margin-right: 6px;
+}
+.phase-tab.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+.cl-list { padding: 12px 18px; }
+.cl-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-bottom: 1px solid #f8fafc; border-radius: 8px; }
+.cl-item:last-child { border-bottom: none; }
+.cl-item.done { background: rgba(5,150,105,.07); }
+
+.cl-checkbox {
+  width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--border);
+  flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.cl-checkbox.done     { background: var(--green); border-color: var(--green); }
+.cl-checkbox.blocked  { background: #fef2f2; border-color: #fca5a5; cursor: not-allowed; }
+.cl-checkbox.done::after { content: '✓'; color: white; font-size: 13px; font-weight: 800; }
+
+.cl-body { flex: 1; }
+.cl-text { font-size: 14px; color: #374151; line-height: 1.4; }
+.cl-text.done { color: var(--green); font-weight: 700; }
+.cl-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.cl-type { font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
+.cl-type.info     { background: var(--light); color: var(--muted); }
+.cl-type.document { background: #fef9c3; color: #92400e; }
+.cl-type.form     { background: #fdf4ff; color: var(--purple); }
+.cl-category      { font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 3px; background: #ecfeff; color: #0e7490; }
+.cl-block-msg { font-size: 12px; color: var(--red); }
+.cl-link { font-size: 12px; color: var(--blue); cursor: pointer; text-decoration: underline; }
+
+/* ── MODAL ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+.overlay.show { display: flex; }
+.modal { background: white; border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+.modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.modal-title { font-size: 17px; font-weight: 800; flex: 1; }
+.modal-close { font-size: 20px; cursor: pointer; color: var(--muted); line-height: 1; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 22px; }
+.modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* Upload */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 10px; padding: 28px;
+  text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--blue); background: #eff6ff; }
+.upload-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-text { font-size: 15px; font-weight: 600; color: var(--muted); }
+.upload-sub  { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+input[type="file"] { display: none; }
+
+/* Form inputs */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.form-input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 15px; outline: none; }
+.form-input:focus { border-color: var(--blue); }
+
+/* Buttons */
+.btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-primary { background: var(--blue); color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-ghost   { background: var(--light); color: var(--muted); }
+.btn-ghost:hover { color: var(--text); }
+.btn-danger  { background: #fef2f2; color: var(--red); border: 1px solid #fca5a5; }
+
+/* AI validation badge */
+.ai-result { border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
+.ai-result.ok   { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+.ai-result.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.ai-result.err  { background: #fef2f2; border: 1px solid #fca5a5; color: #dc2626; }
+
+/* Loading */
+.loading { text-align: center; padding: 40px; color: var(--muted); }
+.spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Belgeyi Doldur — önizleme + yazdırma */
+.dg-preview { font-size: 15px; line-height: 1.7; color: #1e293b; border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-top: 14px; background: #fff; }
+.dg-preview h2 { font-size: 16px; text-align: center; margin-bottom: 12px; }
+.dg-preview table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+.dg-preview table th, .dg-preview table td { border: 1px solid #94a3b8; padding: 5px 8px; text-align: left; }
+.dg-member-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+.dg-member-row input { flex: 1; min-width: 0; }
+@media print {
+  body * { visibility: hidden; }
+  #docgen-preview, #docgen-preview * { visibility: visible; }
+  #docgen-preview { position: absolute; left: 0; top: 0; width: 100%; border: none; padding: 0; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY: Belge yükleme -->
+<div class="overlay" id="upload-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="upload-modal-title">Belge Yükle</div>
+      <div class="modal-close" onclick="closeUpload()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleDrop(event)">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">Dosyayı buraya sürükleyin veya tıklayın</div>
+        <div class="upload-sub">PDF, JPG, PNG — max 10 MB</div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+
+      <div id="selected-file" style="display:none;margin-top:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size: 14px">
+        <div id="file-info"></div>
+        <div id="ai-result-area"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUpload()">İptal</button>
+      <button class="btn btn-primary" id="upload-confirm-btn" onclick="confirmUpload()" disabled>⬆️ Yükle</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Katılımcı formu -->
+<div class="overlay" id="participant-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="participant-modal-title">Katılımcı Ekle</div>
+      <div class="modal-close" onclick="closeParticipantForm()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="part-id">
+      <div class="form-group">
+        <label class="form-label">Ad Soyad</label>
+        <input class="form-input" id="part-full-name" placeholder="Ad Soyad">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TC Kimlik No</label>
+        <input class="form-input" id="part-tc" placeholder="11 haneli TC kimlik no">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Doğum Tarihi</label>
+        <input class="form-input" id="part-birth" type="date" onchange="toggleGuardianFields()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rol</label>
+        <select class="form-input" id="part-role">
+          <option value="student">Öğrenci</option>
+          <option value="teacher">Öğretmen</option>
+          <option value="accompanying">Refakatçi</option>
+          <option value="expert">Uzman</option>
+          <option value="staff">Personel</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-posta</label>
+        <input class="form-input" id="part-email" type="email" placeholder="ornek@ornek.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" id="part-phone" placeholder="05xx xxx xx xx">
+      </div>
+      <div class="form-group">
+        <label class="form-label">IBAN</label>
+        <input class="form-input" id="part-iban" placeholder="TR__ ____ ____ ____ ____ ____ __">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Banka Adı / Şube</label>
+        <input class="form-input" id="part-bank" placeholder="Banka adı / şube">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cinsiyet</label>
+        <select class="form-input" id="part-gender">
+          <option value="">— Seçin —</option>
+          <option value="K">Kadın</option>
+          <option value="E">Erkek</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Resmi Adresi</label>
+        <input class="form-input" id="part-address" placeholder="İkamet adresi">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pasaport Türü</label>
+        <input class="form-input" id="part-passport-type" placeholder="Bordo / Yeşil / Gri vb.">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pasaport No</label>
+        <input class="form-input" id="part-passport-no">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pasaport Son Geçerlilik Tarihi</label>
+        <input class="form-input" id="part-passport-expiry" type="date">
+      </div>
+      <div id="guardian-fields" style="display:none;background:#fce7f3;border:1px solid #f9a8d4;border-radius:8px;padding:12px;margin-bottom:14px">
+        <div style="font-size: 13px;font-weight:700;color:#9d174d;margin-bottom:8px">👨‍👩‍👦 18 Yaş Altı — Yasal Vasi Bilgileri</div>
+        <div class="form-group">
+          <label class="form-label">Veli Adı Soyadı</label>
+          <input class="form-input" id="part-guardian-name" placeholder="Veli adı soyadı">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Veli TC Kimlik No</label>
+          <input class="form-input" id="part-guardian-tc" placeholder="Veli TC kimlik no">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Veli Telefon</label>
+          <input class="form-input" id="part-guardian-phone" placeholder="Veli telefon">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeParticipantForm()">İptal</button>
+      <button class="btn btn-primary" id="participant-save-btn" onclick="saveParticipant()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Dil Gelişim Planı -->
+<div class="overlay" id="langplan-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="langplan-modal-title">Bireysel Yabancı Dil Gelişim Planı</div>
+      <div class="modal-close" onclick="closeLangPlan()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="lp-part-id">
+      <p style="font-size: 13px;color:var(--muted);margin-bottom:14px">CEFR (Avrupa Dilleri Ortak Çerçeve Programı) seviyelerine göre doldurun.</p>
+      <div class="form-group">
+        <label class="form-label">Mevcut Seviye (CEFR)</label>
+        <select class="form-input" id="lp-current">
+          <option value="">— Seçin —</option>
+          <option value="A1">A1 — Başlangıç</option>
+          <option value="A2">A2 — Temel</option>
+          <option value="B1">B1 — Orta Altı</option>
+          <option value="B2">B2 — Orta Üstü</option>
+          <option value="C1">C1 — İleri</option>
+          <option value="C2">C2 — Yetkin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hedef Seviye (CEFR)</label>
+        <select class="form-input" id="lp-target">
+          <option value="">— Seçin —</option>
+          <option value="A1">A1 — Başlangıç</option>
+          <option value="A2">A2 — Temel</option>
+          <option value="B1">B1 — Orta Altı</option>
+          <option value="B2">B2 — Orta Üstü</option>
+          <option value="C1">C1 — İleri</option>
+          <option value="C2">C2 — Yetkin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kullanılan Kaynaklar / Yöntem</label>
+        <textarea class="form-input" id="lp-resources" rows="3" placeholder="Örn: Duolingo, OLS, online kurs, özel ders…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Planlanan Tamamlanma Tarihi</label>
+        <input class="form-input" id="lp-deadline" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notlar</label>
+        <textarea class="form-input" id="lp-notes" rows="2" placeholder="İsteğe bağlı"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeLangPlan()">İptal</button>
+      <button class="btn btn-primary" id="langplan-save-btn" onclick="saveLangPlan()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Hareketlilik Bilgileri Tablosu -->
+<div class="overlay" id="mobinfo-overlay">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-head">
+      <div class="modal-title">Hareketlilik Bilgileri Tablosu</div>
+      <div class="modal-close" onclick="closeMobInfo()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mi-mobility-id">
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px">🏫 Ev Sahibi Kurum</h3>
+      <div class="form-group"><label class="form-label">Kurum OID</label><input class="form-input" id="mi-host-oid"></div>
+      <div class="form-group"><label class="form-label">Kuruluş Türü</label><input class="form-input" id="mi-host-type" placeholder="Okul, Dil Okulu, Şirket vb."></div>
+      <div class="form-group"><label class="form-label">Yasal Temsilci Adı</label><input class="form-input" id="mi-host-legal-rep"></div>
+      <div class="form-group"><label class="form-label">İrtibat Kişisi Adı</label><input class="form-input" id="mi-host-contact-name"></div>
+      <div class="form-group"><label class="form-label">İrtibat Kişisi E-posta</label><input class="form-input" id="mi-host-contact-email" type="email"></div>
+      <div class="form-group"><label class="form-label">Kurum Web Sitesi</label><input class="form-input" id="mi-host-website"></div>
+      <div class="form-group"><label class="form-label">Kurum Adresi</label><input class="form-input" id="mi-host-address"></div>
+      <div class="form-group"><label class="form-label">Posta Kodu</label><input class="form-input" id="mi-host-postal-code"></div>
+      <div class="form-group"><label class="form-label">Kurum Telefonu</label><input class="form-input" id="mi-host-phone"></div>
+      <div class="form-group"><label class="form-label">Ev Sahibi Kurum Nasıl Bulundu? Nasıl İletişime Geçildi?</label><textarea class="form-input" id="mi-host-found-how" rows="2"></textarea></div>
+      <div class="form-group"><label class="form-label">Km Cinsinden Gerçek Mesafe <a href="https://erasmus-plus.ec.europa.eu/resources-and-tools/distance-calculator" target="_blank" class="cl-link">(hesapla)</a></label><input class="form-input" id="mi-distance-km" type="number"></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">✈️ Seyahat Detayları</h3>
+      <div class="form-group"><label class="form-label">Seyahat Rotası</label><input class="form-input" id="mi-travel-route"></div>
+      <div class="form-group"><label class="form-label">Uçuş No(ları)</label><input class="form-input" id="mi-flight-numbers"></div>
+      <div class="form-group"><label class="form-label">Seyahat Araçları</label><input class="form-input" id="mi-travel-vehicles" placeholder="Uçak, otobüs, tren vb."></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🏨 Konaklama Detayları</h3>
+      <div class="form-group"><label class="form-label">Konaklama Türü</label><input class="form-input" id="mi-accommodation-type" placeholder="Ev, Otel, Hostel vb."></div>
+      <div class="form-group"><label class="form-label">Konaklama Adresi</label><input class="form-input" id="mi-accommodation-address"></div>
+      <div class="form-group"><label class="form-label">Konaklama Süresi</label><input class="form-input" id="mi-accommodation-duration"></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🎯 Erasmus Plan Hedefleri <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
+      <div id="mi-plan-goals" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size: 14px"></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">🧠 Temel Yeterlilikler <span style="font-weight:400;text-transform:none">(birden fazla seçilebilir)</span></h3>
+      <div id="mi-key-competences" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size: 14px"></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">✅ Hareketlilik Uygun Kriterleri <span style="font-weight:400;text-transform:none">(en fazla 3 seçenek)</span></h3>
+      <div id="mi-applicable-criteria" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size: 14px"></div>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">👥 Katılımcı Seçim Kurulu Üyeleri</h3>
+      <div id="mi-committee-list" style="margin-bottom:8px"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addCommitteeRow()" style="margin-bottom:14px">+ Üye Ekle</button>
+
+      <h3 style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px">📝 Hareketlilik Faaliyeti Özeti</h3>
+      <div class="form-group">
+        <label class="form-label">Lütfen Hareketlilik Faaliyetinizi Kısaca Özetleyiniz (Yapılandırılmış kurslarda kurs adı/linkini de ekleyin)</label>
+        <textarea class="form-input" id="mi-activity-summary" rows="3"></textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Kurs Linki (varsa)</label><input class="form-input" id="mi-course-link"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMobInfo()">İptal</button>
+      <button class="btn btn-primary" id="mobinfo-save-btn" onclick="saveMobInfo()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Yaygınlaştırma / Sonuçların Kullanımı kaydı -->
+<div class="overlay" id="actlog-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Kayıt Ekle</div>
+      <div class="modal-close" onclick="closeActLogForm()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Tür</label>
+        <select class="form-input" id="al-type">
+          <option value="yayginlastirma">📣 Yaygınlaştırma Faaliyeti</option>
+          <option value="sonuclarin_kullanimi">🎯 Sonuçların Kullanımı Faaliyeti</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Başlık</label>
+        <input class="form-input" id="al-title" placeholder="Örn: Okul panosunda sergi açıldı">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Açıklama</label>
+        <textarea class="form-input" id="al-description" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Link (varsa)</label>
+        <input class="form-input" id="al-link" placeholder="https://…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fotoğraf (opsiyonel)</label>
+        <input type="file" id="al-file-input" accept=".pdf,.jpg,.jpeg,.png" style="display:block">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeActLogForm()">İptal</button>
+      <button class="btn btn-primary" id="actlog-save-btn" onclick="saveActivityLogEntry()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: Belgeyi Doldur (yazdırılabilir önizleme) -->
+<div class="overlay" id="docgen-overlay">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-head">
+      <div class="modal-title" id="docgen-title">Belgeyi Doldur</div>
+      <div class="modal-close" onclick="closeDocGen()">×</div>
+    </div>
+    <div class="modal-body">
+      <div id="docgen-form"></div>
+      <div id="docgen-preview" class="dg-preview"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDocGen()">Kapat</button>
+      <button class="btn btn-primary" onclick="printDocGen()">🖨️ Yazdır / PDF Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANA LAYOUT -->
+<div class="layout">
+
+  <!-- SİDEBAR -->
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-title">🎓 KAYP</div>
+      <div class="sb-logo-sub">Kocaeli Akreditasyon Yönetim Portalı</div>
+    </div>
+    <div class="sb-school">
+      <div class="sb-school-name" id="sb-school-name">Yükleniyor…</div>
+      <div class="sb-school-oid"  id="sb-school-oid"></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Genel</div>
+      <div class="sb-item active" onclick="showTab('dashboard')"><span class="icon">🏠</span>Ana Sayfa</div>
+      <div class="sb-item" onclick="showTab('checklist')"><span class="icon">✅</span>Kontrol Listesi <span class="sb-badge" id="badge-cl">—</span></div>
+      <div class="sb-item" onclick="showTab('documents')"><span class="icon">📁</span>Belgeler <span class="sb-badge" id="badge-doc">—</span></div>
+      <div class="sb-item" onclick="showTab('participants')"><span class="icon">👥</span>Katılımcılar</div>
+      <div class="sb-item" onclick="showTab('activitylog')"><span class="icon">📣</span>Yaygınlaştırma</div>
+      <div class="sb-section">Hareketlilikler</div>
+      <div id="mob-sidebar"></div>
+      <div class="sb-section">Diğer</div>
+      <div class="sb-item" onclick="showTab('notes')"><span class="icon">💬</span>Mesajlar</div>
+      <div class="sb-item" onclick="showTab('profile')"><span class="icon">⚙️</span>Okul Bilgileri</div>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-logout" onclick="doLogout()">← Çıkış Yap</div>
+    </div>
+  </nav>
+
+  <!-- ANA İÇERİK -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Ana Sayfa</div>
+      <div class="topbar-notif" onclick="showTab('notifications')">
+        🔔 <div class="notif-dot" id="notif-dot" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="tab-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🗓️</div>
+            <div class="stat-label">Hareketlilik</div>
+            <div class="stat-value" id="stat-mob">—</div>
+            <div class="stat-sub">Bu dönem</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-label">Katılımcı</div>
+            <div class="stat-value" id="stat-pax">—</div>
+            <div class="stat-sub">Toplam</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-label">Checklist</div>
+            <div class="stat-value" id="stat-cl">—</div>
+            <div class="stat-sub">% tamamlandı (ortalama)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📎</div>
+            <div class="stat-label">Eksik Belge</div>
+            <div class="stat-value" id="stat-missing" style="color:var(--red)">—</div>
+            <div class="stat-sub">Yüklenmesi gereken</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">Hareketliliklerim</div>
+          <div class="section-badge" id="mob-count-badge">0 hareketlilik</div>
+        </div>
+        <div id="mobility-list">
+          <div class="loading"><div class="spinner"></div><p style="margin-top:10px">Yükleniyor…</p></div>
+        </div>
+      </div>
+
+      <!-- ── CHECKLİST ── -->
+      <div id="tab-checklist" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Kontrol Listesi</div>
+          <select id="cl-mob-select" onchange="loadChecklist()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+        </div>
+
+        <div id="checklist-panel" style="display:none">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title" id="cl-panel-title">Kontrol Listesi</div>
+              <div style="margin-left:auto;font-size: 14px;color:var(--muted)"><span id="cl-done-count">0</span> / <span id="cl-total-count">0</span> tamamlandı</div>
+            </div>
+            <div class="phase-tabs">
+              <div class="phase-tab active" onclick="switchPhase('oncesi',this)">📋 Öncesi</div>
+              <div class="phase-tab" onclick="switchPhase('sirasi',this)">✈️ Sırası</div>
+              <div class="phase-tab" onclick="switchPhase('sonrasi',this)">📤 Sonrası</div>
+            </div>
+            <div class="cl-list" id="cl-items"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BELGELER ── -->
+      <div id="tab-documents" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Belgelerim</div>
+          <select id="doc-mob-select" onchange="loadDocuments()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+        </div>
+        <div id="document-list">
+          <div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>
+        </div>
+      </div>
+
+      <!-- ── KATILIMCILAR ── -->
+      <div id="tab-participants" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Katılımcılar</div>
+          <select id="part-mob-select" onchange="loadParticipants()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+          <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openParticipantForm()">+ Katılımcı Ekle</button>
+        </div>
+        <div id="participant-list">
+          <div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>
+        </div>
+      </div>
+
+      <!-- ── YAYGINLAŞTIRMA & SONUÇLARIN KULLANIMI ── -->
+      <div id="tab-activitylog" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Yaygınlaştırma & Sonuçların Kullanımı</div>
+          <select id="al-mob-select" onchange="loadActivityLog()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size: 14px">
+            <option value="">— Hareketlilik Seçin —</option>
+          </select>
+        </div>
+        <div id="activitylog-content">
+          <div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>
+        </div>
+      </div>
+
+      <!-- ── NOTLAR ── -->
+      <div id="tab-notes" style="display:none">
+        <div class="section-header"><div class="section-title">Koordinatörle Mesajlar</div></div>
+        <div id="notes-list" style="max-width:680px">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- ── PROFİL ── -->
+      <div id="tab-profile" style="display:none">
+        <div class="section-header"><div class="section-title">Okul Bilgileri</div></div>
+        <div class="panel" style="max-width:560px">
+          <div class="panel-head"><div class="panel-title">Okul Bilgileri</div></div>
+          <div class="modal-body" id="profile-content">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+// ─────────────────────────────────────────────
+// Supabase Bağlantısı
+// ─────────────────────────────────────────────
+const SUPABASE_URL  = 'https://qmgfqwvbmgmteshopqgc.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_HhrToT0X6VV99lQXtubZGw_1z0ctaxG';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── Durum ──
+let currentUser   = null;
+let currentSchool = null;
+let mobilities    = [];
+let checklistData = {};    // definition_id → progress
+let currentMobId  = null;
+let currentPhase  = 'oncesi';
+let pendingUpload = { file: null, docType: null, mobId: null, partId: null };
+
+// ─────────────────────────────────────────────
+// BAŞLANGIÇ
+// ─────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) { window.location.href = 'erasdesk_login.html'; return; }
+
+  currentUser = session.user;
+
+  const { data: userData } = await db.from('users')
+    .select('*, school:schools(*)')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (!userData) { await db.auth.signOut(); window.location.href = 'erasdesk_login.html'; return; }
+  if (userData.role === 'coordinator' || userData.role === 'admin') {
+    window.location.href = 'erasdesk_koordinator.html'; return;
+  }
+
+  currentSchool = userData.school;
+  document.getElementById('sb-school-name').textContent = currentSchool.name;
+  document.getElementById('sb-school-oid').textContent  = currentSchool.oid;
+
+  await loadMobilities();
+  await loadDashboard();
+}
+
+// ─────────────────────────────────────────────
+// HAREKETLİLİKLERİ YÜKLE
+// ─────────────────────────────────────────────
+async function loadMobilities() {
+  const { data } = await db.from('mobilities')
+    .select('*, participants(count)')
+    .eq('school_id', currentSchool.id)
+    .neq('status','cancelled')
+    .order('start_date', { ascending: true });
+
+  mobilities = data || [];
+
+  // Sidebar
+  const sbMob = document.getElementById('mob-sidebar');
+  const clSel = document.getElementById('cl-mob-select');
+  const docSel = document.getElementById('doc-mob-select');
+  const partSel = document.getElementById('part-mob-select');
+  const alSel = document.getElementById('al-mob-select');
+
+  sbMob.innerHTML = '';
+  clSel.innerHTML  = '<option value="">— Hareketlilik Seçin —</option>';
+  docSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
+  partSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
+  alSel.innerHTML = '<option value="">— Hareketlilik Seçin —</option>';
+
+  mobilities.forEach(m => {
+    const label = actLabel(m.activity_type) + ' — ' + (m.destination_country || '?');
+    sbMob.innerHTML += `<div class="sb-item" onclick="focusMobility('${m.id}')"><span class="icon">${actIcon(m.activity_type)}</span>${label}</div>`;
+    clSel.innerHTML  += `<option value="${m.id}">${label}</option>`;
+    docSel.innerHTML += `<option value="${m.id}">${label}</option>`;
+    partSel.innerHTML += `<option value="${m.id}">${label}</option>`;
+    alSel.innerHTML += `<option value="${m.id}">${label}</option>`;
+  });
+}
+
+// ─────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────
+async function loadDashboard() {
+  document.getElementById('stat-mob').textContent = mobilities.length;
+
+  const paxTotal = mobilities.reduce((s, m) => s + (m.num_participants || 0), 0);
+  document.getElementById('stat-pax').textContent = paxTotal;
+
+  document.getElementById('mob-count-badge').textContent = mobilities.length + ' hareketlilik';
+
+  renderMobilityCards();
+  await updateDashboardStats();
+}
+
+function renderMobilityCards() {
+  const el = document.getElementById('mobility-list');
+  if (!mobilities.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">Henüz hareketlilik tanımlanmamış.<br>Koordinatörünüzle iletişime geçin.</div>';
+    return;
+  }
+
+  el.innerHTML = mobilities.map(m => {
+    const pct   = m._pct || 0;
+    const fillCl = pct < 30 ? 'low' : pct < 70 ? 'mid' : 'high';
+    const dates  = m.start_date ? fmtDate(m.start_date) + ' – ' + fmtDate(m.end_date) : 'Tarih belirlenmedi';
+
+    return `
+    <div class="mob-card" onclick="focusMobility('${m.id}')">
+      <div class="mob-header">
+        <span class="mob-type ${m.activity_type}">${actLabel(m.activity_type)}</span>
+        <span class="mob-name">${m.destination_org || m.destination_country || 'Hedef belirlenmedi'}</span>
+        <span class="mob-dates">${dates}</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Checklist ilerleme</span>
+          <span><b>${pct}%</b></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${fillCl}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="mob-footer">
+        <span class="mob-stat">${actIcon(m.activity_type)} ${actLabel(m.activity_type)}</span>
+        <span class="mob-stat">${m.num_participants || 0} katılımcı</span>
+        ${m._missing_docs > 0 ? `<span class="mob-stat err">⚠ ${m._missing_docs} eksik belge</span>` : '<span class="mob-stat ok">✓ Belgeler tamam</span>'}
+        ${m.status === 'completed' ? '<span class="mob-stat ok">✓ Tamamlandı</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateDashboardStats() {
+  // Checklist summary
+  const mobIds = mobilities.map(m => m.id);
+  if (!mobIds.length) return;
+
+  const { data: clData } = await db.from('mobility_checklist_summary')
+    .select('*')
+    .in('mobility_id', mobIds);
+
+  if (clData && clData.length) {
+    const avg = Math.round(clData.reduce((s, r) => s + (r.pct_done || 0), 0) / clData.length);
+    document.getElementById('stat-cl').textContent = avg + '%';
+    clData.forEach(r => {
+      const m = mobilities.find(x => x.id === r.mobility_id);
+      if (m) m._pct = r.pct_done || 0;
+    });
+    renderMobilityCards();
+
+    const pending = clData.reduce((s, r) => s + (r.total_items - r.done_items), 0);
+    document.getElementById('badge-cl').textContent = pending > 0 ? pending : '✓';
+  }
+
+  // Missing docs
+  const { data: missDocs } = await db.from('missing_documents')
+    .select('*')
+    .in('mobility_id', mobIds);
+
+  if (missDocs) {
+    document.getElementById('stat-missing').textContent = missDocs.length;
+    document.getElementById('badge-doc').textContent = missDocs.length > 0 ? missDocs.length : '✓';
+    const byMob = {};
+    missDocs.forEach(d => { byMob[d.mobility_id] = (byMob[d.mobility_id] || 0) + 1; });
+    mobilities.forEach(m => { m._missing_docs = byMob[m.id] || 0; });
+    renderMobilityCards();
+  }
+}
+
+// ─────────────────────────────────────────────
+// CHECKLİST
+// ─────────────────────────────────────────────
+async function loadChecklist() {
+  const mobId = document.getElementById('cl-mob-select').value;
+  if (!mobId) { document.getElementById('checklist-panel').style.display = 'none'; return; }
+
+  currentMobId = mobId;
+  const mob = mobilities.find(m => m.id === mobId);
+
+  document.getElementById('cl-panel-title').textContent =
+    actLabel(mob.activity_type) + ' — ' + (mob.destination_country || '');
+
+  document.getElementById('checklist-panel').style.display = 'block';
+
+  // Checklist tanımlarını, ilerlemeyi, belgeleri, katılımcıları, hareketlilik bilgilerini ve yaygınlaştırma kayıtlarını çek
+  const [{ data: defs }, { data: prog }, { data: docs }, { data: parts }, { data: mobInfo }, { data: actLog }] = await Promise.all([
+    db.from('checklist_definitions').select('*').eq('is_active', true).order('sort_order'),
+    db.from('checklist_progress').select('*').eq('mobility_id', mobId),
+    db.from('documents').select('*').eq('mobility_id', mobId).neq('status', 'archived').order('created_at', { ascending: false }),
+    db.from('participants').select('*').eq('mobility_id', mobId).order('created_at'),
+    db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle(),
+    db.from('activity_log').select('*').eq('mobility_id', mobId)
+  ]);
+
+  window._clMobInfo = mobInfo || null;
+  window._clActivityLog = actLog || [];
+
+  checklistData = {};
+  (prog || []).forEach(p => { checklistData[p.definition_id] = p; });
+
+  // Belge tipi başına tüm (arşivlenmemiş) yüklemeleri listele — birden fazla belge olabilir
+  window._clDocs = {};
+  (docs || []).forEach(d => {
+    if (!window._clDocs[d.doc_type]) window._clDocs[d.doc_type] = [];
+    window._clDocs[d.doc_type].push(d);
+  });
+
+  mobParticipants = parts || [];
+  window._clDefs = defs || [];
+  window._clMobType = mob.activity_type;
+
+  renderPhase(currentPhase);
+}
+
+function switchPhase(phase, el) {
+  currentPhase = phase;
+  document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderPhase(phase);
+}
+
+function renderPhase(phase) {
+  const defs = (window._clDefs || []).filter(d => {
+    if (d.phase !== phase) return false;
+    if (d.activity_types && !d.activity_types.includes(window._clMobType)) return false;
+    return true;
+  });
+
+  const done  = defs.filter(d => checklistData[d.id]?.status === 'done').length;
+  const total = defs.length;
+  document.getElementById('cl-done-count').textContent  = done;
+  document.getElementById('cl-total-count').textContent = total;
+
+  const el = document.getElementById('cl-items');
+  if (!defs.length) { el.innerHTML = '<div style="padding:20px;color:var(--muted);text-align:center">Bu fazda madde yok.</div>'; return; }
+
+  el.innerHTML = defs.map(d => {
+    const prog   = checklistData[d.id];
+    const isDone = prog?.status === 'done';
+    const docs   = (d.check_type === 'document' ? window._clDocs?.[d.required_doc_type] : null) || [];
+
+    const cbClass   = isDone ? 'done' : '';
+    const textClass = isDone ? 'done' : '';
+    const typeLabel = { info: 'Bilgi', document: 'Belge', form: 'Form' }[d.check_type];
+
+    const docsList = docs.length ? `
+      <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+        ${docs.map(doc => `
+          <div style="font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+            <span>📄 ${doc.file_name}</span>
+            <span style="cursor:pointer;color:var(--blue)" onclick="viewOwnDocument('${doc.file_path}')">Görüntüle</span>
+            <span>· ${statusLabel(doc.status)}</span>
+            ${doc.status !== 'approved' ? `<span style="cursor:pointer;color:#dc2626" onclick="deleteOwnDocument('${doc.id}','${d.id}','${d.required_doc_type}')">🗑 Sil</span>` : ''}
+          </div>`).join('')}
+      </div>` : '';
+
+    // Dil Gelişim Planı — katılımcı bazlı doldurma durumu
+    const langPlanList = (d.check_type === 'form' && d.required_form_type === 'lang_plan') ? `
+      <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+        ${!mobParticipants.length ? `<div style="font-size: 12px;color:var(--orange)">⚠ Önce <span class="cl-link" onclick="showTab('participants')">Katılımcılar</span> sekmesinden katılımcı ekleyin.</div>` :
+          mobParticipants.map(p => {
+            const lp = p.lang_plan || {};
+            const done = !!(lp.current_level && lp.target_level);
+            return `<div style="font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+              <span>${done ? '✅' : '⬜'} ${p.full_name}</span>
+              ${done ? `<span style="color:var(--green)">${lp.current_level} → ${lp.target_level}</span>` : ''}
+              <span class="cl-link" onclick="openLangPlan('${p.id}')">${done ? 'Düzenle' : 'Doldur'}</span>
+            </div>`;
+          }).join('')}
+      </div>` : '';
+
+    // Hareketlilik Bilgileri Tablosu — doldurma durumu
+    const mobInfoBlock = (d.check_type === 'form' && d.required_form_type === 'mobility_info') ? `
+      <div style="margin-top:6px;font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+        ${mobInfoComplete(window._clMobInfo) ? '<span style="color:var(--green);font-weight:700">✅ Dolduruldu</span>' : '<span style="color:var(--orange);font-weight:700">Doldurulmadı</span>'}
+        <span class="cl-link" onclick="openMobInfo('${currentMobId}')">${mobInfoComplete(window._clMobInfo) ? 'Düzenle' : 'Doldur'}</span>
+      </div>` : '';
+
+    // Yaygınlaştırma / Sonuçların Kullanımı / Plan — doldurma durumu
+    const actLogBlock = (d.check_type === 'form' && d.required_form_type === 'results_use_plan') ? `
+      <div style="margin-top:6px;font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+        ${resultsUsePlanFilled() ? '<span style="color:var(--green);font-weight:700">✅ Plan yazıldı</span>' : '<span style="color:var(--orange);font-weight:700">Plan yazılmadı</span>'}
+        <span class="cl-link" onclick="showTab('activitylog')">${resultsUsePlanFilled() ? 'Düzenle' : 'Yaz'}</span>
+      </div>` : (d.check_type === 'form' && (d.required_form_type === 'yayginlastirma' || d.required_form_type === 'sonuclarin_kullanimi')) ? `
+      <div style="margin-top:6px;font-size: 12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+        ${activityLogHasType(d.required_form_type) ? `<span style="color:var(--green);font-weight:700">✅ ${(window._clActivityLog||[]).filter(e=>e.type===d.required_form_type).length} kayıt var</span>` : '<span style="color:var(--orange);font-weight:700">Kayıt yok</span>'}
+        <span class="cl-link" onclick="showTab('activitylog')">Kayıt Ekle</span>
+      </div>` : '';
+
+    return `
+    <div class="cl-item ${isDone ? 'done' : ''}" id="cl-${d.id}">
+      <div class="cl-checkbox ${cbClass}" onclick="toggleChecklist('${d.id}','${d.check_type}','${d.required_doc_type || ''}','${d.required_form_type || ''}')">
+        ${isDone ? '' : ''}
+      </div>
+      <div class="cl-body">
+        <div class="cl-text ${textClass}">${d.title}</div>
+        ${d.helper_text ? `<div style="font-size: 12px;color:var(--muted);margin-top:2px;line-height:1.4">${d.helper_text}</div>` : ''}
+        <div class="cl-meta">
+          <span class="cl-type ${d.check_type}">${typeLabel}</span>
+          ${d.category === 'olcme_degerlendirme' ? `<span class="cl-category">📊 Ölçme ve Değerlendirme</span>` : ''}
+          ${d.helper_url ? `<a class="cl-link" href="${d.helper_url}" target="_blank">📖 Rehber</a>` : ''}
+          ${(d.template_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📎 ${t.label}</a>`).join('')}
+          ${(d.example_urls || []).map(t => `<a class="cl-link" href="${t.url}" target="_blank">📄 ${t.label}</a>`).join('')}
+          ${(() => { const dgType = docGenTypeFor(d); return dgType ? `<span class="cl-link" onclick="openDocGen('${dgType}')">📝 Belgeyi Doldur</span>` : ''; })()}
+          ${d.check_type === 'document' && !isDone ? `<span class="cl-link" onclick="openUpload('${d.required_doc_type}','${currentMobId}',null)">⬆ ${docs.length ? 'Başka Belge Ekle' : 'Belge Yükle'}</span>` : ''}
+          ${isDone && prog?.completed_at ? `<span style="font-size: 12px;color:var(--muted)">${fmtDate(prog.completed_at)}</span>` : ''}
+        </div>
+        ${docsList}
+        ${langPlanList}
+        ${mobInfoBlock}
+        ${actLogBlock}
+      </div>
+      ${isDone ? `<div style="cursor:pointer;color:var(--muted);font-size: 13px;flex-shrink:0" onclick="revokeChecklist('${d.id}')">↩ Geri al</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function toggleChecklist(defId, checkType, reqDoc, reqForm) {
+  const prog = checklistData[defId];
+  if (prog?.status === 'done') return; // geri alma ayrı
+
+  // Belge gerektiriyorsa: zaten yüklenmişse tamamlandı işaretle, yoksa önce yükle
+  if (checkType === 'document' && reqDoc) {
+    const docs = window._clDocs?.[reqDoc] || [];
+    if (!docs.length) {
+      openUpload(reqDoc, currentMobId, null, defId);
+      return;
+    }
+    // belge var — devam edip aşağıda "done" olarak kaydedilir
+  }
+
+  // Form gerektiriyorsa
+  if (checkType === 'form') {
+    if (reqForm === 'lang_plan') {
+      if (!mobParticipants.length) { alert('Önce Katılımcılar sekmesinden katılımcı ekleyin.'); return; }
+      if (!allLangPlansFilled()) { alert('Tüm katılımcıların Dil Gelişim Planı doldurulmadan bu madde tamamlanamaz.'); return; }
+      // hepsi dolu — devam edip aşağıda "done" olarak kaydedilir
+    } else if (reqForm === 'mobility_info') {
+      if (!mobInfoComplete(window._clMobInfo)) { alert('Hareketlilik Bilgileri Tablosu doldurulmadan bu madde tamamlanamaz.'); return; }
+      // dolu — devam edip aşağıda "done" olarak kaydedilir
+    } else if (reqForm === 'results_use_plan') {
+      if (!resultsUsePlanFilled()) { alert('Önce Yaygınlaştırma sekmesinden Sonuçların Kullanımı Planı yazın.'); return; }
+    } else if (reqForm === 'yayginlastirma' || reqForm === 'sonuclarin_kullanimi') {
+      if (!activityLogHasType(reqForm)) { alert('Önce Yaygınlaştırma sekmesinden en az bir kayıt ekleyin.'); return; }
+    } else {
+      alert('Form özelliği yakında eklenecek!');
+      return;
+    }
+  }
+
+  // Bilgi onayı / tamamlanmış form — direkt kaydet
+  await saveChecklistProgress(defId, 'done');
+}
+
+async function revokeChecklist(defId) {
+  if (!confirm('Bu maddenin onayını kaldırmak istediğinize emin misiniz?')) return;
+  await saveChecklistProgress(defId, 'pending');
+}
+
+async function saveChecklistProgress(defId, status) {
+  const { error } = await db.from('checklist_progress')
+    .upsert({
+      mobility_id:   currentMobId,
+      definition_id: defId,
+      status:        status,
+      completed_by:  status === 'done' ? currentUser.id : null,
+      completed_at:  status === 'done' ? new Date().toISOString() : null,
+      revoked_by:    status === 'pending' ? currentUser.id : null,
+      revoked_at:    status === 'pending' ? new Date().toISOString() : null
+    }, { onConflict: 'mobility_id,definition_id' });
+
+  if (!error) {
+    if (status === 'done') {
+      checklistData[defId] = { status: 'done', completed_at: new Date().toISOString() };
+    } else {
+      delete checklistData[defId];
+    }
+    renderPhase(currentPhase);
+    updateDashboardStats();
+  }
+}
+
+// ─────────────────────────────────────────────
+// BELGE YÜKLEME
+// ─────────────────────────────────────────────
+let _afterUploadDefId = null;
+
+function openUpload(docType, mobId, partId, afterDefId = null) {
+  pendingUpload = { file: null, docType, mobId, partId };
+  _afterUploadDefId = afterDefId;
+  document.getElementById('upload-modal-title').textContent = docTypeLabel(docType) + ' Yükle';
+  document.getElementById('selected-file').style.display = 'none';
+  document.getElementById('upload-confirm-btn').disabled = true;
+  document.getElementById('upload-overlay').classList.add('show');
+}
+
+function closeUpload() {
+  document.getElementById('upload-overlay').classList.remove('show');
+  document.getElementById('file-input').value = '';
+  pendingUpload = { file: null, docType: null, mobId: null, partId: null };
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+async function processFile(file) {
+  if (file.size > 10 * 1024 * 1024) { alert('Dosya 10 MB\'ı geçemez.'); return; }
+
+  pendingUpload.file = file;
+
+  const infoEl = document.getElementById('file-info');
+  infoEl.innerHTML = `📄 <strong>${file.name}</strong> (${(file.size/1024/1024).toFixed(2)} MB)`;
+  document.getElementById('selected-file').style.display = 'block';
+  document.getElementById('ai-result-area').innerHTML = '<div style="color:var(--muted);font-size: 13px;margin-top:8px">🤖 AI doğrulama çalışıyor…</div>';
+  document.getElementById('upload-confirm-btn').disabled = true;
+
+  // AI doğrulama (ileride gerçek Claude API ile)
+  await runAIValidation(file, pendingUpload.docType);
+
+  document.getElementById('upload-confirm-btn').disabled = false;
+}
+
+async function runAIValidation(file, docType) {
+  // TODO: Supabase Edge Function üzerinden Claude API'ye gönder
+  // Şimdilik simüle ediyoruz
+  await new Promise(r => setTimeout(r, 1200));
+
+  const aiEl = document.getElementById('ai-result-area');
+
+  const simResults = {
+    sigorta:       { cls: 'warn', msg: '🤖 AI: İsim eşleşiyor. Kaza sigortası açıkça belirtilmemiş — koordinatör kontrol edecek.' },
+    bilet:         { cls: 'ok',   msg: '🤖 AI: İsim ve tarih doğrulandı. ✓' },
+    boarding_pass: { cls: 'ok',   msg: '🤖 AI: İsim ve uçuş tarihi doğrulandı. ✓' },
+    konaklama:     { cls: 'warn', msg: '🤖 AI: Tarihler uyuşuyor. Katılımcı adı belgede bulunamadı (grup rezervasyonu olabilir).' },
+    kurs_proforma: { cls: 'warn', msg: '🤖 AI: Tutar doğrulandı. Tarihler hareketlilikten farklı — koordinatör onaylayacak.' }
+  };
+
+  const result = simResults[docType] || { cls: 'ok', msg: '🤖 AI: Belge alındı. İçerik koordinatör tarafından incelenecek.' };
+  aiEl.innerHTML = `<div class="ai-result ${result.cls}" style="margin-top:8px">${result.msg}</div>`;
+}
+
+function sanitizeForFilename(str) {
+  const map = { ç:'c',ğ:'g',ı:'i',ö:'o',ş:'s',ü:'u',Ç:'C',Ğ:'G',İ:'I',Ö:'O',Ş:'S',Ü:'U' };
+  return (str || '')
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, ch => map[ch])
+    .replace(/[^a-zA-Z0-9]+/g, '')
+    .slice(0, 25);
+}
+
+async function confirmUpload() {
+  const { file, docType, mobId, partId } = pendingUpload;
+  if (!file) return;
+
+  const btn = document.getElementById('upload-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Yükleniyor…';
+
+  try {
+    // 1. Dosyayı Supabase Storage'a yükle
+    const ext       = file.name.split('.').pop();
+    const shortName = sanitizeForFilename(currentSchool.name);
+    const fileName  = `${currentSchool.oid}_${shortName}_${docType}_${Date.now()}.${ext}`;
+    const path      = `${currentSchool.id}/${mobId || 'school'}/${fileName}`;
+
+    const { data: storageData, error: storageErr } = await db.storage
+      .from('KAYP')
+      .upload(path, file, { contentType: file.type, upsert: false });
+
+    if (storageErr) throw storageErr;
+
+    // 2. documents tablosuna kaydet (private bucket — path saklanır, görüntülerken signed URL üretilir)
+    const aiResultEl = document.getElementById('ai-result-area').querySelector('.ai-result');
+    const aiNote = aiResultEl ? aiResultEl.textContent : '';
+
+    const { error: dbErr } = await db.from('documents').upsert({
+      school_id:      currentSchool.id,
+      mobility_id:    mobId || null,
+      participant_id: partId || null,
+      doc_type:       docType,
+      doc_level:      mobId ? 'mobility' : 'school',
+      status:         'uploaded',
+      file_path:      path,
+      file_name:      fileName,
+      file_size_bytes: file.size,
+      file_mime:      file.type,
+      ai_validation:  { note: aiNote, checked_at: new Date().toISOString() }
+    });
+
+    if (dbErr) throw dbErr;
+
+    // 3. Belge gerektiren checklist maddesini otomatik AÇMA — okul tıklamalı
+    closeUpload();
+    alert('✓ Belge başarıyla yüklendi! Koordinatör inceleyecek ve onaylayacak.');
+
+    // Listeyi güncelle
+    await updateDashboardStats();
+    if (currentMobId) renderPhase(currentPhase);
+
+  } catch (err) {
+    alert('Yükleme hatası: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = '⬆️ Yükle';
+  }
+}
+
+async function deleteOwnDocument(docId, defId, docType) {
+  if (!confirm('Bu belgeyi silmek istediğinize emin misiniz?')) return;
+
+  const { error } = await db.from('documents')
+    .update({ status: 'archived' })
+    .eq('id', docId)
+    .eq('school_id', currentSchool.id);
+
+  if (error) { alert('Silme hatası: ' + error.message); return; }
+
+  if (defId) {
+    // Silinen belge, "tamamlandı" işaretli bir maddenin tek kanıtıysa, maddeyi geri al
+    const remaining = (window._clDocs?.[docType] || []).filter(d => d.id !== docId);
+    const prog = checklistData[defId];
+    if (prog?.status === 'done' && !remaining.length) {
+      await saveChecklistProgress(defId, 'pending');
+    }
+    await loadChecklist();
+  } else {
+    await loadDocuments();
+  }
+}
+
+async function viewOwnDocument(path) {
+  const { data } = await db.storage.from('KAYP').createSignedUrl(path, 300);
+  if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+  else alert('❌ Dosya URL alınamadı');
+}
+
+// ─────────────────────────────────────────────
+// YARDIMCI: Belgeler Tabı
+// ─────────────────────────────────────────────
+async function loadDocuments() {
+  const mobId = document.getElementById('doc-mob-select').value;
+  if (!mobId) return;
+
+  const { data: docs } = await db.from('documents')
+    .select('*')
+    .eq('mobility_id', mobId)
+    .neq('status', 'archived')
+    .order('doc_type');
+
+  const el = document.getElementById('document-list');
+
+  if (!docs || !docs.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Bu hareketlilik için henüz belge yok.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+  <div class="panel">
+  ${docs.map(d => `
+    <div style="display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--border)">
+      <div style="font-size:22px">📄</div>
+      <div style="flex:1">
+        <div style="font-size: 14px;font-weight:700">${docTypeLabel(d.doc_type)}</div>
+        <div style="font-size: 12px;color:var(--muted);margin-top:2px">${d.file_name || '—'} · v${d.version}</div>
+      </div>
+      <div style="font-size: 12px;font-weight:700;padding:3px 8px;border-radius:5px;${statusStyle(d.status)}">${statusLabel(d.status)}</div>
+      ${d.file_path ? `<span style="font-size: 13px;color:var(--blue);cursor:pointer" onclick="viewOwnDocument('${d.file_path}')">👁 Görüntüle</span>` : ''}
+      ${d.status !== 'approved' ? `<span style="font-size: 13px;color:var(--muted);cursor:pointer" onclick="openUpload('${d.doc_type}','${mobId}',null)">🔄 Yeniden Yükle</span>` : ''}
+      ${d.status !== 'approved' ? `<span style="font-size: 13px;color:#dc2626;cursor:pointer" onclick="deleteOwnDocument('${d.id}',null,'${d.doc_type}')">🗑 Sil</span>` : ''}
+    </div>
+  `).join('')}
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+// NAVİGASYON
+// ─────────────────────────────────────────────
+const tabTitles = {
+  dashboard: 'Ana Sayfa',
+  checklist: 'Kontrol Listesi',
+  documents: 'Belgelerim',
+  participants: 'Katılımcılar',
+  activitylog: 'Yaygınlaştırma & Sonuçların Kullanımı',
+  notes:     'Mesajlar',
+  profile:   'Okul Bilgileri'
+};
+
+function showTab(name) {
+  ['dashboard','checklist','documents','participants','activitylog','notes','profile'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
+  });
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('topbar-title').textContent = tabTitles[name] || name;
+
+  if (name === 'notes') loadNotes();
+  if (name === 'profile') loadProfile();
+}
+
+function focusMobility(mobId) {
+  currentMobId = mobId;
+  document.getElementById('cl-mob-select').value  = mobId;
+  document.getElementById('doc-mob-select').value = mobId;
+  document.getElementById('part-mob-select').value = mobId;
+  showTab('checklist');
+  loadChecklist();
+}
+
+// ─────────────────────────────────────────────
+// KATILIMCILAR
+// ─────────────────────────────────────────────
+let mobParticipants = [];
+
+function calcAge(birthDate) {
+  if (!birthDate) return null;
+  const b = new Date(birthDate);
+  const t = new Date();
+  let age = t.getFullYear() - b.getFullYear();
+  const m = t.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) age--;
+  return age;
+}
+
+function roleLabel(r) {
+  return { student:'Öğrenci', teacher:'Öğretmen', accompanying:'Refakatçi', expert:'Uzman', staff:'Personel' }[r] || r;
+}
+
+function cefrLabel(c) {
+  return c ? c : '—';
+}
+
+async function loadParticipants() {
+  const mobId = document.getElementById('part-mob-select').value;
+  const el = document.getElementById('participant-list');
+  if (!mobId) { el.innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>'; mobParticipants = []; return; }
+
+  currentMobId = mobId;
+
+  const { data } = await db.from('participants').select('*').eq('mobility_id', mobId).order('created_at');
+  mobParticipants = data || [];
+  renderParticipants();
+}
+
+function renderParticipants() {
+  const el = document.getElementById('participant-list');
+  if (!mobParticipants.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Bu hareketlilik için henüz katılımcı eklenmedi.</div>';
+    return;
+  }
+
+  el.innerHTML = `<div class="panel">${mobParticipants.map(p => {
+    const age = calcAge(p.birth_date);
+    const lp = p.lang_plan || {};
+    const lpDone = !!(lp.current_level || lp.target_level);
+    return `
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:22px">${p.role === 'student' ? '🧑‍🎒' : p.role === 'teacher' ? '👩‍🏫' : '👤'}</div>
+        <div style="flex:1">
+          <div style="font-size: 15px;font-weight:700">${p.full_name}${age !== null ? ` <span style="font-weight:400;color:var(--muted);font-size: 13px">(${age} yaş)</span>` : ''}</div>
+          <div style="font-size: 13px;color:var(--muted);margin-top:2px">${roleLabel(p.role)} ${p.tc_no ? '· TC: ' + p.tc_no : ''}</div>
+        </div>
+        <span class="cl-link" onclick="openParticipantForm('${p.id}')">✏️ Düzenle</span>
+        <span class="cl-link" style="color:#dc2626" onclick="deleteParticipant('${p.id}')">🗑 Sil</span>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:8px;padding:8px 12px">
+        <span style="font-size: 13px;color:var(--muted)">🗣️ Dil Gelişim Planı:</span>
+        ${lpDone
+          ? `<span style="font-size: 13px;color:var(--green);font-weight:700">${cefrLabel(lp.current_level)} → ${cefrLabel(lp.target_level)} ✓</span>`
+          : `<span style="font-size: 13px;color:var(--orange);font-weight:700">Doldurulmadı</span>`}
+        <span class="cl-link" style="margin-left:auto" onclick="openLangPlan('${p.id}')">${lpDone ? 'Düzenle' : 'Doldur'}</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function toggleGuardianFields() {
+  const birth = document.getElementById('part-birth').value;
+  const age = calcAge(birth);
+  document.getElementById('guardian-fields').style.display = (age !== null && age < 18) ? 'block' : 'none';
+}
+
+function openParticipantForm(partId = null) {
+  const p = partId ? mobParticipants.find(x => x.id === partId) : null;
+  document.getElementById('participant-modal-title').textContent = p ? 'Katılımcı Düzenle' : 'Katılımcı Ekle';
+  document.getElementById('part-id').value = p?.id || '';
+  document.getElementById('part-full-name').value = p?.full_name || '';
+  document.getElementById('part-tc').value = p?.tc_no || '';
+  document.getElementById('part-birth').value = p?.birth_date || '';
+  document.getElementById('part-role').value = p?.role || 'student';
+  document.getElementById('part-email').value = p?.email || '';
+  document.getElementById('part-phone').value = p?.phone || '';
+  document.getElementById('part-iban').value = p?.iban || '';
+  document.getElementById('part-bank').value = p?.bank_name || '';
+  document.getElementById('part-gender').value = p?.gender || '';
+  document.getElementById('part-address').value = p?.home_address || '';
+  document.getElementById('part-passport-type').value = p?.passport_type || '';
+  document.getElementById('part-passport-no').value = p?.passport_no || '';
+  document.getElementById('part-passport-expiry').value = p?.passport_expiry || '';
+  document.getElementById('part-guardian-name').value = p?.guardian_name || '';
+  document.getElementById('part-guardian-tc').value = p?.guardian_tc || '';
+  document.getElementById('part-guardian-phone').value = p?.guardian_phone || '';
+  toggleGuardianFields();
+  document.getElementById('participant-overlay').classList.add('show');
+}
+
+function closeParticipantForm() {
+  document.getElementById('participant-overlay').classList.remove('show');
+}
+
+async function saveParticipant() {
+  const mobId = document.getElementById('part-mob-select').value;
+  if (!mobId) { alert('Önce hareketlilik seçin.'); return; }
+
+  const fullName = document.getElementById('part-full-name').value.trim();
+  if (!fullName) { alert('Ad Soyad gereklidir.'); return; }
+
+  const partId = document.getElementById('part-id').value;
+  const btn = document.getElementById('participant-save-btn');
+  btn.disabled = true;
+
+  const payload = {
+    mobility_id:    mobId,
+    school_id:      currentSchool.id,
+    full_name:      fullName,
+    tc_no:          document.getElementById('part-tc').value.trim() || null,
+    birth_date:     document.getElementById('part-birth').value || null,
+    role:           document.getElementById('part-role').value,
+    email:          document.getElementById('part-email').value.trim() || null,
+    phone:          document.getElementById('part-phone').value.trim() || null,
+    iban:           document.getElementById('part-iban').value.trim() || null,
+    bank_name:      document.getElementById('part-bank').value.trim() || null,
+    gender:         document.getElementById('part-gender').value || null,
+    home_address:   document.getElementById('part-address').value.trim() || null,
+    passport_type:  document.getElementById('part-passport-type').value.trim() || null,
+    passport_no:    document.getElementById('part-passport-no').value.trim() || null,
+    passport_expiry: document.getElementById('part-passport-expiry').value || null,
+    guardian_name:  document.getElementById('part-guardian-name').value.trim() || null,
+    guardian_tc:    document.getElementById('part-guardian-tc').value.trim() || null,
+    guardian_phone: document.getElementById('part-guardian-phone').value.trim() || null
+  };
+
+  let error;
+  if (partId) {
+    ({ error } = await db.from('participants').update(payload).eq('id', partId));
+  } else {
+    ({ error } = await db.from('participants').insert(payload));
+  }
+
+  btn.disabled = false;
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+
+  closeParticipantForm();
+  await loadParticipants();
+}
+
+async function deleteParticipant(partId) {
+  if (!confirm('Bu katılımcıyı silmek istediğinize emin misiniz?')) return;
+  const { error } = await db.from('participants').delete().eq('id', partId).eq('school_id', currentSchool.id);
+  if (error) { alert('Silme hatası: ' + error.message); return; }
+  await loadParticipants();
+}
+
+// ─────────────────────────────────────────────
+// DİL GELİŞİM PLANI
+// ─────────────────────────────────────────────
+function openLangPlan(partId) {
+  const p = mobParticipants.find(x => x.id === partId);
+  if (!p) return;
+  const lp = p.lang_plan || {};
+  document.getElementById('lp-part-id').value = partId;
+  document.getElementById('langplan-modal-title').textContent = 'Dil Gelişim Planı — ' + p.full_name;
+  document.getElementById('lp-current').value   = lp.current_level || '';
+  document.getElementById('lp-target').value    = lp.target_level || '';
+  document.getElementById('lp-resources').value = lp.resources || '';
+  document.getElementById('lp-deadline').value  = lp.deadline || '';
+  document.getElementById('lp-notes').value     = lp.notes || '';
+  document.getElementById('langplan-overlay').classList.add('show');
+}
+
+function closeLangPlan() {
+  document.getElementById('langplan-overlay').classList.remove('show');
+}
+
+async function saveLangPlan() {
+  const partId = document.getElementById('lp-part-id').value;
+  const current = document.getElementById('lp-current').value;
+  const target  = document.getElementById('lp-target').value;
+
+  if (!current || !target) { alert('Mevcut ve hedef seviye seçilmelidir.'); return; }
+
+  const btn = document.getElementById('langplan-save-btn');
+  btn.disabled = true;
+
+  const lang_plan = {
+    current_level: current,
+    target_level:  target,
+    resources:     document.getElementById('lp-resources').value.trim(),
+    deadline:      document.getElementById('lp-deadline').value || null,
+    notes:         document.getElementById('lp-notes').value.trim(),
+    updated_at:    new Date().toISOString()
+  };
+
+  const { error } = await db.from('participants').update({ lang_plan }).eq('id', partId);
+
+  btn.disabled = false;
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+
+  closeLangPlan();
+  await loadParticipants();
+  // Checklist'te lang_plan maddesi açıksa güncelle
+  if (currentMobId && window._clDefs) renderPhase(currentPhase);
+}
+
+function allLangPlansFilled(mobId) {
+  // Bu fonksiyon checklist tarafından çağrılıyor; mobParticipants son yüklenen hareketlilik ise kullan
+  if (!mobParticipants.length) return false;
+  return mobParticipants.every(p => p.lang_plan && p.lang_plan.current_level && p.lang_plan.target_level);
+}
+
+// ─────────────────────────────────────────────
+// HAREKETLİLİK BİLGİLERİ TABLOSU
+// ─────────────────────────────────────────────
+const ERASMUS_PLAN_GOALS = [
+  'Yenilikçi ve alternatif öğretim modellerini öğretmenlerin sınıf içi ve sınıf dışı uygulamalarında yaygınlaştırılarak, öğrencilerin 21. yüzyıl becerilerini ve akademik başarılarını artırmak.',
+  'Yenilikçi eğitim teknolojilerinin etkili kullanımını yaygınlaştırmak için öğretmen ve yöneticilerin dijital becerileri geliştirmek',
+  'Öğretmen ve Yöneticilerin Kapsayıcı Eğitim Yeterliliklerini Artırarak Okullarda Kapsayıcı Öğrenme Ortamları Oluşturmak',
+  'Okullarda İyi Oluş Halini Destekleyen Yenilikçi Eğitim ve Yönetim Uygulamalarını Yaygınlaştırmak',
+  'Öğrencilerin 21. Yüzyıl Becerilerini ve Anahtar Yeterliliklerini Geliştirmek',
+  'Sürdürülebilirlik ve çevresel farkındalık için öğretmen, yönetici ve öğrencilerin yeşil becerilerini geliştirmek'
+];
+
+const KEY_COMPETENCES = [
+  'Active citizenship - Aktif vatandaşlık',
+  'Cultural awareness and expression - Kültürel farkındalık ve ifade',
+  'Digital and technology-based competences - Dijital ve teknoloji tabanlı yetenekler',
+  'Entrepreneurship - Girişimcilik',
+  'Interpersonal skills, and the ability to adopt new competences - Kişilerarası beceriler ve yeni yeteneklere uyum kabiliyeti',
+  'Literacy - Okuryazarlık',
+  'Multilingualism - Çok dillilik',
+  'Numerical, scientific and engineering skills - Sayısal, bilimsel ve mühendislik becerileri'
+];
+
+const APPLICABLE_CRITERIA = [
+  'Early childhood education and care - Erken çocukluk eğitimi ve bakımı',
+  'Bridging intercultural, intergenerational and social divide - Kültürlerarası, kuşaklararası ve sosyal ayrımı köprüleme',
+  'Promoting gender equality - Cinsiyet eşitliğini teşvik etme',
+  "Enterprise, industry, SMEs and entrepreneurship - Girişimcilik, endüstri, KOBİ'ler ve girişimcilik",
+  'Preventing radicalisation - Radikalleşmeyi önleme',
+  'Human rights and rule of law - İnsan hakları ve hukukun üstünlüğü',
+  'Environment and climate change - Çevre ve iklim değişikliği',
+  'Preventing racism and discrimination - Irkçılığı ve ayrımcılığı önleme',
+  'Promoting LGBT+ equality - LGBT+ eşitliğini teşvik etme',
+  'Reception and integration of refugees and migrants - Mülteci ve göçmenlerin kabulü ve entegrasyonu',
+  'Recognition, transparency, certification - Tanıma, şeffaflık, sertifikasyon',
+  'Awareness about the European Union - Avrupa Birliği hakkında farkındalık',
+  'Democracy and inclusive democratic participation - Demokrasi ve kapsayıcı demokratik katılım',
+  'Creativity, arts and culture - Yaratıcılık, sanat ve kültür',
+  'Media literacy and tackling disinformation - Medya okuryazarlığı ve dezinformasyonla mücadele',
+  'Digital skills and competences - Dijital beceriler ve yetenekler',
+  'Information and communication technologies (ICT) - Bilgi ve iletişim teknolojileri (BİT)',
+  'Inclusion, promoting equality and non-discrimination - Dahil etme, eşitlik ve ayrımcılığı teşvik etme',
+  'Disabilities - Engelliler',
+  'Development of disadvantaged rural and urban areas - Dezavantajlı kırsal ve kentsel alanların gelişimi',
+  'Preventing early school leaving and failure in education - Erken okul terkini ve eğitim başarısızlığını önleme',
+  'Creating new, innovative or joint curricula or courses - Yeni, yenilikçi veya ortak müfredat veya kurslar oluşturma',
+  'Overcoming skills mismatch and addressing the needs of the labour market - Beceriler uyuşmazlığını aşma ve iş piyasası ihtiyaçlarına cevap verme',
+  'Initial and continuous training for teachers, trainers and other education staff - Öğretmenler, eğitmenler ve diğer eğitim personeli için temel ve sürekli eğitim',
+  'Science, technology, engineering and mathematics (STEM) - Bilim, teknoloji, mühendislik ve matematik (STEM)',
+  'Career guidance - Kariyer rehberliği',
+  'Green transport and mobility - Yeşil ulaşım ve hareketlilik',
+  'Inter-regional cooperation - Bölgesel işbirliği',
+  'Physical and mental health, well-being - Fiziksel ve zihinsel sağlık, iyi olma',
+  'Digital safety - Dijital güvenlik'
+];
+
+let currentMobInfo = null;
+let committeeMembers = [];
+
+function renderCheckboxList(containerId, options, selected, maxSelect) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = options.map((opt, i) => `
+    <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+      <input type="checkbox" data-idx="${i}" ${selected.includes(opt) ? 'checked' : ''} style="margin-top:2px"
+        ${maxSelect ? `onchange="enforceMaxSelect('${containerId}', ${maxSelect})"` : ''}>
+      <span>${opt}</span>
+    </label>`).join('');
+  if (maxSelect) enforceMaxSelect(containerId, maxSelect);
+}
+
+function enforceMaxSelect(containerId, maxSelect) {
+  const el = document.getElementById(containerId);
+  const boxes = el.querySelectorAll('input[type="checkbox"]');
+  const checkedCount = [...boxes].filter(cb => cb.checked).length;
+  boxes.forEach(cb => { cb.disabled = !cb.checked && checkedCount >= maxSelect; });
+}
+
+function getCheckedValues(containerId, options) {
+  const el = document.getElementById(containerId);
+  const checked = [];
+  el.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    if (cb.checked) checked.push(options[parseInt(cb.dataset.idx)]);
+  });
+  return checked;
+}
+
+function renderCommitteeList() {
+  const el = document.getElementById('mi-committee-list');
+  el.innerHTML = committeeMembers.map((m, i) => `
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input class="form-input" placeholder="TC Kimlik No" value="${m.tc || ''}" oninput="committeeMembers[${i}].tc=this.value" style="flex:1">
+      <input class="form-input" placeholder="Adı Soyadı" value="${m.name || ''}" oninput="committeeMembers[${i}].name=this.value" style="flex:2">
+      <button class="btn btn-ghost btn-sm" onclick="removeCommitteeRow(${i})">🗑</button>
+    </div>`).join('');
+}
+
+function addCommitteeRow() {
+  committeeMembers.push({ tc: '', name: '' });
+  renderCommitteeList();
+}
+
+function removeCommitteeRow(i) {
+  committeeMembers.splice(i, 1);
+  renderCommitteeList();
+}
+
+async function openMobInfo(mobId) {
+  document.getElementById('mi-mobility-id').value = mobId;
+
+  const { data } = await db.from('mobility_info').select('*').eq('mobility_id', mobId).maybeSingle();
+  currentMobInfo = data || {};
+
+  document.getElementById('mi-host-oid').value = currentMobInfo.host_oid || '';
+  document.getElementById('mi-host-type').value = currentMobInfo.host_type || '';
+  document.getElementById('mi-host-legal-rep').value = currentMobInfo.host_legal_rep || '';
+  document.getElementById('mi-host-contact-name').value = currentMobInfo.host_contact_name || '';
+  document.getElementById('mi-host-contact-email').value = currentMobInfo.host_contact_email || '';
+  document.getElementById('mi-host-website').value = currentMobInfo.host_website || '';
+  document.getElementById('mi-host-address').value = currentMobInfo.host_address || '';
+  document.getElementById('mi-host-postal-code').value = currentMobInfo.host_postal_code || '';
+  document.getElementById('mi-host-phone').value = currentMobInfo.host_phone || '';
+  document.getElementById('mi-host-found-how').value = currentMobInfo.host_found_how || '';
+  document.getElementById('mi-distance-km').value = currentMobInfo.distance_km || '';
+  document.getElementById('mi-travel-route').value = currentMobInfo.travel_route || '';
+  document.getElementById('mi-flight-numbers').value = currentMobInfo.flight_numbers || '';
+  document.getElementById('mi-travel-vehicles').value = currentMobInfo.travel_vehicles || '';
+  document.getElementById('mi-accommodation-type').value = currentMobInfo.accommodation_type || '';
+  document.getElementById('mi-accommodation-address').value = currentMobInfo.accommodation_address || '';
+  document.getElementById('mi-accommodation-duration').value = currentMobInfo.accommodation_duration || '';
+  document.getElementById('mi-activity-summary').value = currentMobInfo.activity_summary || '';
+  document.getElementById('mi-course-link').value = currentMobInfo.course_link || '';
+
+  renderCheckboxList('mi-plan-goals', ERASMUS_PLAN_GOALS, currentMobInfo.erasmus_plan_goals || []);
+  renderCheckboxList('mi-key-competences', KEY_COMPETENCES, currentMobInfo.key_competences || []);
+  renderCheckboxList('mi-applicable-criteria', APPLICABLE_CRITERIA, currentMobInfo.applicable_criteria || [], 3);
+
+  committeeMembers = (currentMobInfo.selection_committee || []).map(m => ({ ...m }));
+  renderCommitteeList();
+
+  document.getElementById('mobinfo-overlay').classList.add('show');
+}
+
+function closeMobInfo() {
+  document.getElementById('mobinfo-overlay').classList.remove('show');
+}
+
+async function saveMobInfo() {
+  const mobId = document.getElementById('mi-mobility-id').value;
+  const btn = document.getElementById('mobinfo-save-btn');
+  btn.disabled = true;
+
+  const payload = {
+    mobility_id: mobId,
+    school_id: currentSchool.id,
+    host_oid: document.getElementById('mi-host-oid').value.trim() || null,
+    host_type: document.getElementById('mi-host-type').value.trim() || null,
+    host_legal_rep: document.getElementById('mi-host-legal-rep').value.trim() || null,
+    host_contact_name: document.getElementById('mi-host-contact-name').value.trim() || null,
+    host_contact_email: document.getElementById('mi-host-contact-email').value.trim() || null,
+    host_website: document.getElementById('mi-host-website').value.trim() || null,
+    host_address: document.getElementById('mi-host-address').value.trim() || null,
+    host_postal_code: document.getElementById('mi-host-postal-code').value.trim() || null,
+    host_phone: document.getElementById('mi-host-phone').value.trim() || null,
+    host_found_how: document.getElementById('mi-host-found-how').value.trim() || null,
+    distance_km: document.getElementById('mi-distance-km').value ? parseFloat(document.getElementById('mi-distance-km').value) : null,
+    travel_route: document.getElementById('mi-travel-route').value.trim() || null,
+    flight_numbers: document.getElementById('mi-flight-numbers').value.trim() || null,
+    travel_vehicles: document.getElementById('mi-travel-vehicles').value.trim() || null,
+    accommodation_type: document.getElementById('mi-accommodation-type').value.trim() || null,
+    accommodation_address: document.getElementById('mi-accommodation-address').value.trim() || null,
+    accommodation_duration: document.getElementById('mi-accommodation-duration').value.trim() || null,
+    erasmus_plan_goals: getCheckedValues('mi-plan-goals', ERASMUS_PLAN_GOALS),
+    key_competences: getCheckedValues('mi-key-competences', KEY_COMPETENCES),
+    applicable_criteria: getCheckedValues('mi-applicable-criteria', APPLICABLE_CRITERIA),
+    selection_committee: committeeMembers.filter(m => m.tc || m.name),
+    activity_summary: document.getElementById('mi-activity-summary').value.trim() || null,
+    course_link: document.getElementById('mi-course-link').value.trim() || null
+  };
+
+  const { error } = await db.from('mobility_info').upsert(payload, { onConflict: 'mobility_id' });
+
+  btn.disabled = false;
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+
+  closeMobInfo();
+  if (currentMobId === mobId) await loadChecklist();
+}
+
+function mobInfoComplete(info) {
+  return !!(info && info.host_contact_name && info.activity_summary);
+}
+
+// ─────────────────────────────────────────────
+// YAYGINLAŞTIRMA & SONUÇLARIN KULLANIMI
+// ─────────────────────────────────────────────
+let activityLogEntries = [];
+let currentALMobId = null;
+
+const AL_TYPE_LABEL = { yayginlastirma: '📣 Yaygınlaştırma', sonuclarin_kullanimi: '🎯 Sonuçların Kullanımı' };
+
+async function loadActivityLog() {
+  const mobId = document.getElementById('al-mob-select').value;
+  const el = document.getElementById('activitylog-content');
+  if (!mobId) { el.innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center">Hareketlilik seçin.</div>'; return; }
+
+  currentALMobId = mobId;
+
+  const [{ data: entries }, { data: info }] = await Promise.all([
+    db.from('activity_log').select('*').eq('mobility_id', mobId).order('created_at', { ascending: false }),
+    db.from('mobility_info').select('results_use_plan').eq('mobility_id', mobId).maybeSingle()
+  ]);
+
+  activityLogEntries = entries || [];
+  renderActivityLog(info?.results_use_plan || '');
+}
+
+function renderActivityLog(plan) {
+  const el = document.getElementById('activitylog-content');
+
+  const cards = activityLogEntries.length ? activityLogEntries.map(e => `
+    <div class="panel" style="padding:14px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div>
+          <span class="cl-type ${e.type === 'yayginlastirma' ? 'document' : 'form'}" style="margin-bottom:4px;display:inline-block">${AL_TYPE_LABEL[e.type]}</span>
+          <div style="font-size: 15px;font-weight:700;margin-top:2px">${e.title}</div>
+        </div>
+        <span class="cl-link" style="color:#dc2626;flex-shrink:0" onclick="deleteActivityLogEntry('${e.id}')">🗑 Sil</span>
+      </div>
+      ${e.description ? `<div style="font-size: 14px;color:#374151;margin-top:6px">${e.description}</div>` : ''}
+      <div style="font-size: 13px;color:var(--muted);margin-top:8px;display:flex;gap:10px;align-items:center">
+        <span>${fmtDate(e.created_at)}</span>
+        ${e.link_url ? `<a href="${e.link_url}" target="_blank" class="cl-link">🔗 Link</a>` : ''}
+        ${e.file_path ? `<span class="cl-link" onclick="viewOwnDocument('${e.file_path}')">📷 Fotoğraf</span>` : ''}
+      </div>
+    </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--muted)">Henüz kayıt yok.</div>';
+
+  el.innerHTML = `
+    <div class="panel" style="padding:16px;margin-bottom:16px">
+      <div style="font-size: 14px;font-weight:700;margin-bottom:8px">📋 Sonuçların Kullanımı Planı</div>
+      <textarea class="form-input" id="al-plan-text" rows="3" placeholder="Hareketlilik sonuçlarının nasıl kullanılacağına dair planınızı yazın…">${plan}</textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="saveResultsUsePlan()">💾 Planı Kaydet</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size: 14px;font-weight:700;color:var(--muted);text-transform:uppercase">Kayıtlar (${activityLogEntries.length})</div>
+      <button class="btn btn-primary btn-sm" onclick="openActLogForm()">+ Kayıt Ekle</button>
+    </div>
+    ${cards}`;
+}
+
+async function saveResultsUsePlan() {
+  const plan = document.getElementById('al-plan-text').value.trim();
+  const { error } = await db.from('mobility_info').upsert({
+    mobility_id: currentALMobId, school_id: currentSchool.id, results_use_plan: plan
+  }, { onConflict: 'mobility_id' });
+  if (error) { alert('Kaydetme hatası: ' + error.message); return; }
+  alert('✓ Plan kaydedildi.');
+  if (currentMobId === currentALMobId) await loadChecklist();
+}
+
+function openActLogForm() {
+  document.getElementById('al-type').value = 'yayginlastirma';
+  document.getElementById('al-title').value = '';
+  document.getElementById('al-description').value = '';
+  document.getElementById('al-link').value = '';
+  document.getElementById('al-file-input').value = '';
+  document.getElementById('actlog-overlay').classList.add('show');
+}
+
+function closeActLogForm() {
+  document.getElementById('actlog-overlay').classList.remove('show');
+}
+
+async function saveActivityLogEntry() {
+  const title = document.getElementById('al-title').value.trim();
+  if (!title) { alert('Başlık gereklidir.'); return; }
+
+  const btn = document.getElementById('actlog-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Kaydediliyor…';
+
+  try {
+    let filePath = null;
+    const file = document.getElementById('al-file-input').files[0];
+    if (file) {
+      const ext = file.name.split('.').pop();
+      const path = `${currentSchool.id}/${currentALMobId}/yayginlastirma_${Date.now()}.${ext}`;
+      const { error: upErr } = await db.storage.from('KAYP').upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) throw upErr;
+      filePath = path;
+    }
+
+    const { error } = await db.from('activity_log').insert({
+      mobility_id: currentALMobId,
+      school_id:   currentSchool.id,
+      type:        document.getElementById('al-type').value,
+      title,
+      description: document.getElementById('al-description').value.trim() || null,
+      link_url:    document.getElementById('al-link').value.trim() || null,
+      file_path:   filePath,
+      created_by:  currentUser.id
+    });
+    if (error) throw error;
+
+    closeActLogForm();
+    await loadActivityLog();
+    if (currentMobId === currentALMobId) await loadChecklist();
+  } catch (err) {
+    alert('Kaydetme hatası: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Kaydet';
+  }
+}
+
+async function deleteActivityLogEntry(id) {
+  if (!confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
+  const { error } = await db.from('activity_log').delete().eq('id', id).eq('school_id', currentSchool.id);
+  if (error) { alert('Silme hatası: ' + error.message); return; }
+  await loadActivityLog();
+  if (currentMobId === currentALMobId) await loadChecklist();
+}
+
+function activityLogHasType(type) {
+  return (window._clActivityLog || []).some(e => e.type === type);
+}
+
+function resultsUsePlanFilled() {
+  return !!(window._clMobInfo && window._clMobInfo.results_use_plan && window._clMobInfo.results_use_plan.trim());
+}
+
+// ─────────────────────────────────────────────
+// NOTLAR
+// ─────────────────────────────────────────────
+async function loadNotes() {
+  const { data } = await db.from('notes')
+    .select('*, author:users(full_name,role)')
+    .eq('school_id', currentSchool.id)
+    .eq('is_internal', false)
+    .order('created_at', { ascending: false });
+
+  const el = document.getElementById('notes-list');
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Henüz mesaj yok.</div>';
+    return;
+  }
+  el.innerHTML = data.map(n => `
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size: 13px;font-weight:700;color:${n.author?.role === 'school' ? '#1d4ed8' : '#166534'}">
+          ${n.author?.role === 'school' ? '🏫 ' + (n.author?.full_name || 'Okul') : '👩‍💼 Koordinatör'}
+        </span>
+        <span style="font-size: 12px;color:var(--muted)">${fmtDate(n.created_at)}</span>
+      </div>
+      <div style="font-size: 14px;color:#374151;line-height:1.6">${n.content}</div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────────
+// PROFİL
+// ─────────────────────────────────────────────
+async function loadProfile() {
+  const s = currentSchool;
+  document.getElementById('profile-content').innerHTML = `
+    <div style="display:grid;gap:10px;font-size: 14px">
+      <div><strong>Okul Adı:</strong> ${s.name}</div>
+      <div><strong>OID:</strong> ${s.oid}</div>
+      <div><strong>Şehir:</strong> ${s.city || '—'}</div>
+      <div><strong>E-posta:</strong> ${s.email || '—'}</div>
+      <div><strong>Telefon:</strong> ${s.phone || '—'}</div>
+      <div><strong>Müdür:</strong> ${s.principal_name || '—'}</div>
+    </div>
+    <div style="margin-top:16px;font-size: 13px;color:var(--muted)">Bilgi güncellemesi için koordinatörünüzle iletişime geçin.</div>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// ÇIKIŞ
+// ─────────────────────────────────────────────
+async function doLogout() {
+  await db.auth.signOut();
+  window.location.href = 'erasdesk_login.html';
+}
+
+// ─────────────────────────────────────────────
+// YARDIMCI FONKSİYONLAR
+// ─────────────────────────────────────────────
+function actLabel(t) {
+  return {
+    'SM-TTA':         'Öğretim Görevi',
+    'SM-JOB-SHDW':   'İşbaşı',
+    'SM-COUR-TRAIN':  'Kurs',
+    'LM-SHORT-PUPIL': 'Kısa Öğrenci',
+    'LM-LONG-PUPILS': 'Uzun Öğrenci',
+    'LM-GRP-PUPIL':   'Grup Öğrenci',
+    'OA-INV-EXP':     'Uzman Davet',
+    'PREP-VISIT':     'Hazırlık Ziyareti'
+  }[t] || t;
+}
+
+function actIcon(t) {
+  return {
+    'SM-TTA':         '👩‍🏫',
+    'SM-JOB-SHDW':   '🔍',
+    'SM-COUR-TRAIN':  '📚',
+    'LM-SHORT-PUPIL': '🧑‍🎒',
+    'LM-LONG-PUPILS': '🎓',
+    'LM-GRP-PUPIL':   '👫',
+    'OA-INV-EXP':     '🧑‍🔬',
+    'PREP-VISIT':     '✈️'
+  }[t] || '📋';
+}
+
+function docTypeLabel(t) {
+  return {
+    hibe_soz:               'Hibe Anlaşması (Taslak)',
+    hibe_soz_imzali:        'Hibe Anlaşması (İmzalı)',
+    ogrenme_soz:            'Öğrenme Anlaşması (Taslak)',
+    ogrenme_soz_imzali:     'Öğrenme Anlaşması (İmzalı)',
+    faaliyet_programi:      'Faaliyet Programı',
+    faaliyet_programi_imzali: 'Faaliyet Programı (İmzalı)',
+    kvkk:                   'KVKK Belgesi',
+    sertifika:              'Katılım Sertifikası',
+    europass:               'Europass Belgesi',
+    europass_imzali:        'Europass (İmzalı)',
+    boarding_pass:          'Boarding Pass',
+    sigorta:                'Sigorta Poliçesi',
+    bilet:                  'Seyahat Bileti',
+    konaklama:              'Konaklama Rezervasyonu',
+    kurs_proforma:          'Kurs Proforma Faturası',
+    kurs_fatura:            'Kurs Faturası',
+    beyan:                  'Tamamlandı Beyanı',
+    valilik_oluru:          'Valilik Oluru (Onaylı)',
+    ortaklik_soz:           'Ortaklık Sözleşmesi',
+    katilimci_secim_tutanagi: 'Katılımcı Seçim Tutanağı',
+    gorev_yeri_belgesi:     'Görev Yeri / Öğrenci Belgesi',
+    resim_video:            'Fotoğraf / Video'
+  }[t] || t;
+}
+
+// ─────────────────────────────────────────────
+// BELGEYİ DOLDUR (in-app doldur → yazdır/PDF → imzala → yükle)
+// ─────────────────────────────────────────────
+const ERASMUS_PROJECT_NO = '2025-1-TR01-KA121-SCH-000340391';
+
+const DOC_GEN_TITLES = {
+  hyk_tutanagi:             'Hareketlilik Yürütme Kurulu Oluşturma Tutanağı',
+  ksk_tutanagi:             'Katılımcı Seçim Kurulu Oluşturma Tutanağı',
+  secim_kriter_tutanagi:    'Katılımcı Seçim Yöntemi ve Değerlendirme Kriterleri Tutanağı',
+  faaliyet_programi_imzali: 'Davet Mektubu',
+  kvkk:                     'Açık Rıza / KVKK Onay Formu',
+  beyan:                    'Tamamlandı Beyanı',
+  sertifika_taslak:         'Sertifika Taslağı',
+  odak_grup:                'Odak Grup Görüşme Formu'
+};
+
+function docGenTypeFor(d) {
+  if (d.required_doc_type && DOC_GEN_TITLES[d.required_doc_type]) return d.required_doc_type;
+  if (d.phase === 'oncesi' && d.sort_order === 33) return 'sertifika_taslak';
+  if (d.phase === 'sonrasi' && d.sort_order === 10) return 'odak_grup';
+  return null;
+}
+
+let docGenCurrent = null;
+
+function currentMobility() { return mobilities.find(m => m.id === currentMobId) || {}; }
+function dgEsc(s) { return (s === null || s === undefined) ? '' : String(s); }
+function dgDate(iso) { return iso ? iso.split('-').reverse().join('/') : '…/…/20..'; }
+
+function dgMemberRowsHtml(members) {
+  const rows = (members && members.length) ? members : [{}];
+  return rows.map(m => `
+    <div class="dg-member-row">
+      <input class="form-input dg-m-name" placeholder="Adı Soyadı" value="${dgEsc(m.name)}">
+      <input class="form-input dg-m-role" placeholder="Branşı/Görevi" value="${dgEsc(m.role)}">
+      <input class="form-input dg-m-phone" placeholder="Telefon" value="${dgEsc(m.phone)}">
+      <input class="form-input dg-m-email" placeholder="E-posta" value="${dgEsc(m.email)}">
+      <span class="cl-link" onclick="this.parentElement.remove();renderDocGenPreview()">✕</span>
+    </div>`).join('');
+}
+function dgAddMemberRow() {
+  document.getElementById('dg-members').insertAdjacentHTML('beforeend', dgMemberRowsHtml([{}]));
+}
+function dgReadMembers() {
+  const el = document.getElementById('dg-members');
+  if (!el) return [];
+  return [...el.children].map(r => ({
+    name:  r.querySelector('.dg-m-name').value.trim(),
+    role:  r.querySelector('.dg-m-role').value.trim(),
+    phone: r.querySelector('.dg-m-phone').value.trim(),
+    email: r.querySelector('.dg-m-email').value.trim()
+  })).filter(m => m.name);
+}
+
+function openDocGen(reqDocType) {
+  docGenCurrent = reqDocType;
+  document.getElementById('docgen-title').textContent = '📝 ' + (DOC_GEN_TITLES[reqDocType] || 'Belgeyi Doldur');
+  renderDocGenFormFields();
+  renderDocGenPreview();
+  document.getElementById('docgen-overlay').classList.add('show');
+}
+function closeDocGen() {
+  document.getElementById('docgen-overlay').classList.remove('show');
+  docGenCurrent = null;
+}
+async function printDocGen() {
+  if (docGenCurrent === 'hyk_tutanagi' || docGenCurrent === 'ksk_tutanagi') {
+    const key = docGenCurrent === 'hyk_tutanagi' ? 'hyk_members' : 'ksk_members';
+    const members = dgReadMembers();
+    await db.from('schools').update({ [key]: members }).eq('id', currentSchool.id);
+    currentSchool[key] = members;
+  }
+  window.print();
+}
+function dgField(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+function renderDocGenFormFields() {
+  const el = document.getElementById('docgen-form');
+  const today = new Date().toISOString().slice(0,10);
+  const t = docGenCurrent;
+  if (t === 'hyk_tutanagi' || t === 'ksk_tutanagi') {
+    const key = t === 'hyk_tutanagi' ? 'hyk_members' : 'ksk_members';
+    el.innerHTML = `
+      <div class="form-group"><label class="form-label">Tutanak Tarihi</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>
+      <div class="form-group"><label class="form-label">Kurul Üyeleri</label>
+        <div id="dg-members">${dgMemberRowsHtml(currentSchool[key])}</div>
+        <button class="btn btn-ghost" type="button" onclick="dgAddMemberRow();renderDocGenPreview()" style="margin-top:6px">+ Üye Ekle</button>
+      </div>`;
+  } else if (t === 'secim_kriter_tutanagi') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Kurul Toplantı Tarihi</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'faaliyet_programi_imzali') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Tarih</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'kvkk') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Katılımcı Adı Soyadı</label><input class="form-input" id="dg-participant" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'beyan') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Tarih</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else if (t === 'sertifika_taslak') {
+    el.innerHTML = `
+      <div class="form-group"><label class="form-label">Katılımcı Adı Soyadı</label><input class="form-input" id="dg-participant" oninput="renderDocGenPreview()"></div>
+      <div class="form-group"><label class="form-label">Öğrenme Kazanımları (her satıra bir tane)</label><textarea class="form-input" id="dg-kazanimlar" rows="3" oninput="renderDocGenPreview()"></textarea></div>`;
+  } else if (t === 'odak_grup') {
+    el.innerHTML = `<div class="form-group"><label class="form-label">Görüşme Tarihi</label><input type="date" class="form-input" id="dg-date" value="${today}" oninput="renderDocGenPreview()"></div>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+function renderDocGenPreview() {
+  const s = currentSchool || {};
+  const m = currentMobility();
+  const t = docGenCurrent;
+  const date = dgDate(dgField('dg-date'));
+  const preview = document.getElementById('docgen-preview');
+  let html = '';
+
+  if (t === 'hyk_tutanagi') {
+    const members = dgReadMembers();
+    html = `
+      <h2>HAREKETLİLİK YÜRÜTME KURULU OLUŞTURMA TUTANAĞI</h2>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Milli Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği (${ERASMUS_PROJECT_NO}) kapsamında gerçekleştirilecek hareketlilik faaliyetlerinin yürütülmesi amacıyla aşağıda üyelerinin isimleri yer alan Hareketlilik Yürütme Kurulu, ${date} tarihinde oluşturulmuştur. Bu kurul, katılımcı seçimi faaliyetlerin kalite kriterleri çerçevesinde yürütülmesi, raporlanması ve yaygınlaştırılmasından Kocaeli İl Milli Eğitim Müdürlüğü Uluslararasılaşma Yönetim Kurulu'na karşı sorumludur.</p>
+      <table><tr><th>No</th><th>Adı ve Soyadı</th><th>Branşı/Görevi</th><th>Telefon</th><th>E-Posta</th><th>İmza</th></tr>
+      ${members.map((mem,i)=>`<tr><td>${i+1}</td><td>${dgEsc(mem.name)}</td><td>${dgEsc(mem.role)}</td><td>${dgEsc(mem.phone)}</td><td>${dgEsc(mem.email)}</td><td></td></tr>`).join('')}
+      </table>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>Okul Müdürü</p>`;
+
+  } else if (t === 'ksk_tutanagi') {
+    const members = dgReadMembers();
+    html = `
+      <h2>KATILIMCI SEÇİM KURULU OLUŞTURMA TUTANAĞI</h2>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Milli Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği (${ERASMUS_PROJECT_NO}) kapsamında gerçekleştirilecek hareketlilik faaliyetlerine katılacak katılımcıların seçimi amacıyla aşağıda üyelerinin isimleri yer alan kişiler Katılımcı Seçim Kurulu olarak ${date} tarihinde oluşturulmuştur. Bu kurul katılımcıları; şeffaf, adil, tarafsız, tutarlı ve kapsayıcı bir yöntemle seçecek ve Kocaeli İl Milli Eğitim Müdürlüğü Uluslararasılaşma Yönetim Kurulu'na karşı sorumlu olacaktır.</p>
+      <table><tr><th>No</th><th>Adı ve Soyadı</th><th>Branşı/Görevi</th><th>Telefon</th><th>E-Posta</th><th>İmza</th></tr>
+      ${members.map((mem,i)=>`<tr><td>${i+1}</td><td>${dgEsc(mem.name)}</td><td>${dgEsc(mem.role)}</td><td>${dgEsc(mem.phone)}</td><td>${dgEsc(mem.email)}</td><td></td></tr>`).join('')}
+      </table>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>Kurum Müdürü</p>`;
+
+  } else if (t === 'secim_kriter_tutanagi') {
+    html = `
+      <h2>OKUL EĞİTİMİ AKREDİTASYONU<br>ÖĞRENCİ VE REFAKATÇİLER İÇİN KATILIMCI SEÇİM YÖNTEMİ VE DEĞERLENDİRME KRİTERLERİ TUTANAĞI</h2>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Milli Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği (${ERASMUS_PROJECT_NO}) çerçevesinde yürütülecek hareketlilik faaliyetleri ile ilgili olarak, Hareketlilik Yürütme Kurulu ${date} tarihinde toplanmıştır.</p>
+      <p><b>Toplantının amacı:</b> Hareketliliklere katılmak isteyen öğrenciler için başvuru, değerlendirme kriterleri ve seçim sürecinin belirlenmesidir.</p>
+      <p><b>Alınan Kararlar:</b></p>
+      <ul>
+        <li>Başvurular TurnaPortal (turnaportal.ua.gov.tr) üzerinde açılacak ilan aracılığıyla alınacaktır. Başvuru Kılavuzuna uygun olarak yapılmayan başvurular değerlendirmeye alınmayacaktır.</li>
+        <li>TurnaPortal başvurusu öncesi Katılımcı Seçim Kurulu tarafından, katılımcı adaylarına 4 dil becerisini ölçecek şekilde CEFR'a uygun bir yabancı dil sınavı uygulanacaktır. En az B1 düzeyindeki adaylar TurnaPortal'a yönlendirilecektir.</li>
+        <li>Katılımcı adaylarına Katılımcı Seçim Kurulu tarafından mülakat yapılacak, sonuçlar kayıt altına alınacaktır.</li>
+        <li>Katılımcıların hareketlilik tarihinde okulun kayıtlı öğrencisi olmaları zorunludur.</li>
+        <li>Değerlendirme ve seçim süreci Okul Katılımcı Seçim Kurulu tarafından yürütülecek, sonuçlar Okul Hareketlilik Yürütme Kurulu tarafından ilan edilecektir.</li>
+        <li>Bu tutanak aynı zamanda duyuru dokümanı olarak kullanılacaktır.</li>
+      </ul>
+      <p><b>DEĞERLENDİRME KRİTERLERİ</b></p>
+      <ul>
+        <li>Akademik Başarı: Son Akademik Yıl Not Ortalaması (0–15 puan)</li>
+        <li>Yabancı Dil Yeterlilik Sınavı (CEFR, en az B1 düzeyi): (0–25 puan)</li>
+        <li>Mülakat (iletişim, temsil, problem çözme, kültürlerarası uyum, kariyer planı vb.): (0–25 puan)</li>
+        <li>Motivasyon: "Bu hareketlilik faaliyetine neden katılmak istiyorsunuz?" (0–15 puan)</li>
+        <li>Geçmiş Deneyimler: eTwinning, TÜBİTAK, proje çalışmaları, sosyal sorumluluk, uluslararası etkinlikler (0–10 puan)</li>
+        <li>Kazanımların Aktarımı: deneyimi okula/arkadaşlara aktarma planı (0–10 puan)</li>
+        <li>Daha önce Erasmus+ hareketliliğine katılmamış olmak: (Hayır → +5 puan, Evet → 0 puan)</li>
+      </ul>
+      <p><b>ÖNCELİKLENDİRME KRİTERLERİ:</b> Daha az fırsata sahip bireyler eşit puanlı durumlarda önceliklidir; katılımcı seçiminde cinsiyet dengesi gözetilir.</p>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>Okul Müdürü / Hareketlilik Yürütme Kurulu Başkanı</p>`;
+
+  } else if (t === 'faaliyet_programi_imzali') {
+    html = `
+      <h2>LETTER OF INVITATION</h2>
+      <table>
+        <tr><td>Full Legal Name of the host organisation</td><td></td></tr>
+        <tr><td>OID</td><td></td></tr>
+        <tr><td>Legal Representative</td><td></td></tr>
+        <tr><td>Contact Person</td><td></td></tr>
+        <tr><td>Telephone</td><td></td></tr>
+        <tr><td>E-mail</td><td></td></tr>
+        <tr><td>Legal Address</td><td></td></tr>
+      </table>
+      <p>With this letter, we hereby confirm that the following participant(s) are formally invited to take part in the mobility activity described below within the framework of the Erasmus+ Programme, Key Action 1: Learning Mobility of Individuals.</p>
+      <p>Sending partner: ${dgEsc(s.name)}, TURKEY<br>
+      Project No: ${ERASMUS_PROJECT_NO}<br>
+      Project Name: Mobilities for Erasmus Accreditation in the field of School Education<br>
+      Mobility Type: ${dgEsc(actLabel(m.activity_type))}<br>
+      Dates: ${dgEsc(m.start_date)} – ${dgEsc(m.end_date)}</p>
+      <table><tr><th>No</th><th>Name</th><th>Surname</th></tr><tr><td>1</td><td></td><td></td></tr></table>
+      <p>Yours sincerely,<br>Place ………………….. Date ${date}</p>
+      <p>……………………………………………<br>Name and signature of the person working in the host organisation and stamp</p>`;
+
+  } else if (t === 'kvkk') {
+    const participant = dgField('dg-participant');
+    html = `
+      <h2>AÇIK RIZA BEYAN FORMU</h2>
+      <p>SES/GÖRÜNTÜ/METİN KAYITLARINA İLİŞKİN AÇIK RIZA BEYAN FORMU</p>
+      <p>İş bu belgeyi okuduğumu ve bu belgeyi imzalayarak; tarafıma ait olan her türlü fotoğrafın Kocaeli Milli Eğitim Müdürlüğü Erasmus Akreditasyon Faaliyetleri kapsamında ve aynı zamanda Türkiye Ulusal Ajansı ve Mesleki Yeterlilik Kurumu tarafından saklanabileceğini, diğer çalışmalarla birleştirilebileceğini, Kocaeli Milli Eğitim Müdürlüğü ve Türkiye Ulusal Ajansı ile Avrupa Komisyonu'nun iletişim mecralarında kullanılabileceğini kabul, beyan ve taahhüt ediyorum. İlgili içeriğe ilişkin tüm hakların Kocaeli Milli Eğitim Müdürlüğü ve Türkiye Ulusal Ajansı'na ait olduğunu kabul ediyorum, herhangi bir maddi hak talep etmeyeceğimi taahhüt ediyorum.</p>
+      <p>Rızam VARDIR ☐ &nbsp;&nbsp;&nbsp; Rızam YOKTUR ☐</p>
+      <table>
+        <tr><td>Katıldığı Program</td><td>ERASMUS AKREDİTASYONU — Okul Eğitimi</td></tr>
+        <tr><td>Hareketlilik Türü</td><td>${dgEsc(actLabel(m.activity_type))}</td></tr>
+        <tr><td>İsim / Soyisim</td><td>${dgEsc(participant)}</td></tr>
+        <tr><td>Telefon</td><td></td></tr>
+        <tr><td>E-posta</td><td></td></tr>
+        <tr><td>İmza</td><td></td></tr>
+      </table>
+      <h2 style="margin-top:20px">KİŞİSEL VERİLERİN İŞLENMESİ VE GÜVENLİĞİ ONAY FORMU</h2>
+      <p>Bu dokümanı onaylayarak 6698 Sayılı Kişisel Verilerin Korunması Kanunu'nun ("Kanun") 5. Maddesi kapsamında Kocaeli İl Milli Eğitim Müdürlüğü'ne iletmiş olduğunuz kişisel verilerinizin, hizmetlerimiz hakkında bilgi vermek, istatistiki bilgi toplamak ve ilgili işlemlerin yapılması amacıyla kurumumuz tarafından işlenmesine açıkça rıza göstermektesiniz. Kanuni haklarınız kapsamında; dilediğiniz zaman Veri Sorumlusu kurumumuza başvurarak kişisel verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, düzeltme/silme isteme ve zararın tazminini talep etme hakkınız mevcuttur.</p>
+      <p>Kocaeli İl Milli Eğitim Müdürlüğü tarafından açıklanan 6698 sayılı Kişisel Verilerin Korunması Kanunu'na ilişkin aydınlatma metninin tamamını okudum, anladım ve kişisel verilerimin yukarıda belirtilen amaçlar çerçevesinde işlenmesine açık rızam ile onay veriyorum.</p>
+      <p style="margin-top:20px">${date}</p><p>${dgEsc(participant)}</p><p>İmza</p>`;
+
+  } else if (t === 'beyan') {
+    html = `
+      <p>Kocaeli Millî Eğitim Müdürlüğüne,</p>
+      <p>Kurumumuzun 2025 Teklif çağrısı dönemi Erasmus+ Programı altında kabul edilen Kocaeli Millî Eğitim Müdürlüğü Erasmus+ Okul Eğitimi Akreditasyonu Üyeliği ${ERASMUS_PROJECT_NO} kapsamında gerçekleştirdiğimiz ${dgEsc(actLabel(m.activity_type))} Hareketliliği kapsamında Kocaeli Milli Eğitim Müdürlüğü 2025 Hareketlilik Uygulama Rehberi'nde açıklandığı şekilde "Hareketlilik Öncesi, Hareketlilik Sırası ve Hareketlilik Sonrası" süreçlerini kapsayan tüm iş ve işlemlerin Erasmus Kalite Standartları çerçevesinde gerçekleştirildiğini; Hareketlilik Faaliyetleri Tablosu'nun Kontrol Listesi'nde belirtilen tüm belgelerin belirtildiği şekilde teslim edildiğini, aynı tablonun "Faaliyetler" bölümünün eksiksiz olarak tamamlandığını; söz konusu iş ve işlemlerin tamamlanmaması, eksik ve/veya hatalı olması durumunda Ortaklık ve Hibe Sözleşmelerinde belirtilen maddeler uyarınca tahsis edilen hibede kesinti uygulanabileceğini kabul ve beyan ederim.</p>
+      <table><tr><th>No</th><th>Adı ve Soyadı</th><th>Branşı / Görevi</th><th>İmza</th></tr>
+      <tr><td>1</td><td></td><td></td><td></td></tr><tr><td>2</td><td></td><td></td><td></td></tr></table>
+      <p style="margin-top:20px">${date}</p><p>…………………………</p><p>${dgEsc(s.name)}<br>Okul Müdürü</p>`;
+
+  } else if (t === 'sertifika_taslak') {
+    const participant = dgField('dg-participant');
+    const kazanimlar = dgField('dg-kazanimlar').split('\n').filter(x=>x.trim());
+    html = `
+      <h2>Certificate of Attendance<br>Erasmus+ Accreditation — Mobility in School Education<br>${ERASMUS_PROJECT_NO}</h2>
+      <p>This is to certify that <b>${dgEsc(participant) || '…………………'}</b> participated in and successfully completed a ${dgEsc(actLabel(m.activity_type))} activity at ${dgEsc(m.destination_org)}, in ${dgEsc(m.destination_city)}, ${dgEsc(m.destination_country)} in accordance with the Learning Agreement signed between the participant, the sending organisation, and the host organisation prior to the mobility period.</p>
+      <p>During the mobility the participant:</p>
+      <ul>${kazanimlar.length ? kazanimlar.map(k=>`<li>${dgEsc(k)}</li>`).join('') : '<li>…………………</li>'}</ul>
+      <p>From ${dgEsc(m.start_date)} until ${dgEsc(m.end_date)}</p>
+      <p style="margin-top:20px">…………………… &nbsp;&nbsp;&nbsp;&nbsp; Ev sahibi kurum yetkilisi ad soyad<br>imza &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imza</p>`;
+
+  } else if (t === 'odak_grup') {
+    html = `
+      <h2>KOCAELİ MİLLİ EĞİTİM MÜDÜRLÜĞÜ ERASMUS AKREDİTASYONU<br>HAREKETLİLİK SONRASI ODAK GRUP GÖRÜŞMESİ FORMU</h2>
+      <table>
+        <tr><td>Kurumun Adı</td><td>${dgEsc(s.name)}</td></tr>
+        <tr><td>Hareketliliğin Türü</td><td>${dgEsc(actLabel(m.activity_type))}</td></tr>
+        <tr><td>Ortaklık Sözleşme Numarası</td><td>${ERASMUS_PROJECT_NO}</td></tr>
+        <tr><td>Hareketlilik Tarihleri</td><td>${dgEsc(m.start_date)} – ${dgEsc(m.end_date)}</td></tr>
+        <tr><td>Ev Sahibi Ülke</td><td>${dgEsc(m.destination_country)}</td></tr>
+        <tr><td>Hareketlilik Öncesinde Belirlenen Öğrenme Kazanımları</td><td></td></tr>
+      </table>
+      <table>
+        <tr><td>Görüşmeyi Yapan HYK Üyeleri (Adı Soyadı ve Unvanı)</td><td></td></tr>
+        <tr><td>Hareketliliğe Katılan Kişi/Kişiler (Adı Soyadı ve Unvanı)</td><td></td></tr>
+        <tr><td>Görüşmenin Yapıldığı Tarih</td><td>${date}</td></tr>
+        <tr><td>Yer (Çevrimiçi/Yüz Yüze)</td><td></td></tr>
+      </table>
+      <p><b>Sorular:</b></p>
+      <ul>
+        <li>Hareketlilik sürecinde edindiğiniz en önemli kazanımlar nelerdi?</li>
+        <li>Belirlenen kazanımlara ne ölçüde ulaştınız?</li>
+        <li>Ev sahibi kurumda öğrendiğiniz uygulamaları kendi çalışma ortamınıza nasıl taşıyabilirsiniz?</li>
+        <li>Bu hareketlilik programının kişisel becerileriniz veya mesleki gelişiminiz üzerindeki etkisini nasıl değerlendirirsiniz?</li>
+        <li>Kazandığınız beceriler kuruma nasıl katkı sağlayabilir?</li>
+        <li>Eklemek istediğiniz bir öneri veya yorum var mı?</li>
+      </ul>`;
+  }
+
+  preview.innerHTML = html;
+}
+
+function statusLabel(s) {
+  return { pending:'Bekleniyor', generated:'Oluşturuldu', uploaded:'Yüklendi', ai_checked:'AI İnceledi', approved:'Onaylandı', rejected:'Reddedildi', archived:'Arşiv' }[s] || s;
+}
+function statusStyle(s) {
+  return {
+    pending:    'background:#f1f5f9;color:#64748b',
+    generated:  'background:#eff6ff;color:#1d4ed8',
+    uploaded:   'background:#fef9c3;color:#92400e',
+    ai_checked: 'background:#fdf4ff;color:#7c3aed',
+    approved:   'background:#ecfdf5;color:#065f46',
+    rejected:   'background:#fef2f2;color:#991b1b'
+  }[s] || '';
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+// ─────────────────────────────────────────────
+// BAŞLAT
+// ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

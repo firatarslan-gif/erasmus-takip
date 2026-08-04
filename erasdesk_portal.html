@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ErasDesk — Okul Portalı</title>
+<title>KAYP — Okul Portalı</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -246,8 +246,8 @@ input[type="file"] { display: none; }
   <!-- SİDEBAR -->
   <nav class="sidebar">
     <div class="sb-logo">
-      <div class="sb-logo-title">🎓 ErasDesk</div>
-      <div class="sb-logo-sub">Erasmus Akreditasyon 2026</div>
+      <div class="sb-logo-title">🎓 KAYP</div>
+      <div class="sb-logo-sub">Kocaeli Akreditasyon Yönetim Portalı</div>
     </div>
     <div class="sb-school">
       <div class="sb-school-name" id="sb-school-name">Yükleniyor…</div>
@@ -760,12 +760,12 @@ async function confirmUpload() {
     const path     = `${currentSchool.id}/${mobId || 'school'}/${fileName}`;
 
     const { data: storageData, error: storageErr } = await db.storage
-      .from('erasdesk-docs')
+      .from('KAYP')
       .upload(path, file, { contentType: file.type, upsert: false });
 
     if (storageErr) throw storageErr;
 
-    const { data: { publicUrl } } = db.storage.from('erasdesk-docs').getPublicUrl(path);
+    const { data: { publicUrl } } = db.storage.from('KAYP').getPublicUrl(path);
 
     // 2. documents tablosuna kaydet
     const aiResultEl = document.getElementById('ai-result-area').querySelector('.ai-result');

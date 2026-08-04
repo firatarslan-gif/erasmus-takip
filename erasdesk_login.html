@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ErasDesk — Giriş</title>
+<title>KAYP — Giriş</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,18 +40,18 @@ body {
   font-size: 24px;
 }
 .logo-title { font-size: 22px; font-weight: 800; color: #1e293b; }
-.logo-sub   { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.logo-sub   { font-size: 14px; color: #94a3b8; margin-top: 2px; }
 
-h2 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 20px; }
+h2 { font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 20px; }
 
 .form-group { margin-bottom: 16px; }
-label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+label { display: block; font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
 input {
   width: 100%;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px 14px;
-  font-size: 14px;
+  font-size: 16px;
   color: #1e293b;
   outline: none;
   transition: border-color .2s;
@@ -66,7 +66,7 @@ input.error { border-color: #dc2626; }
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   margin-top: 8px;
@@ -81,7 +81,7 @@ input.error { border-color: #dc2626; }
   border: 1px solid #fca5a5;
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 12px;
+  font-size: 14px;
   color: #dc2626;
   margin-bottom: 16px;
   display: none;
@@ -93,7 +93,7 @@ input.error { border-color: #dc2626; }
   border: 1px solid #86efac;
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 12px;
+  font-size: 14px;
   color: #166534;
   margin-bottom: 16px;
   display: none;
@@ -103,7 +103,7 @@ input.error { border-color: #dc2626; }
 .forgot-link {
   display: block;
   text-align: right;
-  font-size: 12px;
+  font-size: 14px;
   color: #2563eb;
   text-decoration: none;
   margin-top: 8px;
@@ -113,7 +113,7 @@ input.error { border-color: #dc2626; }
 
 .divider {
   text-align: center;
-  font-size: 11px;
+  font-size: 13px;
   color: #94a3b8;
   margin: 20px 0;
   position: relative;
@@ -126,12 +126,12 @@ input.error { border-color: #dc2626; }
 }
 .divider span { background: white; padding: 0 12px; position: relative; }
 
-.footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 28px; }
+.footer { text-align: center; font-size: 13px; color: #94a3b8; margin-top: 28px; }
 .footer a { color: #2563eb; text-decoration: none; }
 
 /* Şifre sıfırlama formu */
 .reset-form { display: none; }
-.back-btn { background: none; border: none; color: #2563eb; font-size: 12px; cursor: pointer; margin-bottom: 16px; padding: 0; }
+.back-btn { background: none; border: none; color: #2563eb; font-size: 14px; cursor: pointer; margin-bottom: 16px; padding: 0; }
 .back-btn:hover { text-decoration: underline; }
 
 .spinner {
@@ -147,8 +147,8 @@ input.error { border-color: #dc2626; }
 <div class="card">
   <div class="logo">
     <div class="logo-icon">🎓</div>
-    <div class="logo-title">ErasDesk</div>
-    <div class="logo-sub">Kocaeli MEM Erasmus Akreditasyon Platformu</div>
+    <div class="logo-title">KAYP</div>
+    <div class="logo-sub">Kocaeli Akreditasyon Yönetim Portalı</div>
   </div>
 
   <!-- Giriş Formu -->
@@ -171,11 +171,28 @@ input.error { border-color: #dc2626; }
     <button class="btn" id="login-btn" onclick="doLogin()">Giriş Yap</button>
   </div>
 
+  <!-- Şifre Belirleme (davet / recovery) -->
+  <div class="reset-form" id="setpw-form">
+    <h2>Şifrenizi Belirleyin</h2>
+    <p style="font-size: 14px;color:#64748b;margin-bottom:16px">Hesabınız için yeni bir şifre oluşturun.</p>
+    <div class="error-msg"   id="setpw-error"></div>
+    <div class="success-msg" id="setpw-success"></div>
+    <div class="form-group">
+      <label>Yeni Şifre</label>
+      <input type="password" id="setpw-pass" placeholder="En az 6 karakter">
+    </div>
+    <div class="form-group">
+      <label>Şifre Tekrar</label>
+      <input type="password" id="setpw-pass2" placeholder="Aynı şifreyi tekrar girin">
+    </div>
+    <button class="btn" id="setpw-btn" onclick="doSetPassword()">Şifremi Belirle ve Giriş Yap</button>
+  </div>
+
   <!-- Şifre Sıfırlama -->
   <div class="reset-form" id="reset-form">
     <button class="back-btn" onclick="showLogin()">← Giriş ekranına dön</button>
     <h2>Şifre Sıfırla</h2>
-    <p style="font-size:12px;color:#64748b;margin-bottom:16px">E-posta adresinizi girin, şifre sıfırlama bağlantısı göndereceğiz.</p>
+    <p style="font-size: 14px;color:#64748b;margin-bottom:16px">E-posta adresinizi girin, şifre sıfırlama bağlantısı göndereceğiz.</p>
 
     <div class="error-msg" id="reset-error"></div>
     <div class="success-msg" id="reset-success"></div>
@@ -204,30 +221,67 @@ const SUPABASE_ANON = 'sb_publishable_HhrToT0X6VV99lQXtubZGw_1z0ctaxG';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Zaten giriş yapılmışsa portala yönlendir
-db.auth.getSession().then(({ data: { session } }) => {
-  if (session) redirectToPortal(session.user);
-});
+// ── Davet / Şifre sıfırlama token kontrolü ──
+(function checkHashToken() {
+  const hash = window.location.hash;
+  if (!hash) return;
+  const params = new URLSearchParams(hash.replace('#', ''));
+
+  const error = params.get('error');
+  if (error) {
+    const desc = params.get('error_description');
+    let msg = 'Bağlantının süresi dolmuş veya geçersiz. Lütfen yöneticinizden yeni bir davet/sıfırlama bağlantısı isteyin.';
+    if (error === 'access_denied' && params.get('error_code') === 'otp_expired') {
+      msg = 'Bu bağlantının süresi dolmuş. Lütfen yöneticinizden yeni bir davet bağlantısı isteyin.';
+    } else if (desc) {
+      msg = decodeURIComponent(desc.replace(/\+/g, ' '));
+    }
+    showError(document.getElementById('login-error'), msg);
+    history.replaceState(null, '', window.location.pathname);
+    return;
+  }
+
+  const type = params.get('type');
+  if (type === 'invite' || type === 'recovery') {
+    // Supabase token'ı otomatik işleyecek, PASSWORD_RECOVERY eventi gelecek
+    showSetPassword();
+  }
+})();
 
 // Auth durum değişikliğini dinle
+let _settingPassword = false;
 db.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) {
+  if (event === 'PASSWORD_RECOVERY') {
+    _settingPassword = true;
+    showSetPassword();
+  } else if (event === 'SIGNED_IN' && session && !_settingPassword) {
     redirectToPortal(session.user);
   }
 });
 
-async function redirectToPortal(user) {
-  // Kullanıcı rolüne göre yönlendir
-  const { data: userData } = await db
-    .from('users')
-    .select('role, school_id')
-    .eq('id', user.id)
-    .single();
+// Zaten giriş yapılmışsa portala yönlendir (token yoksa)
+if (!window.location.hash) {
+  db.auth.getSession().then(({ data: { session } }) => {
+    if (session) redirectToPortal(session.user);
+  });
+}
 
-  if (userData?.role === 'coordinator' || userData?.role === 'admin') {
-    window.location.href = 'erasdesk_koordinator.html';
-  } else {
-    window.location.href = 'erasdesk_portal.html';
+async function redirectToPortal(user) {
+  try {
+    const { data: userData } = await db
+      .from('users')
+      .select('role, school_id')
+      .eq('id', user.id)
+      .single();
+
+    if (userData?.role === 'coordinator' || userData?.role === 'admin') {
+      window.location.href = 'erasdesk_koordinator.html';
+    } else {
+      window.location.href = 'kayp_portal.html';
+    }
+  } catch(e) {
+    // users tablosunda kayıt yoksa portala gönder
+    window.location.href = 'kayp_portal.html';
   }
 }
 
@@ -286,6 +340,42 @@ async function doReset() {
   } else {
     sucEl.textContent = 'Bağlantı gönderildi! E-posta kutunuzu kontrol edin.';
     sucEl.classList.add('show');
+  }
+}
+
+function showSetPassword() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('reset-form').style.display = 'none';
+  document.getElementById('setpw-form').style.display = 'block';
+}
+
+async function doSetPassword() {
+  const pass  = document.getElementById('setpw-pass').value;
+  const pass2 = document.getElementById('setpw-pass2').value;
+  const errEl = document.getElementById('setpw-error');
+  const sucEl = document.getElementById('setpw-success');
+  const btn   = document.getElementById('setpw-btn');
+
+  errEl.classList.remove('show');
+  sucEl.classList.remove('show');
+
+  if (pass.length < 6) { showError(errEl, 'Şifre en az 6 karakter olmalıdır.'); return; }
+  if (pass !== pass2)  { showError(errEl, 'Şifreler eşleşmiyor.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Kaydediliyor…';
+
+  const { data, error } = await db.auth.updateUser({ password: pass });
+
+  btn.disabled = false;
+  btn.innerHTML = 'Şifremi Belirle ve Giriş Yap';
+
+  if (error) {
+    showError(errEl, 'Hata: ' + error.message);
+  } else {
+    sucEl.textContent = 'Şifreniz belirlendi! Yönlendiriliyorsunuz…';
+    sucEl.classList.add('show');
+    setTimeout(() => redirectToPortal(data.user), 1500);
   }
 }
 
