@@ -5115,7 +5115,7 @@ function renderApplications() {
   h += '</div>';
 
   // Search
-  h += '<input type="text" placeholder="Kurum adı veya ilçe ara..." value="'+(APP_STATE.q||'')+'" oninput="APP_STATE.q=this.value;renderApplications()" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;box-sizing:border-box;outline:none">';
+  h += '<input type="text" id="appsSearchInput" placeholder="Kurum adı veya ilçe ara..." value="'+(APP_STATE.q||'')+'" oninput="var _v=this.value,_p=this.selectionStart;APP_STATE.q=_v;renderApplications();var _i=document.getElementById(\'appsSearchInput\');if(_i){_i.focus();try{_i.setSelectionRange(_p,_p);}catch(e){}}" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;box-sizing:border-box;outline:none">';
 
   if(APP_STATE.year===2022||APP_STATE.year===0){
     h += '<div style="margin-top:8px;padding:8px 12px;background:#fefce8;border-radius:8px;font-size:11px;color:#854d0e;border-left:3px solid #eab308">⚠ 2022 listesinde ilçe ve iletişim bilgisi bulunmuyor — veriler e-posta listesinden alındı.</div>';
@@ -7005,8 +7005,8 @@ function render2026(){
   </div>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
-    <input type="text" placeholder="Okul, ilçe veya OID ara…" value="${filter2026.search}"
-      oninput="filter2026.search=this.value;render2026()"
+    <input type="text" id="y2026SearchInput" placeholder="Okul, ilçe veya OID ara…" value="${filter2026.search}"
+      oninput="var _v=this.value,_p=this.selectionStart;filter2026.search=_v;render2026();var _i=document.getElementById('y2026SearchInput');if(_i){_i.focus();try{_i.setSelectionRange(_p,_p);}catch(e){}}"
       style="flex:1;min-width:160px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none;background:white"/>
     <select onchange="filter2026.ilce=this.value;render2026()"
       style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:white">
@@ -7205,8 +7205,8 @@ function renderTakip(){
   ${editFormHtml}
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
-    <input type="text" placeholder="Okul, tür veya not ara…" value="${takipFilter.search}"
-      oninput="takipFilter.search=this.value;renderTakip()"
+    <input type="text" id="takipSearchInput" placeholder="Okul, tür veya not ara…" value="${takipFilter.search}"
+      oninput="var _v=this.value,_p=this.selectionStart;takipFilter.search=_v;renderTakip();var _i=document.getElementById('takipSearchInput');if(_i){_i.focus();try{_i.setSelectionRange(_p,_p);}catch(e){}}"
       style="flex:1;min-width:160px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none;background:white"/>
     ${['','2024','2025'].map(v=>`<button onclick="takipFilter.donem='${v}';renderTakip()"
       style="padding:5px 12px;border-radius:8px;border:1px solid ${takipFilter.donem===v?'var(--blue)':'var(--border)'};background:${takipFilter.donem===v?'var(--blue)':'white'};color:${takipFilter.donem===v?'white':'var(--text)'};cursor:pointer;font-family:inherit;font-size:13px">${v||'Tümü'}</button>`).join('')}
@@ -10000,7 +10000,7 @@ function renderTakip24() {
   // ── Filtre & Arama ──────────────────────────────────
   var activeFilters = _t24Filter.beyan || _t24Filter.onay || _t24Filter.q.trim();
   h += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px">';
-  h += '<input id="_t24SearchInp" type="text" value="'+(_t24Filter.q||'').replace(/"/g,'&quot;')+'" oninput="_t24SetFilter(&quot;q&quot;,this.value)" placeholder="🔍 Okul ara…" style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
+  h += '<input id="_t24SearchInp" type="text" value="'+(_t24Filter.q||'').replace(/"/g,'&quot;')+'" oninput="var _v=this.value,_p=this.selectionStart;_t24SetFilter(&quot;q&quot;,_v);var _i=document.getElementById(&quot;_t24SearchInp&quot;);if(_i){_i.focus();try{_i.setSelectionRange(_p,_p);}catch(e){}}" placeholder="🔍 Okul ara…" style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
   h += '<button onclick="_t24SetFilter(&quot;beyan&quot;,!_t24Filter.beyan)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.beyan?'#2563eb':'#e2e8f0')+';background:'+(_t24Filter.beyan?'#eff6ff':'white')+';color:'+(_t24Filter.beyan?'#1d4ed8':'#64748b')+'">📤 Beyan Yüklendi</button>';
   h += '<button onclick="_t24SetFilter(&quot;onay&quot;,!_t24Filter.onay)" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(_t24Filter.onay?'#7c3aed':'#e2e8f0')+';background:'+(_t24Filter.onay?'#faf5ff':'white')+';color:'+(_t24Filter.onay?'#6d28d9':'#64748b')+'">✅ Onaylandı</button>';
   if (activeFilters) h += '<button onclick="_t24ClearFilter()" style="padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid #fecdd3;background:#fff1f2;color:#be123c">✕ Temizle</button>';
